@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasUuids;
+
+    protected $primaryKey = 'id_user';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +22,10 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
+        'id_user',
+        'username',
         'password',
+        'role',
     ];
 
     /**
@@ -41,8 +46,31 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the siswa record associated with the user.
+     */
+    public function siswa(): HasOne
+    {
+        return $this->hasOne(Siswa::class, 'id_user', 'id_user');
+    }
+
+    /**
+     * Get the civitas akademik record associated with the user.
+     */
+    public function civitasAkademik(): HasOne
+    {
+        return $this->hasOne(CivitasAkademik::class, 'id_user', 'id_user');
+    }
+
+    /**
+     * Get the penjual record associated with the user.
+     */
+    public function penjual(): HasOne
+    {
+        return $this->hasOne(Penjual::class, 'id_user', 'id_user');
     }
 }
