@@ -21,16 +21,16 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/">Beranda</a>
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">Beranda</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/makanan">Makanan</a>
+                    <a class="nav-link {{ request()->is('makanan') ? 'active' : '' }}" href="/makanan">Makanan</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/minuman">Minuman</a>
+                    <a class="nav-link {{ request()->is('minuman') ? 'active' : '' }}" href="/minuman">Minuman</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/camilan">Camilan</a>
+                    <a class="nav-link {{ request()->is('camilan') ? 'active' : '' }}" href="/camilan">Camilan</a>
                 </li>
             </ul>
 
