@@ -3,216 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar - Kantin Digital</title>
+    <title>Manajemen Pesanan - Penjual</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --theme-color: #00897b;
-            --primary-blue: #0d6efd;
-            --danger-red: #e53935;
+            --primary-green: #1e8e3e;
+            --light-gray-bg: #f0f2f5;
+            --text-gray: #6c757d;
+
+            /* Warna Tombol Aksi */
+            --btn-process-bg: #1e8e3e; /* Merah - Terima & Proses */
+            --btn-ready-bg: #0d6efd;   /* Biru - Siap Ambil */
+            --btn-done-bg: #198754;    /* Hijau Tua - Telah Diambil (Contoh) */
+            --btn-done-bright-bg: #20c997; /* Hijau Terang - Telah Diambil */
+            --btn-cancel-bg: #6c757d;  /* Abu-abu - Batalkan/Detail */
         }
 
-        body, html {
-            margin: 0;
+        body {
             font-family: 'Poppins', sans-serif;
-            background-color: white;
+            background-color: var(--light-gray-bg);
         }
 
-        /* =========================================== */
-        /* == GAYA TAMPILAN MOBILE (DEFAULT) == */
-        /* =========================================== */
-        .mobile-navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
+        /* Navbar */
+        .navbar {
             background-color: white;
-            border-bottom: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
         }
-        .mobile-navbar .navbar-brand {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #212529;
-            text-decoration: none;
+        .navbar-brand img {
+            height: 35px;
         }
-        .mobile-navbar .navbar-brand img {
-            height: 30px;
-            margin-right: 0.5rem;
-        }
-        .mobile-navbar .nav-link {
-            font-size: 0.9rem;
+        .navbar .nav-link {
             font-weight: 500;
-            color: var(--danger-red);
-            text-decoration: none;
+            color: #333;
         }
 
-        .brand-header {
-            background-color: var(--theme-color);
-            color: white;
-            padding: 2rem 1rem 3rem 1rem;
-            text-align: center;
-            border-radius: 0 0 25px 25px;
+        /* Filter Status Pesanan */
+        .status-filters .btn {
+            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            border: none;
+            transition: background-color 0.2s;
         }
-        .brand-header img {
-            max-width: 80px;
+        .status-filters .btn.active {
+            background-color: var(--primary-green);
+            color: white;
+        }
+        .status-filters .btn:not(.active) {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        /* Kartu Pesanan (Mobile First) */
+        .order-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 1rem;
             margin-bottom: 1rem;
         }
-        .brand-header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-        .brand-header p {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
+        /* Style border berbeda untuk setiap status */
+        .order-card[data-status="baru"] { border: 2px dashed #e0e0e0; }
+        .order-card[data-status="diproses"] { border: 2px dashed var(--btn-ready-bg); }
+        .order-card[data-status="siap"] { border: 2px dashed var(--btn-done-bright-bg); }
 
-        .form-section {
-            padding: 2rem 1.5rem;
-            background-color: white;
-        }
-        .form-section h3 {
+        .order-card-body dt { font-weight: 600; }
+        .order-card-body dd { color: var(--text-gray); }
+        .order-card-footer .btn {
+            border-radius: 20px;
             font-weight: 600;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        .form-control {
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-        }
-        .form-control:focus {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-        .btn-submit {
-            padding: 0.75rem;
-            border-radius: 10px;
-            font-weight: 600;
+            width: 100%;
+            padding: 0.6rem;
+            border: none;
         }
 
-        /* Sembunyikan navbar desktop di mobile */
-        .desktop-navbar {
-            display: none;
-        }
+        /* Kelas untuk Styling Tombol Aksi */
+        .btn-cancel { background-color: var(--btn-cancel-bg); color: white; }
+        .btn-action-process { background-color: var(--btn-process-bg); color: white; }
+        .btn-action-ready { background-color: var(--btn-ready-bg); color: white; }
+        .btn-action-done { background-color: var(--btn-done-bright-bg); color: white; }
 
-        /* ========================================================= */
-        /* == GAYA TAMPILAN DESKTOP (Layar > 992px) == */
-        /* ========================================================= */
-        @media (min-width: 992px) {
-            .mobile-navbar {
-                display: none;
+        /* Tampilan Desktop */
+        @media (min-width: 768px) {
+            .order-card {
+                border: 1px solid #dee2e6;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+                padding: 1.25rem;
             }
-            .desktop-navbar {
-                display: block; /* Tampilkan navbar desktop */
-            }
+             .order-card[data-status="baru"] { border: 1px solid #dee2e6; }
+             .order-card[data-status="diproses"] { border: 2px dashed var(--btn-ready-bg); }
+             .order-card[data-status="siap"] { border: 2px dashed var(--btn-done-bright-bg); }
 
-            main {
-                display: flex;
-                align-items: center;
-                min-height: 100vh;
-                position: relative;
-                background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto-format&fit=crop');
-                background-size: cover;
-                background-position: center;
-            }
-            main::before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background-color: var(--theme-color);
-                opacity: 0.8;
-            }
-
-            .brand-header, .form-section {
-                position: relative;
-                z-index: 2;
-                flex: 1; /* Buat kedua bagian memenuhi space */
-                padding: 0 2rem;
-            }
-
-            .brand-header {
-                background: none; /* Hapus background hijau di desktop */
-                border-radius: 0;
-            }
-            .brand-header img {
-                max-width: 150px;
-            }
-            .brand-header h1 {
-                font-size: 3.5rem;
-            }
-            .brand-header p {
-                font-size: 1.25rem;
-            }
-
-            .form-section {
-                display: flex;
-                justify-content: flex-start;
-                background: none;
-            }
-            .form-card {
-                background-color: white;
-                border-radius: 20px;
-                padding: 2.5rem;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                width: 100%;
-                max-width: 450px; /* Batasi lebar form */
-            }
+            .order-card-body .order-row { display: flex; justify-content: space-between; }
+            .order-card-body dd { text-align: right; }
+            .order-card-footer .btn { width: auto; padding: 0.5rem 1.25rem; }
         }
     </style>
 </head>
 <body>
 
-    <header class="desktop-navbar sticky-top">
-        <nav class="navbar bg-white border-bottom shadow-sm">
-            <div class="container">
-                <a class="navbar-brand d-flex align-items: center" href="#">
-                    <img src="https://smanda.sch.id/wp-content/uploads/2020/07/logo-smanda.png" alt="Logo" class="me-3" style="height: 35px;">
-                    <span class="fw-bold fs-5">Daftar</span>
-                </a>
-                <span class="navbar-text">
-                    <a href="#" style="color: var(--danger-red); text-decoration: none; font-weight: 500;">Butuh bantuan?</a>
-                </span>
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><img src="https://smanda.sch.id/wp-content/uploads/2020/07/logo-smanda.png" alt="Logo" class="me-2"><span class="fw-bold d-none d-lg-inline">SMA NEGERI 2 JEMBER</span></a>
+                <div class="collapse navbar-collapse" id="navbarNav"><ul class="navbar-nav mx-auto"><li class="nav-item"><a class="nav-link" href="#">Laporan</a></li><li class="nav-item"><a class="nav-link" href="#">Produk</a></li><li class="nav-item dropdown"><a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Pesanan</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="#">Pesanan Baru</a></li><li><a class="dropdown-item" href="#">Pesanan Diproses</a></li><li><a class="dropdown-item" href="#">Siap Diambil</a></li></ul></li></ul></div>
+                <div class="d-flex align-items-center"><span class="fw-bold me-3">Rp 0</span><a href="#" class="fs-5 text-secondary me-3"><i class="bi bi-bell-fill"></i></a><button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button></div>
             </div>
         </nav>
     </header>
 
-    <main>
-        <section class="brand-header">
-            <img src="https://smanda.sch.id/wp-content/uploads/2020/07/logo-smanda.png" alt="Logo Kantin Digital">
-            <h1>KANTIN DIGITAL</h1>
-            <p>SMA NEGERI 2 JEMBER</p>
-        </section>
+    <main class="container my-4">
+        <div class="mb-3">
+            <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Beranda</a></li><li class="breadcrumb-item active" aria-current="page">Pesanan</li></ol></nav>
+            <h1 class="h3 fw-bold">Pesanan</h1>
+        </div>
 
-        <section class="form-section">
-            <div class="form-card">
-                <div class="mobile-navbar">
-                    <a class="navbar-brand" href="#">
-                        <img class="d-none d-md-inline" src="https://smanda.sch.id/wp-content/uploads/2020/07/logo-smanda.png" alt="Logo">
-                        <span>Daftar</span>
-                    </a>
-                    <a href="#" class="nav-link">Butuh bantuan?</a>
+        <div class="status-filters d-flex gap-2 mb-4">
+            <button class="btn active" data-status="baru">Pesanan Baru</button>
+            <button class="btn" data-status="diproses">Pesanan Diproses</button>
+            <button class="btn" data-status="siap">Siap Diambil</button>
+        </div>
+
+        <div class="row" id="order-grid">
+            <div class="col-lg-4 col-md-6 col-12 mb-3">
+                <div class="order-card  h-100" data-status="baru">
+                    <h6 class="fw-bold mb-3">Order ID: #123</h6>
+                    <div class="order-card-body"><dl class="mb-0"><div class="order-row"><dt>Nama Pelanggan</dt><dd>Magistra</dd></div><div class="order-row"><dt>Waktu Pesan</dt><dd>12 Feb 2025, 14:14</dd></div><div class="order-row"><dt>Detail Pesan</dt><dd>1x Ayam Goreng, Pedas<br>1x Es Teh, Tawar</dd></div><div class="order-row"><dt>Pengambilan</dt><dd>15 Feb 2025, Istirahat 1</dd></div><div class="order-row"><dt>Total</dt><dd class="fw-bold">Rp. 20.000</dd></div></dl></div>
+                    <hr>
+                    <div class="order-card-footer"><div class="row g-2"><div class="col-6"><button class="btn btn-cancel">Detail</button></div><div class="col-6"><button class="btn btn-action-process">Terima & Proses</button></div></div></div>
                 </div>
-
-                <h3 class="mt-4">Daftar Akun</h3>
-                <form>
-                    <div class="mb-3">
-                        <label for="nama" class="form-label">Nama</label>
-                        <input type="text" class="form-control" id="nama" placeholder="Masukkan Nama Anda">
-                    </div>
-                    <div class="mb-4">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" placeholder="Password">
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 btn-submit">Buat Akun</button>
-                </form>
             </div>
-        </section>
+
+             <div class="col-lg-4 col-md-6 col-12 mb-3">
+                <div class="order-card h-100" data-status="baru">
+                    <h6 class="fw-bold mb-3">Order ID: #124</h6>
+                    <div class="order-card-body"><dl class="mb-0"><div class="order-row"><dt>Nama Pelanggan</dt><dd>Budi Hartono</dd></div><div class="order-row"><dt>Waktu Pesan</dt><dd>12 Feb 2025, 14:18</dd></div><div class="order-row"><dt>Detail Pesan</dt><dd>2x Nasi Padang</dd></div><div class="order-row"><dt>Pengambilan</dt><dd>15 Feb 2025, Istirahat 1</dd></div><div class="order-row"><dt>Total</dt><dd class="fw-bold">Rp. 24.000</dd></div></dl></div>
+                    <hr>
+                    <div class="order-card-footer"><div class="row g-2"><div class="col-6"><button class="btn btn-cancel">Detail</button></div><div class="col-6"><button class="btn btn-action-process">Terima & Proses</button></div></div></div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 col-12 mb-3">
+                <div class="order-card h-100" data-status="baru">
+                    <h6 class="fw-bold mb-3">Order ID: #125</h6>
+                    <div class="order-card-body"><dl class="mb-0"><div class="order-row"><dt>Nama Pelanggan</dt><dd>Citra Lestari</dd></div><div class="order-row"><dt>Waktu Pesan</dt><dd>12 Feb 2025, 14:21</dd></div><div class="order-row"><dt>Detail Pesan</dt><dd>1x Es Teler</dd></div><div class="order-row"><dt>Pengambilan</dt><dd>15 Feb 2025, Istirahat 2</dd></div><div class="order-row"><dt>Total</dt><dd class="fw-bold">Rp. 12.000</dd></div></dl></div>
+                    <hr>
+                    <div class="order-card-footer"><div class="row g-2"><div class="col-6"><button class="btn btn-cancel">Detail</button></div><div class="col-6"><button class="btn btn-action-process">Terima & Proses</button></div></div></div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-12 mb-3">
+                <div class="order-card h-100" data-status="baru">
+                    <h6 class="fw-bold mb-3">Order ID: #125</h6>
+                    <div class="order-card-body"><dl class="mb-0"><div class="order-row"><dt>Nama Pelanggan</dt><dd>Citra Lestari</dd></div><div class="order-row"><dt>Waktu Pesan</dt><dd>12 Feb 2025, 14:21</dd></div><div class="order-row"><dt>Detail Pesan</dt><dd>1x Es Teler</dd></div><div class="order-row"><dt>Pengambilan</dt><dd>15 Feb 2025, Istirahat 2</dd></div><div class="order-row"><dt>Total</dt><dd class="fw-bold">Rp. 12.000</dd></div></dl></div>
+                    <hr>
+                    <div class="order-card-footer"><div class="row g-2"><div class="col-6"><button class="btn btn-cancel">Detail</button></div><div class="col-6"><button class="btn btn-action-process">Terima & Proses</button></div></div></div>
+                </div>
+            </div>
+        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.status-filters .btn');
+            const orderCards = document.querySelectorAll('.order-card');
+
+            // Fungsi untuk mengubah tampilan kartu berdasarkan status
+            const updateCards = (status) => {
+                orderCards.forEach(card => {
+                    const footer = card.querySelector('.order-card-footer');
+                    let actionButtonHTML = '';
+
+                    // Ubah border card
+                    card.dataset.status = status;
+
+                    // Ganti tombol berdasarkan status yang dipilih
+                    if (status === 'baru') {
+                        // Tombol untuk 'Pesanan Baru'
+                        footer.innerHTML = `
+                            <div class="row g-2">
+                                <div class="col-6"><button class="btn btn-cancel">Detail</button></div>
+                                <div class="col-6"><button class="btn btn-action-process">Terima & Proses</button></div>
+                            </div>`;
+                    } else if (status === 'diproses') {
+                        // Tombol untuk 'Pesanan Diproses'
+                        footer.innerHTML = `
+                            <div class="row g-2">
+                                <div class="col-6"><button class="btn btn-cancel">Batalkan</button></div>
+                                <div class="col-6"><button class="btn btn-action-ready">Siap Ambil</button></div>
+                            </div>`;
+                    } else if (status === 'siap') {
+                        // Tombol untuk 'Siap Diambil'
+                        footer.innerHTML = `
+                            <div class="row g-2">
+                                <div class="col-6"><button class="btn btn-cancel">Batalkan</button></div>
+                                <div class="col-6"><button class="btn btn-action-done">Telah Diambil</button></div>
+                            </div>`;
+                    }
+                });
+            };
+
+            // Tambahkan event listener ke setiap tombol filter
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Hapus kelas 'active' dari semua tombol
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Tambahkan kelas 'active' ke tombol yang diklik
+                    this.classList.add('active');
+
+                    // Dapatkan status dari atribut data-status
+                    const status = this.dataset.status;
+
+                    // Panggil fungsi untuk update kartu
+                    updateCards(status);
+                });
+            });
+
+            // Inisialisasi tampilan awal
+            updateCards('baru');
+        });
+    </script>
 </body>
 </html>

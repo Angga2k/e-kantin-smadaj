@@ -12,10 +12,14 @@
 
 <h1 class="fw-bold">Minuman</h1>
 
+<div id="notFoundMessage" class="text-center my-5 d-none">
+    <p class="lead text-muted">Tidak ada nama item yang sesuai...</p>
+</div>
+
 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3">
 
     <div class="col">
-        <div class="card h-100">
+        <div class="card card2 h-100">
             <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -25,14 +29,14 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col">
-        <div class="card h-100">
+        <div class="card card2 h-100">
                 <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -42,14 +46,14 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col">
-            <div class="card h-100">
+            <div class="card card2 h-100">
                 <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -59,14 +63,14 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col">
-        <div class="card h-100">
+        <div class="card card2 h-100">
                 <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -76,14 +80,14 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col">
-        <div class="card h-100">
+        <div class="card card2 h-100">
                 <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -93,14 +97,14 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col">
-        <div class="card h-100">
+        <div class="card card2 h-100">
                 <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -110,14 +114,14 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col">
-        <div class="card h-100">
+        <div class="card card2 h-100">
                 <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -127,14 +131,14 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col">
-        <div class="card h-100">
+        <div class="card card2 h-100">
                 <div style="position: relative;">
                 <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Teler" style="height: 200px; object-fit: cover; background-color: #eee;">
                 <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
@@ -144,7 +148,7 @@
                 <h5 class="card-title">Es Teler</h5>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <p class="price mb-0">Rp. 12.000</p>
-                    <a href="#" class="add-button">+</a>
+                    {{-- <a href="#" class="add-button">+</a> --}}
                 </div>
             </div>
         </div>

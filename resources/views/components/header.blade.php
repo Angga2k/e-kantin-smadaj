@@ -6,7 +6,7 @@
         <div class="d-flex align-items-center d-lg-none ms-auto">
             <div class="search-box search-box-mobile">
                 <i class="bi bi-search search-icon"></i>
-                <input class="form-control" type="search" placeholder="Cari...">
+                <input class="form-control search-filter-input" type="search" placeholder="Cari...">
             </div>
 
             <button class="btn btn-keranjang mx-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
@@ -32,12 +32,15 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('camilan') ? 'active' : '' }}" href="/camilan">Camilan</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('profile') ? 'active' : '' }}" href="/profile">Profile</a>
+                </li>
             </ul>
 
             <div class="d-none d-lg-flex align-items-center">
                 <div class="search-box me-3">
                     <i class="bi bi-search search-icon"></i>
-                    <input class="form-control" type="search" placeholder="Cari...">
+                    <input class="form-control search-filter-input" type="search" placeholder="Cari...">
                 </div>
                 <button class="btn btn-keranjang" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                     <i class="bi bi-cart-fill me-2"></i>Keranjang

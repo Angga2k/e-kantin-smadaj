@@ -58,15 +58,15 @@
                     <label class="btn btn-outline-secondary rounded-pill" for="varian-tidak-pedas">Tidak Pedas</label>
                 </div>
             </div>
-
-            <div class="my-4">
+            <hr>
+            {{-- <div class="my-4">
                 <label for="catatan" class="form-label fw-bold mb-2">Catatan</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light">
                         <i class="bi bi-pencil-square"></i> </span>
                     <textarea class="form-control" id="catatan" rows="3" placeholder="Tulis catatan untuk penjual (opsional)"></textarea>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="d-flex align-items-center gap-4 mt-4">
                 <div class="quantity-selector border rounded-pill p-1">
