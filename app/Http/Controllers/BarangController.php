@@ -14,7 +14,7 @@ class BarangController extends Controller
     public function index()
     {
         $barang = Barang::with(['penjual', 'ratingUlasan'])->get();
-        return response()->json($barang);
+        return view('barang.index', compact('barang'));
     }
 
     /**
@@ -43,7 +43,7 @@ class BarangController extends Controller
             ...$validated
         ]);
 
-        return response()->json($barang->load('penjual'), 201);
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan');
     }
 
     /**
@@ -52,7 +52,7 @@ class BarangController extends Controller
     public function show(string $id)
     {
         $barang = Barang::with(['penjual', 'ratingUlasan', 'detailTransaksi'])->findOrFail($id);
-        return response()->json($barang);
+        return view('barang.show', compact('barang'));
     }
 
     /**
@@ -79,7 +79,7 @@ class BarangController extends Controller
 
         $barang->update($validated);
 
-        return response()->json($barang->load('penjual'));
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil diperbarui');
     }
 
     /**
@@ -90,7 +90,7 @@ class BarangController extends Controller
         $barang = Barang::findOrFail($id);
         $barang->delete();
 
-        return response()->json(['message' => 'Barang deleted successfully']);
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
     }
 
     /**
@@ -101,7 +101,7 @@ class BarangController extends Controller
         $barang = Barang::where('id_user_penjual', $idUserPenjual)
             ->with(['ratingUlasan'])
             ->get();
-        
+
         return response()->json($barang);
     }
 

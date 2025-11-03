@@ -11,9 +11,7 @@ Route::get('/aa', function () {
 Route::get('/', function () {
     return view('buyer.beranda.index');
 });
-Route::get('/makanan', function () {
-    return view('buyer.makanan.index');
-});
+Route::get('/makanan', [App\Http\Controllers\MakananController::class, 'index'])->name('makanan.index');
 Route::get('/minuman', function () {
     return view('buyer.minuman.index');
 });

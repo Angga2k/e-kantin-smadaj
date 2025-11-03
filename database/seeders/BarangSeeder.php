@@ -16,7 +16,7 @@ class BarangSeeder extends Seeder
     {
         // Get penjual users
         $penjualUsers = User::where('role', 'penjual')->get();
-        
+
         if ($penjualUsers->isEmpty()) {
             $this->command->warn('No penjual users found. Please run PenjualSeeder first.');
             return;
@@ -29,7 +29,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Makanan Berat',
                 'harga' => 15000,
                 'stok' => 25,
-                'foto_barang' => 'https://example.com/gudeg.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 450,
                 'protein_g' => 25.5,
                 'lemak_g' => 12.3,
@@ -43,7 +43,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Makanan Berat',
                 'harga' => 18000,
                 'stok' => 20,
-                'foto_barang' => 'https://example.com/rawon.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 520,
                 'protein_g' => 28.0,
                 'lemak_g' => 15.2,
@@ -57,7 +57,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Makanan Berat',
                 'harga' => 12000,
                 'stok' => 30,
-                'foto_barang' => 'https://example.com/mie-ayam.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 380,
                 'protein_g' => 22.3,
                 'lemak_g' => 8.7,
@@ -71,7 +71,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Makanan Ringan',
                 'harga' => 10000,
                 'stok' => 15,
-                'foto_barang' => 'https://example.com/gado-gado.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 280,
                 'protein_g' => 12.5,
                 'lemak_g' => 18.6,
@@ -85,7 +85,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Minuman',
                 'harga' => 3000,
                 'stok' => 50,
-                'foto_barang' => 'https://example.com/es-teh.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 80,
                 'protein_g' => 0.1,
                 'lemak_g' => 0.0,
@@ -99,7 +99,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Minuman',
                 'harga' => 8000,
                 'stok' => 20,
-                'foto_barang' => 'https://example.com/jus-jeruk.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 110,
                 'protein_g' => 1.7,
                 'lemak_g' => 0.5,
@@ -113,7 +113,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Snack',
                 'harga' => 5000,
                 'stok' => 35,
-                'foto_barang' => 'https://example.com/pisang-goreng.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 180,
                 'protein_g' => 3.2,
                 'lemak_g' => 8.4,
@@ -127,7 +127,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Snack',
                 'harga' => 7000,
                 'stok' => 25,
-                'foto_barang' => 'https://example.com/martabak.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 220,
                 'protein_g' => 5.8,
                 'lemak_g' => 12.1,
@@ -141,7 +141,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Makanan Berat',
                 'harga' => 13000,
                 'stok' => 18,
-                'foto_barang' => 'https://example.com/soto-ayam.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 420,
                 'protein_g' => 26.8,
                 'lemak_g' => 11.2,
@@ -155,7 +155,7 @@ class BarangSeeder extends Seeder
                 'jenis_barang' => 'Snack',
                 'harga' => 6000,
                 'stok' => 40,
-                'foto_barang' => 'https://example.com/bakpao.jpg',
+                'foto_barang' => null,
                 'kalori_kkal' => 160,
                 'protein_g' => 8.5,
                 'lemak_g' => 4.2,

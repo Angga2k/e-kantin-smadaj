@@ -17,7 +17,7 @@ class TransaksiController extends Controller
     public function index()
     {
         $transaksi = Transaksi::with(['pembeli', 'detailTransaksi.barang'])->get();
-        return response()->json($transaksi);
+        return view('transaksi.index', compact('transaksi'));
     }
 
     /**
@@ -42,7 +42,7 @@ class TransaksiController extends Controller
             // Calculate total and validate stock
             foreach ($validated['items'] as $item) {
                 $barang = Barang::findOrFail($item['id_barang']);
-                
+
                 if ($barang->stok < $item['jumlah']) {
                     throw new \Exception("Stok barang {$barang->nama_barang} tidak mencukupi");
                 }
@@ -98,7 +98,7 @@ class TransaksiController extends Controller
     public function show(string $id)
     {
         $transaksi = Transaksi::with(['pembeli', 'detailTransaksi.barang'])->findOrFail($id);
-        return response()->json($transaksi);
+        return view('transaksi.show', compact('transaksi'));
     }
 
     /**
@@ -117,7 +117,7 @@ class TransaksiController extends Controller
 
         $transaksi->update($validated);
 
-        return response()->json($transaksi->load(['pembeli', 'detailTransaksi.barang']));
+        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil diperbarui');
     }
 
     /**
@@ -126,7 +126,7 @@ class TransaksiController extends Controller
     public function destroy(string $id)
     {
         $transaksi = Transaksi::findOrFail($id);
-        
+
         // Return stock if transaction is cancelled
         if ($transaksi->status_pembayaran === 'pending') {
             foreach ($transaksi->detailTransaksi as $detail) {
@@ -136,7 +136,7 @@ class TransaksiController extends Controller
 
         $transaksi->delete();
 
-        return response()->json(['message' => 'Transaksi deleted successfully']);
+        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus');
     }
 
     /**
@@ -164,7 +164,7 @@ class TransaksiController extends Controller
             ->with(['detailTransaksi.barang'])
             ->orderBy('waktu_transaksi', 'desc')
             ->get();
-        
+
         return response()->json($transaksi);
     }
 }

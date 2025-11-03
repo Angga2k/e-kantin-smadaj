@@ -16,7 +16,7 @@ class CivitasAkademikController extends Controller
     public function index()
     {
         $civitasAkademik = CivitasAkademik::with('user')->get();
-        return response()->json($civitasAkademik);
+        return view('civitas-akademik.index', compact('civitasAkademik'));
     }
 
     /**
@@ -33,7 +33,6 @@ class CivitasAkademikController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        // Create user first
         $user = User::create([
             'id_user' => Str::uuid(),
             'username' => $validated['username'],
@@ -41,7 +40,6 @@ class CivitasAkademikController extends Controller
             'role' => 'civitas_akademik',
         ]);
 
-        // Create civitas akademik
         $civitasAkademik = CivitasAkademik::create([
             'id' => Str::uuid(),
             'id_user' => $user->id_user,
@@ -51,7 +49,7 @@ class CivitasAkademikController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'],
         ]);
 
-        return response()->json($civitasAkademik->load('user'), 201);
+        return redirect()->route('civitas-akademik.index')->with('success', 'Civitas akademik berhasil ditambahkan');
     }
 
     /**
@@ -60,7 +58,7 @@ class CivitasAkademikController extends Controller
     public function show(string $id)
     {
         $civitasAkademik = CivitasAkademik::with('user')->findOrFail($id);
-        return response()->json($civitasAkademik);
+        return view('civitas-akademik.show', compact('civitasAkademik'));
     }
 
     /**
@@ -85,7 +83,7 @@ class CivitasAkademikController extends Controller
             $civitasAkademik->user->update(['username' => $validated['username']]);
         }
 
-        return response()->json($civitasAkademik->load('user'));
+        return redirect()->route('civitas-akademik.index')->with('success', 'Civitas akademik berhasil diperbarui');
     }
 
     /**
@@ -96,6 +94,6 @@ class CivitasAkademikController extends Controller
         $civitasAkademik = CivitasAkademik::findOrFail($id);
         $civitasAkademik->user->delete(); // This will cascade delete civitas akademik
 
-        return response()->json(['message' => 'Civitas akademik deleted successfully']);
+        return redirect()->route('civitas-akademik.index')->with('success', 'Civitas akademik berhasil dihapus');
     }
 }

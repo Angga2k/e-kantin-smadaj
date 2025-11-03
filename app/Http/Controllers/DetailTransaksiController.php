@@ -13,7 +13,7 @@ class DetailTransaksiController extends Controller
     public function index()
     {
         $detailTransaksi = DetailTransaksi::with(['transaksi', 'barang'])->get();
-        return response()->json($detailTransaksi);
+        return view('detail-transaksi.index', compact('detailTransaksi'));
     }
 
     /**
@@ -22,7 +22,7 @@ class DetailTransaksiController extends Controller
     public function show(string $id)
     {
         $detailTransaksi = DetailTransaksi::with(['transaksi', 'barang', 'ratingUlasan'])->findOrFail($id);
-        return response()->json($detailTransaksi);
+        return view('detail-transaksi.show', compact('detailTransaksi'));
     }
 
     /**
@@ -38,7 +38,7 @@ class DetailTransaksiController extends Controller
 
         $detailTransaksi->update($validated);
 
-        return response()->json($detailTransaksi->load(['transaksi', 'barang']));
+        return redirect()->route('detail-transaksi.index')->with('success', 'Detail transaksi berhasil diperbarui');
     }
 
     /**
@@ -49,7 +49,7 @@ class DetailTransaksiController extends Controller
         $detailTransaksi = DetailTransaksi::where('id_transaksi', $idTransaksi)
             ->with(['barang', 'ratingUlasan'])
             ->get();
-        
+
         return response()->json($detailTransaksi);
     }
 
@@ -61,7 +61,7 @@ class DetailTransaksiController extends Controller
         $detailTransaksi = DetailTransaksi::findOrFail($id);
         $detailTransaksi->update(['status_barang' => 'sudah_diambil']);
 
-        return response()->json($detailTransaksi->load(['transaksi', 'barang']));
+        return redirect()->back()->with('success', 'Item berhasil ditandai diambil');
     }
 
     /**
@@ -72,6 +72,6 @@ class DetailTransaksiController extends Controller
         $detailTransaksi = DetailTransaksi::findOrFail($id);
         $detailTransaksi->update(['status_barang' => 'belum_diambil']);
 
-        return response()->json($detailTransaksi->load(['transaksi', 'barang']));
+        return redirect()->back()->with('success', 'Item berhasil ditandai belum diambil');
     }
 }

@@ -17,7 +17,7 @@ class Barang extends Model
     protected $primaryKey = 'id_barang';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $dates = ['delete_at'];
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
@@ -53,7 +53,7 @@ class Barang extends Model
         'karbohidrat_g' => 'decimal:2',
         'serat_g' => 'decimal:2',
         'gula_g' => 'decimal:2',
-        'delete_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /**

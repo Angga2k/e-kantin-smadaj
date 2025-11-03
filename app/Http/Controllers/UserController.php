@@ -15,7 +15,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with(['siswa', 'civitasAkademik', 'penjual'])->get();
-        return response()->json($users);
+        return view('user.index', compact('users'));
     }
 
     /**
@@ -36,7 +36,7 @@ class UserController extends Controller
             'role' => $validated['role'],
         ]);
 
-        return response()->json($user, 201);
+        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan');
     }
 
     /**
@@ -45,7 +45,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::with(['siswa', 'civitasAkademik', 'penjual'])->findOrFail($id);
-        return response()->json($user);
+        return view('user.show', compact('user'));
     }
 
     /**
@@ -67,7 +67,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return response()->json($user);
+        return redirect()->route('user.index')->with('success', 'User berhasil diperbarui');
     }
 
     /**
@@ -78,6 +78,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return redirect()->route('user.index')->with('success', 'User berhasil dihapus');
     }
 }

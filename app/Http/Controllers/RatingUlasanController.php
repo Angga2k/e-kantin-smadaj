@@ -15,7 +15,7 @@ class RatingUlasanController extends Controller
     public function index()
     {
         $ratingUlasan = RatingUlasan::with(['barang', 'siswa', 'detailTransaksi'])->get();
-        return response()->json($ratingUlasan);
+        return view('rating-ulasan.index', compact('ratingUlasan'));
     }
 
     /**
@@ -31,15 +31,15 @@ class RatingUlasanController extends Controller
 
         // Get detail transaksi to validate ownership and get required data
         $detailTransaksi = DetailTransaksi::with(['transaksi', 'barang'])->findOrFail($validated['id_detail_transaksi']);
-        
+
         // Validate that the item has been taken
         if ($detailTransaksi->status_barang !== 'sudah_diambil') {
-            return response()->json(['error' => 'Rating hanya bisa diberikan untuk barang yang sudah diambil'], 400);
+            return redirect()->back()->with('error', 'Rating hanya bisa diberikan untuk barang yang sudah diambil');
         }
 
         // Validate that the transaction is successful
         if ($detailTransaksi->transaksi->status_pembayaran !== 'success') {
-            return response()->json(['error' => 'Rating hanya bisa diberikan untuk transaksi yang berhasil'], 400);
+            return redirect()->back()->with('error', 'Rating hanya bisa diberikan untuk transaksi yang berhasil');
         }
 
         $ratingUlasan = RatingUlasan::create([
@@ -51,7 +51,7 @@ class RatingUlasanController extends Controller
             'ulasan' => $validated['ulasan'],
         ]);
 
-        return response()->json($ratingUlasan->load(['barang', 'siswa', 'detailTransaksi']), 201);
+        return redirect()->route('rating-ulasan.index')->with('success', 'Rating berhasil ditambahkan');
     }
 
     /**
@@ -60,7 +60,7 @@ class RatingUlasanController extends Controller
     public function show(string $id)
     {
         $ratingUlasan = RatingUlasan::with(['barang', 'siswa', 'detailTransaksi'])->findOrFail($id);
-        return response()->json($ratingUlasan);
+        return view('rating-ulasan.show', compact('ratingUlasan'));
     }
 
     /**
@@ -77,7 +77,7 @@ class RatingUlasanController extends Controller
 
         $ratingUlasan->update($validated);
 
-        return response()->json($ratingUlasan->load(['barang', 'siswa', 'detailTransaksi']));
+        return redirect()->route('rating-ulasan.index')->with('success', 'Rating berhasil diperbarui');
     }
 
     /**
@@ -88,7 +88,7 @@ class RatingUlasanController extends Controller
         $ratingUlasan = RatingUlasan::findOrFail($id);
         $ratingUlasan->delete();
 
-        return response()->json(['message' => 'Rating ulasan deleted successfully']);
+        return redirect()->route('rating-ulasan.index')->with('success', 'Rating berhasil dihapus');
     }
 
     /**
@@ -100,7 +100,7 @@ class RatingUlasanController extends Controller
             ->with(['siswa', 'detailTransaksi'])
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         return response()->json($ratingUlasan);
     }
 
@@ -113,7 +113,7 @@ class RatingUlasanController extends Controller
             ->with(['barang', 'detailTransaksi'])
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
         return response()->json($ratingUlasan);
     }
 
@@ -124,7 +124,7 @@ class RatingUlasanController extends Controller
     {
         $avgRating = RatingUlasan::where('id_barang', $idBarang)->avg('rating');
         $totalReviews = RatingUlasan::where('id_barang', $idBarang)->count();
-        
+
         return response()->json([
             'average_rating' => round($avgRating, 2),
             'total_reviews' => $totalReviews

@@ -16,7 +16,7 @@ class SiswaController extends Controller
     public function index()
     {
         $siswa = Siswa::with('user')->get();
-        return response()->json($siswa);
+        return view('siswa.index', compact('siswa'));
     }
 
     /**
@@ -50,7 +50,7 @@ class SiswaController extends Controller
             'jenis_kelamin' => $validated['jenis_kelamin'],
         ]);
 
-        return response()->json($siswa->load('user'), 201);
+        return redirect()->route('siswa.index')->with('success', 'Siswa berhasil ditambahkan');
     }
 
     /**
@@ -59,7 +59,7 @@ class SiswaController extends Controller
     public function show(string $id)
     {
         $siswa = Siswa::with('user')->findOrFail($id);
-        return response()->json($siswa);
+        return view('siswa.show', compact('siswa'));
     }
 
     /**
@@ -83,7 +83,7 @@ class SiswaController extends Controller
             $siswa->user->update(['username' => $validated['nisn']]);
         }
 
-        return response()->json($siswa->load('user'));
+        return redirect()->route('siswa.index')->with('success', 'Siswa berhasil diperbarui');
     }
 
     /**
@@ -94,6 +94,6 @@ class SiswaController extends Controller
         $siswa = Siswa::findOrFail($id);
         $siswa->user->delete(); // This will cascade delete siswa
 
-        return response()->json(['message' => 'Siswa deleted successfully']);
+        return redirect()->route('siswa.index')->with('success', 'Siswa berhasil dihapus');
     }
 }

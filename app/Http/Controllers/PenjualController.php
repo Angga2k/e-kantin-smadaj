@@ -16,7 +16,7 @@ class PenjualController extends Controller
     public function index()
     {
         $penjual = Penjual::with(['user', 'barang'])->get();
-        return response()->json($penjual);
+        return view('penjual.index', compact('penjual'));
     }
 
     /**
@@ -51,7 +51,7 @@ class PenjualController extends Controller
             'nama_bank' => $validated['nama_bank'],
         ]);
 
-        return response()->json($penjual->load('user'), 201);
+        return redirect()->route('penjual.index')->with('success', 'Penjual berhasil ditambahkan');
     }
 
     /**
@@ -60,7 +60,7 @@ class PenjualController extends Controller
     public function show(string $id)
     {
         $penjual = Penjual::with(['user', 'barang'])->findOrFail($id);
-        return response()->json($penjual);
+        return view('penjual.show', compact('penjual'));
     }
 
     /**
@@ -85,7 +85,7 @@ class PenjualController extends Controller
             $penjual->user->update(['username' => $validated['username']]);
         }
 
-        return response()->json($penjual->load('user'));
+        return redirect()->route('penjual.index')->with('success', 'Penjual berhasil diperbarui');
     }
 
     /**
@@ -96,6 +96,6 @@ class PenjualController extends Controller
         $penjual = Penjual::findOrFail($id);
         $penjual->user->delete(); // This will cascade delete penjual
 
-        return response()->json(['message' => 'Penjual deleted successfully']);
+        return redirect()->route('penjual.index')->with('success', 'Penjual berhasil dihapus');
     }
 }
