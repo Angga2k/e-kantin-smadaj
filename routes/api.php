@@ -10,6 +10,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\DetailTransaksiController;
 use App\Http\Controllers\RatingUlasanController;
+use App\Http\Controllers\TesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,7 +91,7 @@ Route::prefix('barang')->group(function () {
     Route::get('/{id}', [BarangController::class, 'show']);
     Route::put('/{id}', [BarangController::class, 'update']);
     Route::delete('/{id}', [BarangController::class, 'destroy']);
-    
+
     // Additional barang routes
     Route::get('/penjual/{idUserPenjual}', [BarangController::class, 'getByPenjual']);
     Route::patch('/{id}/stock', [BarangController::class, 'updateStock']);
@@ -107,7 +108,7 @@ Route::prefix('transaksi')->group(function () {
     Route::get('/{id}', [TransaksiController::class, 'show']);
     Route::put('/{id}', [TransaksiController::class, 'update']);
     Route::delete('/{id}', [TransaksiController::class, 'destroy']);
-    
+
     // Additional transaksi routes
     Route::patch('/{id}/payment-status', [TransaksiController::class, 'updatePaymentStatus']);
     Route::get('/user/{idUser}', [TransaksiController::class, 'getByUser']);
@@ -122,7 +123,7 @@ Route::prefix('detail-transaksi')->group(function () {
     Route::get('/', [DetailTransaksiController::class, 'index']);
     Route::get('/{id}', [DetailTransaksiController::class, 'show']);
     Route::put('/{id}', [DetailTransaksiController::class, 'update']);
-    
+
     // Additional detail transaksi routes
     Route::get('/transaksi/{idTransaksi}', [DetailTransaksiController::class, 'getByTransaksi']);
     Route::patch('/{id}/taken', [DetailTransaksiController::class, 'markAsTaken']);
@@ -140,9 +141,12 @@ Route::prefix('rating-ulasan')->group(function () {
     Route::get('/{id}', [RatingUlasanController::class, 'show']);
     Route::put('/{id}', [RatingUlasanController::class, 'update']);
     Route::delete('/{id}', [RatingUlasanController::class, 'destroy']);
-    
+
     // Additional rating ulasan routes
     Route::get('/barang/{idBarang}', [RatingUlasanController::class, 'getByBarang']);
     Route::get('/user/{idUser}', [RatingUlasanController::class, 'getByUser']);
     Route::get('/barang/{idBarang}/average', [RatingUlasanController::class, 'getAverageRating']);
 });
+
+Route::get('/tes', [TesController::class, 'index']);
+Route::get('/tes/{barang}', [TesController::class, 'index2']);

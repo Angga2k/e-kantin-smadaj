@@ -20,109 +20,55 @@
     <p class="text-muted">Temukan aneka menu favorit, pilihan sehat, dan penawaran terbaik langsung dari kantin sekolahmu.</p>
 </div>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-
-    <div class="col">
-        <div class="card card1 h-100">
-            <div style="position: relative;">
-                <img src="{{ asset('tes/ayam.png') }}" class="card-img-top" alt="Ayam Goreng" style="height: 200px; object-fit: cover; background-color: #eee;">
-                <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
-            </div>
-            <div class="card-body">
-                <p class="stall-name mb-1">Stand A</p>
-                <h5 class="card-title">Ayam Goreng</h5>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <p class="price mb-0">Rp. 12.000</p>
-                    {{-- <a href="#" class="add-button">+</a> --}}
-                </div>
-            </div>
-        </div>
+@if(count($barang) == 0)
+    <div id="notFoundMessage" class="text-center my-5">
+        <p class="lead text-muted">Tidak ada makanan yang tersedia saat ini...</p>
     </div>
+@else
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3 mb-5">
+        @foreach($barang as $item)
+            <div class="col">
+                @php
+                        if ($item->jenis_barang === 'Makanan') {
+                            $cardClass = 'card1';
+                        } elseif ($item->jenis_barang === 'Minuman') {
+                            $cardClass = 'card2'; 
+                        } elseif ($item->jenis_barang === 'Snack') {
+                            $cardClass = 'card3'; 
+                        } 
+                @endphp
+                <a href="{{ route('detail.index', $item->id_barang) }}" class="text-decoration-none text-dark">
+                    <div class="card {{ $cardClass }} h-100">
+                        <div style="position: relative;">
+                            @if($item->foto_barang)
+                                <img src="{{ asset($item->foto_barang) }}" class="card-img-top" alt="{{ $item->nama_barang }}" style="height: 200px; object-fit: cover; background-color: #eee;">
+                            @else
+                                <img src="{{ asset('icon\\'. $item->jenis_barang . '.png') }}" class="card-img-top" alt="{{ $item->nama_barang }}" style="height: 200px; object-fit: contain; background-color: #eee;">
+                            @endif
 
-    <div class="col">
-        <div class="card card1 h-100">
-                <div style="position: relative;">
-                <img src="{{ asset('tes/naspad.png') }}" class="card-img-top" alt="Nasi Padang" style="height: 200px; object-fit: cover; background-color: #eee;">
-                <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
+                            @php
+                                $avgRating = $item->ratingUlasan->avg('rating') ?? 0;
+                            @endphp
+                            @if($avgRating > 0)
+                                <div class="rating-badge"><i class="bi bi-star-fill"></i>{{ number_format($avgRating, 1) }}</div>
+                                @else
+                                <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
+                            @endif
+                        </div>
+                        <div class="card-body">
+                            <p class="stall-name mb-1">{{ $item->penjual->nama_toko ?? 'Stand' }}</p>
+                            <h5 class="card-title">{{ $item->nama_barang }}</h5>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <p class="price mb-0">Rp. {{ number_format($item->harga, 0, ',', '.') }}</p>
+                                {{-- <a href="#" class="add-button">+</a> --}}
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
-            <div class="card-body">
-                <p class="stall-name mb-1">Stand B</p>
-                <h5 class="card-title">Nasi Padang</h5>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <p class="price mb-0">Rp. 12.000</p>
-                    {{-- <a href="#" class="add-button">+</a> --}}
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
+@endif
 
-    <div class="col">
-            <div class="card card1 h-100">
-                <div style="position: relative;">
-                <img src="{{ asset('tes/ayam.png') }}" class="card-img-top" alt="Ayam Goreng" style="height: 200px; object-fit: cover; background-color: #eee;">
-                <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
-            </div>
-            <div class="card-body">
-                <p class="stall-name mb-1">Stand A</p>
-                <h5 class="card-title">Ayam Goreng</h5>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <p class="price mb-0">Rp. 12.000</p>
-                    {{-- <a href="#" class="add-button">+</a> --}}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card card1 h-100">
-                <div style="position: relative;">
-                <img src="{{ asset('tes/naspad.png') }}" class="card-img-top" alt="Nasi Padang" style="height: 200px; object-fit: cover; background-color: #eee;">
-                <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
-            </div>
-            <div class="card-body">
-                <p class="stall-name mb-1">Stand B</p>
-                <h5 class="card-title">Nasi Padang</h5>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <p class="price mb-0">Rp. 12.000</p>
-                    {{-- <a href="#" class="add-button">+</a> --}}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card card2 h-100">
-                <div style="position: relative;">
-                <img src="{{ asset('tes/esteler.png') }}" class="card-img-top" alt="Es Buah" style="height: 200px; object-fit: cover; background-color: #eee;">
-                <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
-            </div>
-            <div class="card-body">
-                <p class="stall-name mb-1">Stand C</p>
-                <h5 class="card-title">Es Teler</h5>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <p class="price mb-0">Rp. 8.000</p>
-                    {{-- <a href="#" class="add-button">+</a> --}}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
-        <div class="card card3 h-100">
-            <div style="position: relative;">
-                <img src="{{ asset('tes/kripik.jpg') }}" class="card-img-top" alt="Camilan A" style="height: 200px; object-fit: cover; background-color: #eee;">
-                <div class="rating-badge"><i class="bi bi-star-fill"></i>4.9</div>
-            </div>
-            <div class="card-body">
-                <p class="stall-name mb-1">Stand D</p>
-                <h5 class="card-title">Keripik Pedas</h5>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <p class="price mb-0">Rp. 5.000</p>
-                    {{-- <a href="#" class="add-button">+</a> --}}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 @endsection

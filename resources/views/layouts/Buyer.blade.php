@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Kantin SMA Negeri 2 Jember')</title>
 
     <link rel="icon" type="image/png" href="{{ asset('asset/logo.png') }}">
@@ -26,8 +27,23 @@
         @include('components.header')
     </header>
 
-    <section class="hero-banner d-none {{ request()->is('detail', 'profile', 'profile/update') ? '' : 'd-md-block' }}">
+    {{-- <section class="hero-banner d-none {{ request()->is('detail', 'profile', 'profile/update') ? '' : 'd-md-block' }}">
         <h1>E-Kantin SMAN 2 Jember</h1>
+    </section> --}}
+
+    <section class="hero-banner d-none {{ request()->is('detail*', 'profile', 'profile/update') ? '' : 'd-md-block' }}">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-center">
+
+                <img src="{{ asset('asset/logo.png') }}" alt="Logo" class="hero-logo">
+
+                <div class="hero-text ms-4">
+                    <h1 class="hero-title">KANTIN DIGITAL</h1>
+                    <p class="hero-subtitle">SMA NEGERI 2 JEMBER</p>
+                </div>
+
+            </div>
+        </div>
     </section>
 
     <main class="container my-4">
@@ -37,6 +53,9 @@
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas" aria-labelledby="cartOffcanvasLabel">
         @include('components.keranjang')
     </div>
+
+    {{-- LOGIKA KERANJANG (LOCAL STORAGE) --}}
+    <script src="{{ asset('js/cart.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {{-- TANGGAL DI KERANJANG GUYS --}}

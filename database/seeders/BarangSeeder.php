@@ -26,7 +26,7 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Nasi Gudeg Jogja',
                 'deskripsi_barang' => 'Nasi gudeg khas Yogyakarta dengan ayam, tahu, dan tempe',
-                'jenis_barang' => 'Makanan Berat',
+                'jenis_barang' => 'Makanan',
                 'harga' => 15000,
                 'stok' => 25,
                 'foto_barang' => null,
@@ -40,10 +40,10 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Nasi Rawon',
                 'deskripsi_barang' => 'Nasi rawon daging sapi dengan kerupuk dan tauge',
-                'jenis_barang' => 'Makanan Berat',
+                'jenis_barang' => 'Makanan',
                 'harga' => 18000,
                 'stok' => 20,
-                'foto_barang' => null,
+                'foto_barang' => 'gambar\tes.jpg',
                 'kalori_kkal' => 520,
                 'protein_g' => 28.0,
                 'lemak_g' => 15.2,
@@ -54,7 +54,7 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Mie Ayam Bakso',
                 'deskripsi_barang' => 'Mie ayam dengan bakso, pangsit, dan sayuran',
-                'jenis_barang' => 'Makanan Berat',
+                'jenis_barang' => 'Makanan',
                 'harga' => 12000,
                 'stok' => 30,
                 'foto_barang' => null,
@@ -68,7 +68,7 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Gado-Gado',
                 'deskripsi_barang' => 'Sayuran segar dengan bumbu kacang dan kerupuk',
-                'jenis_barang' => 'Makanan Ringan',
+                'jenis_barang' => 'Makanan',
                 'harga' => 10000,
                 'stok' => 15,
                 'foto_barang' => null,
@@ -138,7 +138,7 @@ class BarangSeeder extends Seeder
             [
                 'nama_barang' => 'Soto Ayam',
                 'deskripsi_barang' => 'Soto ayam kuning dengan nasi, telur, dan kerupuk',
-                'jenis_barang' => 'Makanan Berat',
+                'jenis_barang' => 'Makanan',
                 'harga' => 13000,
                 'stok' => 18,
                 'foto_barang' => null,

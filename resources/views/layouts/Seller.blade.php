@@ -1,78 +1,401 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>@yield('title', 'Kantin SMA Negeri 2 Jember')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Penjual')</title>
+    <link rel="icon" type="image/png" href="{{ asset('asset/logo.png') }}">
 
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/favicon.png') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('plugins/fontawesome/css/all.min.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-	<!-- Select2 CSS -->
-	<link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> --}}
 
-	<!-- Datatable CSS -->
-	<link rel="stylesheet" href="{{ asset('css/dataTables.bootstrap5.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/buyyer.css') }}"> --}}
+    <style>
+        :root {
+            --primary-green: #00897b;
+            --light-gray-bg: #f0f2f5;
+
+            --btn-process-bg: #1e8e3e; /* Merah - Terima & Proses */
+            --btn-ready-bg: #0d6efd;   /* Biru - Siap Ambil */
+            --btn-done-bg: #198754;    /* Hijau Tua - Telah Diambil (Contoh) */
+            --btn-done-bright-bg: #20c997; /* Hijau Terang - Telah Diambil */
+            --btn-cancel-bg: #6c757d;  /* Abu-abu - Batalkan/Detail */
+        }
 
 
-    <!-- Summernote -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-gray-bg);
+        }
 
-    <!-- Custom Style -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        /* NAV */
 
-    @stack('styles')
+        /* Mengatur ukuran toggler agar tidak terlalu besar */
+        .navbar-toggler {
+            padding: .25rem .5rem;
+            font-size: .875rem;
+            border: none;
+        }
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        /* Penyesuaian ikon bell di mobile agar tidak terlalu besar */
+        .d-lg-none .bi-bell-fill {
+            font-size: 1.1rem;
+        }
+
+        /* Main Content Card */
+        .product-card {
+            background-color: white;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* Image Upload Box */
+        .img-upload-box {
+            width: 100%;
+            height: 300px;
+            background-color: #f8f9fa;
+            border: 2px dashed #ced4da;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-weight: 500;
+            cursor: pointer;
+            overflow: hidden; /* BARU: Agar gambar tidak keluar box */
+            position: relative;
+        }
+        .img-upload-box:hover { background-color: #e9ecef; }
+        .img-upload-box i { font-size: 3rem; }
+
+        .pill-options .btn-check:checked + .btn {
+            background-color: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .pill-options .btn-check:checked + .btn {
+            background-color: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .pill-options .btn-check:not(:checked) + .btn:hover {
+            background-color: rgba(0, 137, 123, 0.1); /* Warna hijau transparan */
+        }
+
+        /* BARU: Style untuk preview gambar */
+        .img-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+        }
+
+        /* Form Label */
+        .form-label {
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+             background-color: white;
+             border: 1px solid #ced4da;
+             border-radius: 8px;
+             font-weight: 500;
+        }
+        .form-control:focus {
+             background-color: white;
+             border-color: var(--primary-green);
+             box-shadow: none;
+        }
+
+        /* Varian Dinamis */
+        .variant-pill {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 0.3rem 0.5rem 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .variant-pill .btn-remove-variant {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            line-height: 1;
+            padding: 0 0 0 0.25rem;
+        }
+
+        /* Action Buttons */
+        .btn-simpan { background-color: var(--primary-green); color: white; font-weight: 600; }
+        .btn-batal { background-color: #6c757d; color: white; font-weight: 600; }
+
+
+        /* Filter Status Pesanan */
+        .status-filters .btn {
+            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .status-filters .btn.active {
+            background-color: var(--primary-green);
+            color: white;
+        }
+        .status-filters .btn:not(.active) {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        /* Kartu Pesanan (Mobile First) */
+        .order-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        /* Style border berbeda untuk setiap status */
+        .order-card[data-status="baru"] { border: 2px dashed #e0e0e0; }
+        .order-card[data-status="diproses"] { border: 2px dashed var(--btn-ready-bg); }
+        .order-card[data-status="siap"] { border: 2px dashed var(--btn-done-bright-bg); }
+
+        .order-card-body dt { font-weight: 600; }
+        .order-card-body dd { color: var(--text-gray); }
+        .order-card-footer .btn {
+            border-radius: 20px;
+            font-weight: 600;
+            width: 100%;
+            padding: 0.6rem;
+            border: none;
+        }
+
+        /* Kelas untuk Styling Tombol Aksi */
+        .btn-cancel { background-color: var(--btn-cancel-bg); color: white; }
+        .btn-action-process { background-color: var(--btn-process-bg); color: white; }
+        .btn-action-ready { background-color: var(--btn-ready-bg); color: white; }
+        .btn-action-done { background-color: var(--btn-done-bright-bg); color: white; }
+
+        /* Tampilan Desktop */
+        @media (min-width: 768px) {
+            .order-card {
+                border: 1px solid #dee2e6;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+                padding: 1.25rem;
+            }
+             .order-card[data-status="baru"] { border: 1px solid #dee2e6; }
+             .order-card[data-status="diproses"] { border: 2px dashed var(--btn-ready-bg); }
+             .order-card[data-status="siap"] { border: 2px dashed var(--btn-done-bright-bg); }
+
+            .order-card-body .order-row { display: flex; justify-content: space-between; }
+            .order-card-body dd { text-align: right; }
+            .order-card-footer .btn { width: auto; padding: 0.5rem 1.25rem; }
+        }
+    </style>
 </head>
 <body>
 
-    <x-header />
+    <header class="bg-white shadow-sm sticky-top">
+        @include('components.headerSeller')
+    </header>
 
-    <main>
+    <main class="container my-4">
         @yield('content')
     </main>
 
-    <footer>
-        <p>&copy; Copyright {{ date('Y') }}</p>
-    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- Barang store --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // == BAGIAN VARIAN DINAMIS (Tetap sama) ==
+            const addVarianBtn = document.getElementById('addVarianBtn');
+            const varianInput = document.getElementById('varianInput');
+            const varianContainer = document.getElementById('varianContainer');
 
-    <!-- jQuery -->
-    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+            const addVarian = () => {
+                const varianText = varianInput.value.trim();
+                if (varianText) {
+                    const pill = document.createElement('span');
+                    pill.className = 'variant-pill';
+                    pill.innerHTML = `
+                        ${varianText}
+                        <input type="hidden" name="varian[]" value="${varianText}">
+                        <button type="button" class="btn-remove-variant">&times;</button>
+                    `;
+                    varianContainer.appendChild(pill);
+                    varianInput.value = '';
+                }
+            };
+            addVarianBtn.addEventListener('click', addVarian);
+            varianInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); addVarian(); }
+            });
+            varianContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('btn-remove-variant')) {
+                    e.target.closest('.variant-pill').remove();
+                }
+            });
 
-    <!-- Bootstrap -->
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+            // == BARU: BAGIAN PREVIEW GAMBAR ==
+            const uploadGambar = document.getElementById('uploadGambar');
+            const imagePreview = document.getElementById('imagePreview');
+            const placeholderText = document.getElementById('placeholderText');
 
-    <!-- Feather -->
-    <script src="{{ asset('js/feather.min.js') }}"></script>
+            uploadGambar.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Buat URL sementara untuk file gambar
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        // Tampilkan gambar di preview
+                        imagePreview.src = event.target.result;
+                        imagePreview.classList.remove('d-none');
+                        // Sembunyikan teks placeholder
+                        placeholderText.classList.add('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
 
-    <!-- Slimscroll -->
-    <script src="{{ asset('js/jquery.slimscroll.min.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ====================================================================
+            // == BAGIAN LOGIKA BARANG STORE (Varian Dinamis & Preview Gambar) ==
+            // Hanya jalankan jika elemen utama ada (misalnya di halaman Barang Store)
+            // ====================================================================
+            const addVarianBtn = document.getElementById('addVarianBtn');
+            const uploadGambar = document.getElementById('uploadGambar');
 
-    <!-- Select2 -->
-    <script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
+            if (addVarianBtn) { // Check untuk Varian Dinamis
+                const varianInput = document.getElementById('varianInput');
+                const varianContainer = document.getElementById('varianContainer');
 
-    <!-- Summernote -->
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+                const addVarian = () => {
+                    const varianText = varianInput.value.trim();
+                    if (varianText) {
+                        const pill = document.createElement('span');
+                        pill.className = 'variant-pill';
+                        pill.innerHTML = `
+                            ${varianText}
+                            <input type="hidden" name="varian[]" value="${varianText}">
+                            <button type="button" class="btn-remove-variant">&times;</button>
+                        `;
+                        varianContainer.appendChild(pill);
+                        varianInput.value = '';
+                    }
+                };
+                addVarianBtn.addEventListener('click', addVarian);
+                varianInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); addVarian(); }
+                });
+                varianContainer.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn-remove-variant')) {
+                        e.target.closest('.variant-pill').remove();
+                    }
+                });
+            }
 
-	<!-- Datatable JS -->
-	<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
+            if (uploadGambar) { // Check untuk Preview Gambar
+                const imagePreview = document.getElementById('imagePreview');
+                const placeholderText = document.getElementById('placeholderText');
 
-    <!-- Chart JS -->
-	<script src="{{ asset('plugins/apexchart/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('plugins/apexchart/chart-data.js') }}"></script>
+                uploadGambar.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            imagePreview.src = event.target.result;
+                            imagePreview.classList.remove('d-none');
+                            placeholderText.classList.add('d-none');
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
 
-    <!-- Custom Script -->
-    <script src="{{ asset('js/theme-colorpicker.js') }}"></script>
-    <script src="{{ asset('js/script.js') }}"></script>
 
-    @stack('scripts')
+            // ===============================================
+            // == BAGIAN LOGIKA PESANAN PENJUAL (AJAX & Filter) ==
+            // Hanya jalankan jika elemen utama order-grid ada
+            // ===============================================
+            const orderGrid = document.getElementById('order-grid');
+
+            if (orderGrid) { // KUNCI PERBAIKAN: Membungkus kode yang spesifik untuk halaman pesanan
+
+                // Fungsi untuk mengubah tampilan kartu berdasarkan status (Filter Tombol Lokal)
+                const updateCards = (status) => {
+                    const orderCards = document.querySelectorAll('.order-card');
+                    orderCards.forEach(card => {
+                        const footer = card.querySelector('.order-card-footer');
+                        let actionButtonHTML = '';
+
+                        card.dataset.status = status;
+
+                        // Tombol Logika (Prototype/UI Only)
+                        if (status === 'baru') {
+                            footer.innerHTML = `
+                                <div class="row g-2">
+                                    <div class="col-6"><button class="btn btn-cancel">Detail</button></div>
+                                    <div class="col-6"><button class="btn btn-action-process">Terima & Proses</button></div>
+                                </div>`;
+                        } else if (status === 'diproses') {
+                            footer.innerHTML = `
+                                <div class="row g-2">
+                                    <div class="col-6"><button class="btn btn-cancel">Batalkan</button></div>
+                                    <div class="col-6"><button class="btn btn-action-ready">Siap Ambil</button></div>
+                                </div>`;
+                        } else if (status === 'siap') {
+                            footer.innerHTML = `
+                                <div class="row g-2">
+                                    <div class="col-6"><button class="btn btn-cancel">Batalkan</button></div>
+                                    <div class="col-6"><button class="btn btn-action-done">Telah Diambil</button></div>
+                                </div>`;
+                        }
+                    });
+                };
+
+                // --- KODE LAMA ANDA: TOMBOL FILTER DI VIEW LAMA (SEBELUM DIBUAT DYNAMIC) ---
+                /*
+                const filterButtons = document.querySelectorAll('.status-filters .btn');
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        const status = this.dataset.status;
+                        updateCards(status); // Panggil fungsi untuk update kartu
+                    });
+                });
+                updateCards('baru'); // Inisialisasi tampilan awal
+                */
+                // --- KODE LAMA END ---
+
+                // Note: Karena Anda menggunakan <a> tag di Blade untuk filtering,
+                // logika filter di JS ini menjadi tidak relevan/perlu dihapus,
+                // kecuali Anda ingin mempertahankan fungsi updateCards untuk styling.
+            }
+        });
+    </script>
 </body>
 </html>

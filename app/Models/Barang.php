@@ -17,7 +17,8 @@ class Barang extends Model
     protected $primaryKey = 'id_barang';
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $dates = ['deleted_at'];
+    // protected $dates = ['deleted_at'];
+    const DELETED_AT = 'delete_at';
 
     /**
      * The attributes that are mass assignable.
@@ -54,6 +55,7 @@ class Barang extends Model
         'serat_g' => 'decimal:2',
         'gula_g' => 'decimal:2',
         'deleted_at' => 'datetime',
+        // 'delete_at' => 'datetime',tak ganti soal e neng db gae delete
     ];
 
     /**
@@ -61,7 +63,7 @@ class Barang extends Model
      */
     public function penjual(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'id_user_penjual', 'id_user');
+        return $this->belongsTo(Penjual::class, 'id_user_penjual', 'id_user');
     }
 
     /**

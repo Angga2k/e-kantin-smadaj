@@ -26,7 +26,7 @@ return new class extends Migration
             $table->decimal('gula_g', 5, 2)->nullable();
 
             $table->timestamps();
-            $table->softDeletes();
+            $table->timestamp('delete_at')->nullable();
 
             $table->foreign('id_user_penjual')->references('id_user')->on('users')->onDelete('cascade');
         });

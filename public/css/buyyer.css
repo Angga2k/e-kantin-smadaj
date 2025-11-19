@@ -56,13 +56,9 @@ body {
     background-color: #c62828;
     color: white;
 }
-.hero-banner {
-    padding: 20px;
-    text-align: center;
-    background: linear-gradient(to right, #ff9800, rgb(250, 201, 56));
-    /* padding: 80px 20px; */
-    position: relative; /* Diperlukan agar pseudo-elements bisa diposisikan */
-    overflow: hidden; /* Mencegah ornamen keluar dari banner jika terlalu besar */
+/* .hero-banner {
+    position: relative;
+    overflow: hidden;
 }
 
 .hero-banner h1 {
@@ -73,7 +69,6 @@ body {
     letter-spacing: 2px;
     text-align: center;
     text-transform: uppercase;
-    /* margin-top: 10px; */
     position: relative;
     z-index: 1;
     text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
@@ -85,7 +80,7 @@ body {
     height: 5px;
     background-color: #2c3e50;
     opacity: 0.6;
-    margin: 15px auto 0; /* Jarak dari teks */
+    margin: 15px auto 0;
 }
 .hero-banner h1::before {
     content: '';
@@ -99,6 +94,34 @@ body {
 .hero-banner img {
     max-width: 250px;
     height: auto;
+} */
+.hero-banner {
+    background-image:
+        linear-gradient(rgba(0, 137, 123, 0.7), rgba(0, 137, 123, 0.7)),
+        url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto-format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    padding: 2rem 0;
+    color: white;
+}
+
+.hero-banner .hero-logo {
+    height: 150px; /* Sesuaikan ukuran logo */
+    width: auto;
+}
+
+.hero-banner .hero-title {
+    font-size: 2.5rem; /* Ukuran "KANTIN DIGITAL" */
+    font-weight: 700;
+    margin-bottom: 0;
+    letter-spacing: 1px;
+}
+
+.hero-banner .hero-subtitle {
+    font-size: 1.25rem; /* Ukuran "SMA NEGERI 2 JEMBER" */
+    font-weight: 400;
+    margin-bottom: 0;
+    letter-spacing: 1px;
 }
 .card {
     padding:5px;
@@ -271,9 +294,12 @@ body {
     background-color: #c62828;
     color: white;
 }
+
+
 /* Detail */
 .product-image {
     width: 100%;
+    max-height: 450px;
     height: auto;
     border-radius: 15px;
     border: 1px solid #eee;
