@@ -3,93 +3,110 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Transaksi;
+use App\Models\DetailTransaksi;
+use App\Models\Barang;
+use App\Services\XenditService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Carbon\Carbon;
 
 class CheckoutController extends Controller
 {
-    /**
-     * Memproses data keranjang dari Local Storage dan menyimpannya sebagai Transaksi.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function process(Request $request): JsonResponse
+    public function process(Request $request, XenditService $xenditService)
     {
-        $validated = $request->validate([
-            'cart_items' => 'required|array|min:1',
-            'cart_items.*.id_barang' => 'required|uuid',
-            'cart_items.*.kuantitas' => 'required|integer|min:1',
-            'cart_items.*.harga_satuan' => 'required|numeric|min:0',
-            'total_harga' => 'required|numeric|min:0',
-            'waktu_pengambilan' => 'required|string',
-            'detail_pengambilan' => 'required|string',
+        // 1. Validasi Input
+        $request->validate([
+            'total_bayar' => 'required|numeric|min:1000',
+            // Pastikan frontend mengirim array items: [{id_barang: '...', jumlah: 2}, ...]
+            'items'       => 'required|array|min:1',
+            'items.*.id_barang' => 'required|exists:barang,id_barang',
+            'items.*.jumlah'    => 'required|integer|min:1',
         ]);
 
-        $userIdPembeli = '09a75a40-da09-4438-964a-313b6b737248'; //ID Pembeli testing
+        $user = Auth::user();
 
-        $transactionId = (string) Str::uuid();
-        $timestamp = now()->timestamp;
-        $kodeTransaksi = 'INV-' . $timestamp;
+        // Generate ID Unik
+        // external_id: Untuk Xendit (TRX-TIMESTAMP-RANDOM)
+        $externalId = 'TRX-' . time() . '-' . Str::random(5);
+        // kode_transaksi: Untuk Tampilan User (INV/YYYYMMDD/RANDOM)
+        $kodeTransaksi = 'INV/' . date('Ymd') . '/' . strtoupper(Str::random(6));
 
-        try {
-            $waktuPengambilan = Carbon::createFromFormat('d/m/Y H:i:s', $validated['waktu_pengambilan'] . ' 00:00:00');
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Format tanggal/waktu pengambilan tidak valid.'], 422);
-        }
-
+        // dd($request);
         DB::beginTransaction();
-
         try {
-            $transaksi = [
-                'id_transaksi' => $transactionId,
-                'kode_transaksi' => $kodeTransaksi,
-                'id_user_pembeli' => $userIdPembeli,
-                'total_harga' => $validated['total_harga'],
-                'id_order_gateway' => 'INV-'.$timestamp,
-                'metode_pembayaran' => 'TES_CHECKOUT', // TES
-                'status_pembayaran' => 'pending', // Default pending
-                'waktu_transaksi' => now(),
-                'waktu_pengambilan' => $waktuPengambilan,
-                'detail_pengambilan' => $validated['detail_pengambilan'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-            DB::table('transaksi')->insert($transaksi);
+            // 2. Simpan Transaksi Utama
+            $transaksi = new Transaksi();
+            $transaksi->id_transaksi = Str::uuid();
+            $transaksi->kode_transaksi = $kodeTransaksi;
+            $transaksi->id_user_pembeli = $user->id_user;
 
-            $detailItems = [];
-            foreach ($validated['cart_items'] as $item) {
-                $detailItems[] = [
-                    'id_transaksi' => $transactionId,
+            // Kolom Integrasi Xendit
+            $transaksi->external_id = $externalId;
+            $transaksi->id_order_gateway = $externalId;
+
+            $transaksi->total_harga = $request->total_bayar;
+            $transaksi->status_pembayaran = 'pending';
+            // $transaksi->status_barang = 'baru';
+            $transaksi->waktu_transaksi = now();
+
+            // Default Pengambilan (Bisa dibuat dinamis jika ada input form)
+            $transaksi->waktu_pengambilan = $request->tanggal_pengambilan;
+            $transaksi->detail_pengambilan = $request->detail_pengambilan;
+
+            $transaksi->save();
+
+            // 3. Simpan Detail Barang (Item Belanja)
+            foreach($request->items as $item) {
+                $barang = Barang::find($item['id_barang']);
+
+                // Cek stok (Opsional, tapi disarankan)
+                if($barang->stok < $item['jumlah']) {
+                    throw new \Exception("Stok barang {$barang->nama_barang} tidak mencukupi.");
+                }
+
+                DetailTransaksi::create([
+                    'id_detail' => Str::uuid(),
+                    'id_transaksi' => $transaksi->id_transaksi,
                     'id_barang' => $item['id_barang'],
-                    'jumlah' => $item['kuantitas'],
-                    'harga_saat_transaksi' => $item['harga_satuan'],
-                    'status_barang' => 'baru',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                    'jumlah' => $item['jumlah'],
+                    'harga_saat_transaksi' => $barang->harga, // Rekam harga saat beli (antisipasi perubahan harga)
+                    'status_barang' => 'baru'
+                ]);
+
+                // Opsional: Kurangi stok langsung (atau kurangi saat webhook success)
+                // $barang->decrement('stok', $item['jumlah']);
             }
-            DB::table('detail_transaksi')->insert($detailItems);
+
+            // 4. Buat Invoice Xendit
+            $invoice = $xenditService->createInvoice(
+                $externalId,
+                $request->total_bayar,
+                $user->email ?? 'pembeli@ekantin.com', // Fallback email
+                "Pembayaran Kantin - " . $user->username
+            );
+
+            // Simpan Link Pembayaran (Agar user bisa bayar nanti)
+            $transaksi->payment_link = $invoice['invoice_url'];
+            $transaksi->save();
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Transaksi berhasil dibuat.',
-                'kode_transaksi' => $kodeTransaksi
-            ]);
+            // 5. Redirect User ke Halaman Pembayaran Xendit
+            return redirect($invoice['invoice_url']);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("Checkout Failed for user {$userIdPembeli}: " . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menyimpan transaksi ke database. Coba lagi.',
-                'error_detail' => $e->getMessage()
-            ], 500);
+            return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }
+    }
+
+    public function paymentStatus(Request $request)
+    {
+        // Ambil parameter 'status' dari URL, default 'failed'
+        $status = $request->query('status', 'failed');
+
+        // Return ke view errors/payment.blade.php
+        return view('errors.payment', compact('status'));
     }
 }

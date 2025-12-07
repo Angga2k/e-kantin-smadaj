@@ -8,6 +8,8 @@
 
     <link rel="icon" type="image/png" href="{{ asset('asset/logo.png') }}">
 
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -57,6 +59,7 @@
     {{-- LOGIKA KERANJANG (LOCAL STORAGE) --}}
     <script src="{{ asset('js/cart.js') }}"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {{-- TANGGAL DI KERANJANG GUYS --}}
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

@@ -1,69 +1,81 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MakananController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PenjualController;
+use App\Http\Middleware\RoleChecker;
 
-Route::get('/aaa', function () {
-    // return view('seller_pesanan');
-    // return view('seller_dash');
-    // return view('seller_wd');
-    // return view('seller_produk');
-    return view('seller_history');
-});
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/aa', function () {
-    // return view('tes');
-    return view('welcome');
-    // return view('slicing_store');
-    // return view('slicing_u_profile');
+    return view('welcome2');
 });
+
 Route::get('/a', function () {
-    // return view('tes');
-    // return view('welcome2');
-    return view('slicing_store');
-    // return view('slicing_u_profile');
-});
-Route::get('/', [App\Http\Controllers\MakananController::class, 'index'])->name('beranda.index');
-Route::get('/asdasd', function () {
-    return view('buyer.beranda.index1');
-});
-Route::get('/minuman', [App\Http\Controllers\MakananController::class, 'minuman'])->name('minuman.index');
-// Route::get('/minuman', function () {
-//     return view('buyer.minuman.index');
-// });
-Route::get('/makanan', [App\Http\Controllers\MakananController::class, 'makanan'])->name('makanan.index');
-// Route::get('/makanan', function () {
-    //     return view('buyer.makanan.index');
-    // });
-Route::get('/camilan', [App\Http\Controllers\MakananController::class, 'camilan'])->name('camilan.index');
-// Route::get('/camilan', function () {
-//     return view('buyer.camilan.index');
-// });
-Route::get('/detail/{barang}', [App\Http\Controllers\MakananController::class, 'show'])->name('detail.index');
-Route::get('/detail', function () {
-    return view('buyer.detail.index1');
-});
-Route::get('/profile', function () {
-    return view('buyer.profile.index');
-});
-Route::get('/profile/update', function () {
-    return view('buyer.profile.update');
-});
-Route::get('/d', function () {
-    return view('slicing_detail');
+    return view('seller.dompet.index');
 });
 
-Route::get('/seller', function () {
-    return view('seller.beranda.index');
-});
-Route::get('/barang', function () {
-    return view('seller.barang.index');
-});
-Route::get('/barang/store', function () {
-    return view('seller.barang.store');
-});
-// Route::get('/pesanan', function () {
-//     return view('seller.pesanan.index');
-// });
+Route::get('/tesauth', function () {
+    return view('auth.tes');
+})->name('auth.tes');
 
-Route::get('/penjual/pesanan/{statusFilter?}', [App\Http\Controllers\PenjualController::class, 'index'])->name('seller.pesanan.index');
-Route::post('/penjual/pesanan/update-status', [App\Http\Controllers\PenjualController::class, 'updateStatus'])->name('seller.pesanan.update_status');
-Route::post('/checkout/process', [App\Http\Controllers\CheckoutController::class, 'process'])->name('checkout.process');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Route Makanan (Public)
+Route::get('/', [MakananController::class, 'index'])->name('beranda.index');
+Route::get('/minuman', [MakananController::class, 'minuman'])->name('minuman.index');
+Route::get('/makanan', [MakananController::class, 'makanan'])->name('makanan.index');
+Route::get('/camilan', [MakananController::class, 'camilan'])->name('camilan.index');
+Route::get('/detail/{barang}', [MakananController::class, 'show'])->name('detail.index');
+
+Route::get('/payment/status', [CheckoutController::class, 'paymentStatus'])->name('payment.status');
+
+// Route Authenticated
+Route::middleware(['auth'])->group(function () {
+    // Route Siswa / Civitas
+    Route::middleware([RoleChecker::class . ':siswa,civitas_akademik'])->group(function () {
+        Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    });
+
+    // Route Penjual
+    Route::middleware([RoleChecker::class . ':penjual'])->prefix('penjual')->group(function () {
+
+        // Dashboard & Pesanan
+        Route::get('/', [PenjualController::class, 'beranda'])->name('seller.beranda.index');
+        Route::get('/pesanan/{statusFilter?}', [PenjualController::class, 'index'])->name('seller.pesanan.index');
+        Route::post('/pesanan/update-status', [PenjualController::class, 'updateStatus'])->name('seller.pesanan.update_status');
+        Route::get('/riwayat', [PenjualController::class, 'history'])->name('seller.history.index');
+        Route::get('/dana', [PenjualController::class, 'dompet'])->name('seller.dompet.index');
+        Route::post('/dana/tarik', [PenjualController::class, 'storePenarikan'])->name('seller.dompet.store');
+
+        // CRUD Produk
+        // PERBAIKAN: Gunakan 'seller.produk.' agar sesuai dengan panggilan di View
+        Route::prefix('produk')->name('seller.produk.')->group(function () {
+
+            // Hasil: seller.produk.index
+            Route::get('/', [PenjualController::class, 'showProduk'])->name('index');
+
+            // Hasil: seller.produk.create
+            Route::get('/tambah', [PenjualController::class, 'createProduk'])->name('create');
+
+            // Hasil: seller.produk.store
+            Route::post('/', [PenjualController::class, 'storeProduk'])->name('store');
+
+            // Hasil: seller.produk.edit
+            Route::get('/{id}/edit', [PenjualController::class, 'editProduk'])->name('edit');
+
+            // Hasil: seller.produk.update
+            Route::put('/{id}', [PenjualController::class, 'updateProduk'])->name('update');
+
+            // Hasil: seller.produk.destroy
+            Route::delete('/{id}', [PenjualController::class, 'destroyProduk'])->name('destroy');
+        });
+    });
+});

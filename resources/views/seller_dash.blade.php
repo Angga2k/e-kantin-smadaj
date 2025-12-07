@@ -181,7 +181,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Data Simulasi
         const chartData = {
             '2025': {
                 produk: [65, 59, 80, 81, 56, 55, 40, 70, 90, 100, 85, 60],

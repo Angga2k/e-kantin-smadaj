@@ -42,14 +42,14 @@
                 // Hitung rating dan total ulasan
                 $avgRating = $barang->ratingUlasan->avg('rating') ?? 0;
                 $totalReviews = $barang->ratingUlasan->count();
-                $roundedRating = floor($avgRating); // Pembulatan ke bawah sesuai permintaan terakhir
+                // $roundedRating = floor($avgRating); // Pembulatan ke bawah sesuai permintaan terakhir
+                $roundedRating = 4.5; // Pembulatan ke bawah sesuai permintaan terakhir
             @endphp
 
             {{-- Tampilan Rating --}}
             <div class="d-flex align-items-center my-3 rating-stars">
                 @for ($i = 1; $i <= 5; $i++)
-                    {{-- Menggunakan floor() untuk pembulatan ke bawah --}}
-                    <i class="bi bi-star-{{ $i <= $roundedRating ? 'fill' : 'empty' }}"></i>
+                    <i class="bi bi-star{{ $i <= $roundedRating ? '-fill' : '' }}"></i>
                 @endfor
                 <span class="ms-2 fw-bold">{{ number_format($avgRating, 1) }}</span>
                 <span class="ms-1 text-muted">({{ $totalReviews }})</span>
@@ -101,7 +101,7 @@
                     <button class="btn btn-sm btn-outline-secondary" id="increaseQty">+</button>
                 </div>
 
-                <button
+                {{-- <button
                     class="btn btn-add-to-cart btn-lg flex-grow-1"
                     id="addToCartButton"
                     data-id="{{ $barang->id_barang }}"
@@ -111,7 +111,42 @@
                     data-photo="{{ asset($barang->foto_barang) ?: asset('icon/' . $barang->jenis_barang . '.png') }}"
                     >
                     Tambah Keranjang
-                </button>
+                </button> --}}
+                @guest
+                    {{-- KASUS 1: PENGGUNA BELUM LOGIN (GUEST) --}}
+                    <button
+                        class="btn btn-success btn-lg flex-grow-1"
+                        id="guestAddToCartButton"
+                        onclick="showLoginAlert()"
+                        >
+                        Tambah Keranjang
+                    </button>
+                @else
+                    {{-- KASUS 2: PENGGUNA SUDAH LOGIN --}}
+                    @php $userRole = Auth::user()->role; @endphp
+                    @if ($userRole === 'siswa' || $userRole === 'civitas_akademik')
+                    <button
+                        class="btn btn-success btn-add-to-cart btn-lg flex-grow-1"
+                        id="addToCartButton"
+                        data-id="{{ $barang->id_barang }}"
+                        data-name="{{ $barang->nama_barang }}"
+                        data-price="{{ $barang->harga }}"
+                        data-jenis="{{ $barang->jenis_barang }}"
+                        data-photo="{{ asset($barang->foto_barang) ?: asset('icon/' . $barang->jenis_barang . '.png') }}"
+                        >
+                        Tambah Keranjang
+                    </button>
+                    @else
+                    <button
+                        class="btn btn-success btn-lg flex-grow-1"
+                        id="guestAddToCartButton"
+                        onclick="showPenjualAlert()"
+                        >
+                        Tambah Keranjang
+                    </button>
+                    @endif
+                @endguest
+
             </div>
         </div>
     </div>
@@ -141,5 +176,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function showLoginAlert() {
+    // --- MENGGANTI CONFIRM() DENGAN SWEETALERT2 ---
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: "Anda Belum Login",
+            text: "Silakan Login untuk melanjutkan pembelian.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#00897b", // Warna hijau tema
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Ya, Login Sekarang"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Arahkan ke halaman login jika user menekan 'Ya, Login Sekarang'
+                window.location.href = '{{ route('login') }}';
+            }
+        });
+    } else {
+        const confirmLogin = confirm("Anda harus Login untuk membeli. Ingin Login sekarang?");
+        if (confirmLogin) {
+            window.location.href = '{{ route('login') }}';
+        }
+    }
+}
+function showPenjualAlert() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: "Warning!!!",
+            text: "Penjual tidak dapat menggunakan fitur pembeli.",
+            icon: "warning",
+            confirmButtonColor: "#00897b", // Warna hijau tema
+        });
+    }
+}
 </script>
 @endsection

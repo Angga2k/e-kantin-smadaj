@@ -30,6 +30,17 @@
             --btn-done-bg: #198754;    /* Hijau Tua - Telah Diambil (Contoh) */
             --btn-done-bright-bg: #20c997; /* Hijau Terang - Telah Diambil */
             --btn-cancel-bg: #6c757d;  /* Abu-abu - Batalkan/Detail */
+
+            --bg-teal: #00838f;
+            --bg-yellow: #fbc02d;
+            --bg-red: #c62828;
+            --bg-green: #2e7d32;
+
+
+            --primary-green: #00897b;
+            --primary-red: #d32f2f;
+            --btn-grey: #757575;
+            --light-gray-bg: #f0f2f5;
         }
 
 
@@ -211,6 +222,136 @@
             .order-card-body dd { text-align: right; }
             .order-card-footer .btn { width: auto; padding: 0.5rem 1.25rem; }
         }
+
+
+        /* dashboard */
+
+
+        /* Small Box Cards */
+        .small-box {
+            border-radius: 10px;
+            position: relative;
+            display: block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            color: #fff;
+        }
+        .small-box .inner { padding: 20px; }
+        .small-box h3 { font-size: 2.5rem; font-weight: 700; margin: 0 0 10px 0; white-space: nowrap; }
+        .small-box p { font-size: 1rem; margin-bottom: 5px; font-weight: 500; }
+        .small-box .icon { position: absolute; top: 15px; right: 15px; font-size: 1.5rem; color: rgba(255, 255, 255, 0.7); }
+        .small-box-footer {
+            position: relative; text-align: center; padding: 5px 0; color: rgba(255, 255, 255, 0.8);
+            display: block; z-index: 10; background: rgba(0, 0, 0, 0.15); text-decoration: none; font-size: 0.9rem;
+        }
+        .small-box-footer:hover { color: #fff; background: rgba(0, 0, 0, 0.25); }
+
+        /* Card Colors */
+        .bg-card-teal { background-color: var(--bg-teal); }
+        .bg-card-yellow { background-color: var(--bg-yellow); }
+        .bg-card-red { background-color: var(--bg-red); }
+        .bg-card-green { background-color: var(--bg-green); }
+
+        /* Chart Section */
+        .chart-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .form-select-sm {
+            border-radius: 20px;
+            font-weight: 500;
+            border: 1px solid #ced4da;
+        }
+
+        /* Product Card */
+        .products-card {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+        .products-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+        .card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rating-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .rating-badge .bi-star-fill { color: #ffc107; }
+
+        .card-body { padding: 1rem; }
+        .product-title { font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem; color: #212529; }
+        .product-price { color: #0d6efd; font-weight: 700; font-size: 1.1rem; }
+
+        /* Buttons */
+        .btn-add-new {
+            background-color: var(--primary-green);
+            color: white;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            border: none;
+            text-decoration: none; /* Penting agar tidak ada underline */
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-add-new:hover { background-color: #b71c1c; color: white; }
+
+        .btn-action-edit {
+            background-color: var(--btn-grey);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .btn-action-edit:hover { background-color: #616161; color: white; }
+
+        .btn-action-delete {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .btn-action-delete:hover { background-color: #b71c1c; color: white; }
     </style>
 </head>
 <body>
@@ -224,6 +365,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {{-- Barang store --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -375,27 +517,11 @@
                         }
                     });
                 };
-
-                // --- KODE LAMA ANDA: TOMBOL FILTER DI VIEW LAMA (SEBELUM DIBUAT DYNAMIC) ---
-                /*
-                const filterButtons = document.querySelectorAll('.status-filters .btn');
-                filterButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        filterButtons.forEach(btn => btn.classList.remove('active'));
-                        this.classList.add('active');
-                        const status = this.dataset.status;
-                        updateCards(status); // Panggil fungsi untuk update kartu
-                    });
-                });
-                updateCards('baru'); // Inisialisasi tampilan awal
-                */
-                // --- KODE LAMA END ---
-
-                // Note: Karena Anda menggunakan <a> tag di Blade untuk filtering,
-                // logika filter di JS ini menjadi tidak relevan/perlu dihapus,
-                // kecuali Anda ingin mempertahankan fungsi updateCards untuk styling.
             }
         });
     </script>
+
+    @stack('scripts')
+
 </body>
 </html>

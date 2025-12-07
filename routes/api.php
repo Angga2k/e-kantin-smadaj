@@ -11,6 +11,8 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\DetailTransaksiController;
 use App\Http\Controllers\RatingUlasanController;
 use App\Http\Controllers\TesController;
+use App\Http\Controllers\Api\XenditWebhookController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -150,3 +152,7 @@ Route::prefix('rating-ulasan')->group(function () {
 
 Route::get('/tes', [TesController::class, 'index']);
 Route::get('/tes/{barang}', [TesController::class, 'index2']);
+
+
+Route::post('/xendit/disbursement', [XenditWebhookController::class, 'handleDisbursement']);
+Route::post('/xendit/invoice', [XenditWebhookController::class, 'handleInvoice']);
