@@ -3,6 +3,238 @@
 @section('title', 'Dompet & Penarikan')
 
 @section('content')
+
+<style>
+    @media (max-width: 575.98px) {
+        /* Main Container */
+        .container {
+            padding: 0.75rem !important;
+        }
+
+        /* Row & Columns */
+        .row {
+            --bs-gutter-x: 1rem !important;
+        }
+
+        .col-lg-5, .col-lg-7 {
+            margin-bottom: 1.5rem !important;
+        }
+
+        /* Alert */
+        .alert {
+            font-size: 0.85rem !important;
+            padding: 0.6rem 0.9rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .alert ul {
+            margin: 0 !important;
+            padding-left: 1.2rem !important;
+        }
+
+        .alert li {
+            font-size: 0.8rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            margin-bottom: 1.2rem !important;
+        }
+
+        .balance-card .card-body {
+            padding: 1rem !important;
+        }
+
+        .balance-card p {
+            font-size: 0.75rem !important;
+            margin-bottom: 0.4rem !important;
+        }
+
+        .balance-card h2 {
+            font-size: 1.3rem !important;
+        }
+
+        .balance-card .balance-icon {
+            font-size: 1.5rem !important;
+        }
+
+        /* Card Headers */
+        .card-header {
+            padding: 0.75rem !important;
+        }
+
+        .card-header h5 {
+            font-size: 0.95rem !important;
+            margin-bottom: 0 !important;
+        }
+
+        .card-header i {
+            font-size: 0.9rem !important;
+        }
+
+        /* Card Body */
+        .card-body {
+            padding: 0.9rem !important;
+        }
+
+        /* Form Labels */
+        .form-label {
+            font-size: 0.7rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+
+        /* Input Groups */
+        .input-group {
+            margin-bottom: 0.5rem !important;
+        }
+
+        .input-group-text {
+            font-size: 0.8rem !important;
+            padding: 0.4rem 0.6rem !important;
+        }
+
+        .form-control, .form-select {
+            font-size: 0.8rem !important;
+            padding: 0.4rem 0.6rem !important;
+            height: auto !important;
+        }
+
+        .form-control-lg {
+            font-size: 0.85rem !important;
+            padding: 0.4rem 0.6rem !important;
+        }
+
+        .form-text {
+            font-size: 0.65rem !important;
+            margin-top: 0.2rem !important;
+        }
+
+        /* Button Groups */
+        .btn-group {
+            gap: 0.3rem !important;
+        }
+
+        .btn-group .btn {
+            font-size: 0.7rem !important;
+            padding: 0.35rem 0.5rem !important;
+            flex: 1 !important;
+        }
+
+        /* Background sections */
+        #section_tersimpan, #section_baru {
+            padding: 0.75rem !important;
+            margin-bottom: 0.8rem !important;
+            border-radius: 6px !important;
+        }
+
+        #section_tersimpan .small, #section_baru .small {
+            font-size: 0.65rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+
+        .form-check-label {
+            font-size: 0.7rem !important;
+            margin-left: 0.4rem !important;
+        }
+
+        /* Submit Button */
+        .btn-primary {
+            font-size: 0.85rem !important;
+            padding: 0.5rem 1rem !important;
+        }
+
+        /* Table */
+        .table {
+            font-size: 0.75rem !important;
+            margin-bottom: 0 !important;
+            min-width: 500px !important;
+        }
+
+        .table thead th {
+            font-size: 0.65rem !important;
+            padding: 0.4rem 0.5rem !important;
+            font-weight: 700 !important;
+            background-color: #f8f9fa !important;
+            white-space: nowrap !important;
+        }
+
+        .table tbody td {
+            padding: 0.4rem 0.5rem !important;
+            font-size: 0.7rem !important;
+            vertical-align: middle !important;
+            white-space: nowrap !important;
+        }
+
+        .table .fw-bold {
+            font-size: 0.7rem !important;
+        }
+
+        .table .small {
+            font-size: 0.6rem !important;
+            line-height: 1.1 !important;
+        }
+
+        .table .text-muted {
+            font-size: 0.6rem !important;
+        }
+
+        .table .font-monospace {
+            font-size: 0.6rem !important;
+        }
+
+        .badge {
+            font-size: 0.6rem !important;
+            padding: 0.25rem 0.4rem !important;
+        }
+
+        /* Table Responsive */
+        .table-responsive {
+            margin-bottom: 0 !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        .table tbody tr {
+            border-bottom: 0.5px solid #e9ecef !important;
+        }
+
+        /* Card Footer (Pagination) */
+        .card-footer {
+            font-size: 0.75rem !important;
+            padding: 0.75rem !important;
+        }
+
+        .card-footer nav {
+            margin-bottom: 0 !important;
+        }
+
+        .pagination {
+            margin-bottom: 0 !important;
+            gap: 0.2rem !important;
+        }
+
+        .pagination .page-link {
+            font-size: 0.65rem !important;
+            padding: 0.25rem 0.4rem !important;
+        }
+
+        /* Remove extra padding from PS-4 on mobile */
+        .table td.ps-4 {
+            padding-left: 0.4rem !important;
+        }
+
+        /* Mb utility */
+        .mb-4 {
+            margin-bottom: 1rem !important;
+        }
+
+        .mb-3 {
+            margin-bottom: 0.8rem !important;
+        }
+    }
+</style>
+
 <main class="container my-4">
 
     {{-- Alert Sukses/Error --}}

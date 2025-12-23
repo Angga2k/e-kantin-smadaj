@@ -3,6 +3,36 @@
 @section('title', 'Beranda')
 
 @section('content')
+<style>
+    @media (max-width: 575.98px) {
+        .card-img-top {
+            height: 140px !important;
+        }
+
+        .card-body {
+            padding: 0.75rem !important;
+        }
+
+        .card .card-title {
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .card .stall-name {
+            font-size: 0.75rem;
+        }
+
+        .card .price {
+            font-size: 0.95rem;
+        }
+
+        .rating-badge {
+            padding: 2px 8px !important;
+            font-size: 0.75rem !important;
+        }
+    }
+</style>
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item text-muted">Beranda /</li>
@@ -32,10 +62,10 @@
                         if ($item->jenis_barang === 'Makanan') {
                             $cardClass = 'card1';
                         } elseif ($item->jenis_barang === 'Minuman') {
-                            $cardClass = 'card2'; 
+                            $cardClass = 'card2';
                         } elseif ($item->jenis_barang === 'Snack') {
-                            $cardClass = 'card3'; 
-                        } 
+                            $cardClass = 'card3';
+                        }
                 @endphp
                 <a href="{{ route('detail.index', $item->id_barang) }}" class="text-decoration-none text-dark">
                     <div class="card {{ $cardClass }} h-100">

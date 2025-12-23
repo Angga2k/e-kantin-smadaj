@@ -3,6 +3,82 @@
 @section('title', isset($produk) ? 'Edit Produk' : 'Tambah Produk')
 
 @section('content')
+<style>
+    @media (max-width: 575.98px) {
+        .breadcrumb {
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem !important;
+            padding: 0 !important;
+        }
+
+        .breadcrumb-item {
+            padding: 0 !important;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+        }
+
+        .card-body {
+            padding: 1rem !important;
+        }
+
+        .row.g-5 {
+            gap: 1.5rem !important;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.35rem !important;
+        }
+
+        .form-control,
+        .form-control:focus {
+            font-size: 0.95rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .input-group-text {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.6rem;
+        }
+
+        .input-group .form-control {
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.9rem !important;
+        }
+
+        .pill-options {
+            gap: 0.5rem !important;
+        }
+
+        .pill-options .btn {
+            padding: 0.4rem 0.8rem !important;
+            font-size: 0.85rem !important;
+        }
+
+        .img-upload-box {
+            min-height: 100px !important;
+        }
+
+        .img-upload-box {
+            min-height: 100px !important;
+        }
+
+        textarea {
+            font-size: 0.95rem;
+        }
+
+        .d-flex.flex-column.flex-md-row {
+            gap: 1rem !important;
+        }
+    }
+</style>
+
 <div class="container my-4 pb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -41,7 +117,7 @@
                     <div class="col-lg-4">
                         <div class="mb-4">
                             <label class="form-label">Foto Produk</label>
-                            <label for="uploadGambar" class="img-upload-box d-block w-100 position-relative" style="cursor: pointer; border: 2px dashed #ddd; border-radius: 8px; overflow: hidden; min-height: 250px; display: flex; align-items: center; justify-content: center;">
+                            <label for="uploadGambar" class="img-upload-box d-block w-100 position-relative" style="cursor: pointer; border: 2px dashed #ddd; border-radius: 8px; overflow: hidden; min-height: 200px; display: flex; align-items: center; justify-content: center;">
 
                                 {{-- Preview Gambar: Tampilkan jika sedang edit dan ada fotonya --}}
                                 <img src="{{ isset($produk) && $produk->foto_barang ? asset($produk->foto_barang) : '' }}"

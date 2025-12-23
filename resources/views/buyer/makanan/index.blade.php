@@ -3,6 +3,36 @@
 @section('title', 'Makanan')
 
 @section('content')
+<style>
+    @media (max-width: 575.98px) {
+        .card-img-top {
+            height: 140px !important;
+        }
+
+        .card-body {
+            padding: 0.75rem !important;
+        }
+
+        .card .card-title {
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .card .stall-name {
+            font-size: 0.75rem;
+        }
+
+        .card .price {
+            font-size: 0.95rem;
+        }
+
+        .rating-badge {
+            padding: 2px 8px !important;
+            font-size: 0.75rem !important;
+        }
+    }
+</style>
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">Beranda</a></li>

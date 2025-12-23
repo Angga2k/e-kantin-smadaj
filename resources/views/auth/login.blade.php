@@ -43,7 +43,7 @@
             text-decoration: none;
         }
         .mobile-navbar .navbar-brand img {
-            height: 30px;
+            height: 20px;
             margin-right: 0.5rem;
         }
         .mobile-navbar .nav-link {
@@ -61,11 +61,11 @@
             border-radius: 0 0 25px 25px;
         }
         .brand-header img {
-            max-width: 80px;
+            max-width: 70px;
             margin-bottom: 1rem;
         }
         .brand-header h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
         }
         .brand-header p {

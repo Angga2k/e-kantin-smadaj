@@ -3,6 +3,137 @@
 @section('title', 'Riwayat Penjualan')
 
 @section('content')
+
+<style>
+    @media (max-width: 575.98px) {
+        /* Main Container */
+        .container {
+            padding: 0.75rem !important;
+        }
+
+        /* Heading & Page Title */
+        h4 {
+            font-size: 1rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .d-flex > div > p {
+            font-size: 0.7rem !important;
+            margin-bottom: 0 !important;
+        }
+
+        /* Filter Card */
+        .filter-card {
+            margin-bottom: 1rem !important;
+        }
+
+        .filter-card .card-body {
+            padding: 0.6rem !important;
+        }
+
+        .filter-card label {
+            font-size: 0.7rem !important;
+            margin-right: 0.25rem !important;
+        }
+
+        .filter-card .form-select-sm {
+            text-align: left;
+            font-size: 0.75rem !important;
+            padding: 0.3rem 1.8rem 0.3rem 0.4rem !important;
+            height: auto !important;
+        }
+
+        .filter-card .btn-sm {
+            font-size: 0.75rem !important;
+            padding: 0.3rem 0.5rem !important;
+        }
+
+        /* Table Card */
+        .table-card {
+            margin-bottom: 1rem !important;
+        }
+
+        .table-responsive {
+            margin-bottom: 0 !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        /* Table Headers */
+        .table thead th {
+            font-size: 0.65rem !important;
+            padding: 0.4rem 0.5rem !important;
+            font-weight: 700 !important;
+            line-height: 1.2 !important;
+            word-break: break-word !important;
+            white-space: nowrap !important;
+            min-width: 80px !important;
+        }
+
+        /* Table Cells */
+        .table tbody td {
+            padding: 0.4rem 0.5rem !important;
+            font-size: 0.7rem !important;
+            vertical-align: middle !important;
+            white-space: nowrap !important;
+        }
+
+        .table tbody tr {
+            border-bottom: 0.5px solid #e9ecef !important;
+        }
+
+        .table .fw-bold {
+            font-size: 0.7rem !important;
+        }
+
+        .table .small {
+            font-size: 0.6rem !important;
+            line-height: 1.1 !important;
+        }
+
+        .table h6 {
+            font-size: 0.75rem !important;
+            margin-bottom: 0 !important;
+            font-weight: 700 !important;
+        }
+
+        .table .badge {
+            font-size: 0.6rem !important;
+            padding: 0.25rem 0.4rem !important;
+            white-space: nowrap !important;
+        }
+
+        .table .font-monospace {
+            font-size: 0.6rem !important;
+        }
+
+        /* Item List */
+        .item-list {
+            margin-bottom: 0 !important;
+        }
+
+        .item-list li {
+            font-size: 0.65rem !important;
+            margin-bottom: 0.3rem !important;
+            gap: 0.3rem !important;
+        }
+
+        .item-list .text-muted {
+            font-size: 0.6rem !important;
+        }
+
+        /* Card Footer */
+        .card-footer {
+            font-size: 0.65rem !important;
+            padding: 0.6rem !important;
+        }
+
+        /* Remove padding from PS-4 on mobile */
+        .table td.ps-4 {
+            padding-left: 0.2rem !important;
+        }
+    }
+</style>
 <main class="container my-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
         <div>
