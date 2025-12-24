@@ -1,79 +1,56 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>@yield('title', 'System Admin')</title>
-
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/favicon.png') }}">
-
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ asset('plugins/fontawesome/css/all.min.css') }}">
-
-	<!-- Select2 CSS -->
-	<link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
-
-	<!-- Datatable CSS -->
-	<link rel="stylesheet" href="{{ asset('css/dataTables.bootstrap5.min.css') }}">
-
-
-    <!-- Summernote -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
-
-    <!-- Custom Style -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-
-    @stack('styles')
+    <title>Admin Panel - Kantin Digital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; }
+        .sidebar { min-height: 100vh; background-color: #2c3e50; color: white; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: #34495e; color: white; border-left: 4px solid #3498db; }
+        .content-wrapper { padding: 2rem; }
+        .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 12px; }
+    </style>
 </head>
 <body>
+    <div class="d-flex">
+        {{-- Sidebar --}}
+        <div class="sidebar d-none d-lg-block" style="width: 250px;">
+            <div class="p-4 text-center border-bottom border-secondary">
+                <h5 class="fw-bold m-0">ADMIN PANEL</h5>
+                <small class="text-white-50">E-Kantin Smada</small>
+            </div>
+            <nav class="nav flex-column mt-3">
+                {{-- <a class="nav-link {{ request()->routeIs('admin.index') ? 'active' : '' }}" href="{{ route('admin.index') }}"> --}}
+                <a class="nav-link ">
+                    <i class="bi bi-people me-2"></i> Manajemen User
+                </a>
+                <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit()">
+                    <i class="bi bi-box-arrow-left me-2"></i> Logout
+                </a>
+            </nav>
+        </div>
 
-    <x-header />
-    <x-sidebar />
+        {{-- Mobile Toggle & Content --}}
+        <div class="flex-grow-1">
+            <nav class="navbar navbar-light bg-white shadow-sm d-lg-none">
+                <div class="container-fluid">
+                    <span class="navbar-brand mb-0 h1 fw-bold">Admin Panel</span>
+                </div>
+            </nav>
 
-    <main>
-        @yield('content')
-    </main>
+            <div class="content-wrapper">
+                @yield('content')
+            </div>
+        </div>
+    </div>
 
-    <footer>
-        <p>&copy; Copyright {{ date('Y') }}</p>
-    </footer>
-
-    <!-- jQuery -->
-    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
-
-    <!-- Bootstrap -->
-    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Feather -->
-    <script src="{{ asset('js/feather.min.js') }}"></script>
-
-    <!-- Slimscroll -->
-    <script src="{{ asset('js/jquery.slimscroll.min.js') }}"></script>
-
-    <!-- Select2 -->
-    <script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
-
-    <!-- Summernote -->
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
-
-	<!-- Datatable JS -->
-	<script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
-	<script src="{{ asset('js/dataTables.bootstrap5.min.js') }}"></script>
-
-    <!-- Chart JS -->
-	<script src="{{ asset('plugins/apexchart/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('plugins/apexchart/chart-data.js') }}"></script>
-
-    <!-- Custom Script -->
-    <script src="{{ asset('js/theme-colorpicker.js') }}"></script>
-    <script src="{{ asset('js/script.js') }}"></script>
-
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
 </html>

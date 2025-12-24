@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class RoleChecker
 {
@@ -25,6 +26,12 @@ class RoleChecker
 
         $user = Auth::user();
         $userRole = strtolower($user->role);
+        Log::error('Role user tidak sesuai', [
+            'user_id' => $user->id ?? null,
+            'user_role' => $userRole,
+            'allowed_roles' => $roles,
+            'url' => $request->url(),
+        ]);
 
         // 2. Cek apakah role pengguna ada di daftar role yang diizinkan
         if (in_array($userRole, $roles)) {

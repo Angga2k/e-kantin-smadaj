@@ -91,9 +91,19 @@
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
         .btn-submit {
-            padding: 0.75rem;
-            border-radius: 10px;
+            padding: 0.6rem;
+            border-radius: 8px;
             font-weight: 600;
+            font-size: 0.95rem;
+            background-color: var(--theme-color);
+            border-color: var(--theme-color);
+            color: white;
+            margin-top: 0.5rem;
+        }
+        .btn-submit:hover {
+            background-color: #00695c;
+            border-color: #00695c;
+            color: white;
         }
 
         /* Sembunyikan navbar desktop di mobile */
@@ -212,7 +222,7 @@
                             name="username"
                             placeholder="Masukkan Username Anda"
                             {{-- value="{{ old('username') }}" --}}
-                            value="kantin.tes"
+                            value="admin"
                             required
                         >
                         @error('username')
@@ -228,7 +238,7 @@
                             id="password"
                             name="password"
                             placeholder="Password"
-                            value="penjual123"
+                            value="admin123"
                             required
                         >
                         @error('password')
@@ -236,7 +246,10 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn w-100 btn-submit">Masuk</button>
+                    <button type="submit" class="btn mb-2 w-100 shadow-sm btn-submit">Masuk</button>
+                    <span class="navbar-text" style="font-size: 0.9rem;">
+                        Belum punya akun? <a href="{{ route('register') }}" style="color: var(--theme-color); text-decoration: none; font-weight: 600;">Daftar disini</a>
+                    </span>
                 </form>
             </div>
         </section>

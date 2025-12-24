@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MakananController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PenjualController;
+use App\Http\Controllers\AdminController;
 use App\Http\Middleware\RoleChecker;
 
 /*
@@ -20,12 +21,20 @@ Route::get('/a', function () {
     return view('seller.dompet.index');
 });
 
+Route::get('/tesssss', function () {
+    return view('admin.tes');
+});
+
 Route::get('/tesauth', function () {
     return view('auth.tes');
 })->name('auth.tes');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Route Makanan (Public)
@@ -39,6 +48,15 @@ Route::get('/payment/status', [CheckoutController::class, 'paymentStatus'])->nam
 
 // Route Authenticated
 Route::middleware(['auth'])->group(function () {
+    
+    Route::middleware([RoleChecker::class . ':admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('index');
+        Route::get('/tambah', [AdminController::class, 'create'])->name('create');
+        Route::post('/store', [AdminController::class, 'store'])->name('store');
+        Route::put('/user/{id}/password', [AdminController::class, 'updatePassword'])->name('updatePassword');
+        Route::delete('/user/{id}', [AdminController::class, 'destroy'])->name('destroy');
+    });
+
     // Route Siswa / Civitas
     Route::middleware([RoleChecker::class . ':siswa,civitas_akademik'])->group(function () {
         Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
