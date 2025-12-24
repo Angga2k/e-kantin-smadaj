@@ -3,6 +3,61 @@
 @section('title', 'Produk')
 
 @section('content')
+<style>
+    @media (max-width: 575.98px) {
+        .breadcrumb {
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem !important;
+            padding: 0 !important;
+        }
+
+        .breadcrumb-item {
+            padding: 0 !important;
+        }
+
+        .d-flex.flex-column.flex-md-row {
+            align-items: flex-start !important;
+        }
+
+        .card-img-top {
+            height: 200px !important;
+        }
+
+        .card-body {
+            padding: 0.75rem !important;
+        }
+
+        .product-title {
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem !important;
+        }
+
+        .product-price {
+            font-size: 0.95rem;
+            margin-bottom: 1rem !important;
+        }
+
+        .btn {
+            padding: 0.45rem 0.6rem !important;
+            font-size: 0.85rem !important;
+        }
+
+        .rating-badge {
+            padding: 2px 8px !important;
+            font-size: 0.75rem !important;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+        }
+
+        .btn-add-new {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.85rem !important;
+        }
+    }
+</style>
+
 <main class="container my-4 pb-5">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
         <div class="mb-3 mb-md-0">

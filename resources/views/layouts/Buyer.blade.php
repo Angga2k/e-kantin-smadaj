@@ -29,10 +29,6 @@
         @include('components.header')
     </header>
 
-    {{-- <section class="hero-banner d-none {{ request()->is('detail', 'profile', 'profile/update') ? '' : 'd-md-block' }}">
-        <h1>E-Kantin SMAN 2 Jember</h1>
-    </section> --}}
-
     <section class="hero-banner d-none {{ request()->is('detail*', 'profile', 'profile/update') ? '' : 'd-md-block' }}">
         <div class="container">
             <div class="d-flex align-items-center justify-content-center">

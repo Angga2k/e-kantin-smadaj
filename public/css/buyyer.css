@@ -1,6 +1,6 @@
 /* CSS ini sama dengan kode sebelumnya, tidak ada perubahan */
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     background-color: #f8f9fa;
 }
 .navbar-brand img {
@@ -96,9 +96,11 @@ body {
     height: auto;
 } */
 .hero-banner {
-    background-image:
-        linear-gradient(rgba(0, 137, 123, 0.7), rgba(0, 137, 123, 0.7)),
-        url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto-format&fit=crop');
+    background-image: linear-gradient(
+            rgba(0, 137, 123, 0.7),
+            rgba(0, 137, 123, 0.7)
+        ),
+        url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1974&auto-format&fit=crop");
     background-size: cover;
     background-position: center;
     padding: 2rem 0;
@@ -124,22 +126,22 @@ body {
     letter-spacing: 1px;
 }
 .card {
-    padding:5px;
+    padding: 5px;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s;
 }
-.card1{
-    border: 3px dashed #FF0000;
+.card1 {
+    border: 3px dashed #ff0000;
 }
-.card2{
-    border: 3px dashed #6A9D00;
+.card2 {
+    border: 3px dashed #6a9d00;
 }
-.card3{
+.card3 {
     border: 3px dashed #31adff;
 }
-.card-img-top{
+.card-img-top {
     border-radius: 15px;
 }
 .card:hover {
@@ -295,7 +297,6 @@ body {
     color: white;
 }
 
-
 /* Detail */
 .product-image {
     width: 100%;
@@ -327,7 +328,7 @@ body {
     font-size: 1em;
     color: #6c757d;
 }
-.variant-options .btn-check:checked+.btn {
+.variant-options .btn-check:checked + .btn {
     background-color: #0d6efd;
     border-color: #0d6efd;
     color: white;
@@ -363,8 +364,6 @@ body {
     color: white;
 }
 
-
-
 /* prifile */
 
 .profile-card {
@@ -373,7 +372,7 @@ body {
 
     border: 3px dashed #ffd000;
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 2rem;
     position: relative;
 }
@@ -395,7 +394,7 @@ body {
 
     border: 3px dashed #ffd000;
 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-top: -51px;
     left: 50%;
     transform: translateX(-50%);
@@ -444,7 +443,6 @@ body {
     }
 }
 
-
 /* PROFILE UPDATE */
 .profile-picture-update-wrapper {
     position: relative;
@@ -482,7 +480,6 @@ body {
 .upload-button input[type="file"] {
     display: none;
 }
-
 
 .profile-form .form-label {
     font-weight: 600;

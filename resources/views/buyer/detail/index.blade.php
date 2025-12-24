@@ -4,6 +4,107 @@
 
 @section('content')
 
+<style>
+    @media (max-width: 575.98px) {
+        .breadcrumb {
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-image {
+            max-height: 250px;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 1.5rem !important;
+            margin-bottom: 0.75rem;
+        }
+
+        .display-4 {
+            font-size: 1.75rem !important;
+        }
+
+        h6 {
+            font-size: 0.95rem !important;
+        }
+
+        .text-muted {
+            font-size: 0.85rem;
+        }
+
+        p:not(.text-muted) {
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.6rem !important;
+        }
+
+        .badge span {
+            display: block;
+            font-size: 0.65rem;
+            margin-top: 0.2rem;
+        }
+
+        .rating-stars i {
+            font-size: 1rem;
+        }
+
+        .rating-stars span {
+            font-size: 0.95rem;
+        }
+
+        .btn-check + label {
+            padding: 0.4rem 1rem !important;
+            font-size: 0.9rem;
+        }
+
+        .quantity-selector {
+            padding: 0.5rem !important;
+            gap: 0.25rem;
+        }
+
+        .quantity-selector .btn {
+            padding: 0.25rem 0.5rem !important;
+            font-size: 0.85rem;
+        }
+
+        .quantity-selector input {
+            font-size: 0.9rem !important;
+        }
+
+        .btn-lg {
+            padding: 0.5rem 1rem !important;
+            font-size: 0.95rem !important;
+        }
+
+        .d-flex.align-items-center.gap-4 {
+            gap: 0.75rem !important;
+        }
+
+        .d-flex.align-items-center.gap-4 .btn-lg {
+            padding: 0.45rem 0.8rem !important;
+            font-size: 0.85rem !important;
+        }
+
+        .row.g-5 {
+            gap: 1.5rem !important;
+        }
+
+        .nutrition-info {
+            gap: 0.5rem !important;
+        }
+
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
 {{-- Tambahkan dd($barang) di sini jika ingin melihat data mentah: {{ dd($barang) }} --}}
 
 <div class="container my-5">
