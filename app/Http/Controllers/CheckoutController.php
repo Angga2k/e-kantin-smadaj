@@ -10,6 +10,7 @@ use App\Services\XenditService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class CheckoutController extends Controller
 {
@@ -49,11 +50,12 @@ class CheckoutController extends Controller
             $transaksi->status_pembayaran = 'pending';
             // $transaksi->status_barang = 'baru';
             $transaksi->waktu_transaksi = now();
-
+            
             // Default Pengambilan (Bisa dibuat dinamis jika ada input form)
-            $transaksi->waktu_pengambilan = $request->tanggal_pengambilan;
+            // $transaksi->waktu_pengambilan = $request->tanggal_pengambilan;
+            $transaksi->waktu_pengambilan = Carbon::createFromFormat('d/m/Y', $request->tanggal_pengambilan)->format('Y-m-d H:i:s');
             $transaksi->detail_pengambilan = $request->detail_pengambilan;
-
+            
             $transaksi->save();
 
             // 3. Simpan Detail Barang (Item Belanja)
@@ -96,6 +98,7 @@ class CheckoutController extends Controller
             return redirect($invoice['invoice_url']);
 
         } catch (\Exception $e) {
+            dd($e->getMessage());
             DB::rollBack();
             return back()->with('error', 'Gagal memproses pembayaran: ' . $e->getMessage());
         }

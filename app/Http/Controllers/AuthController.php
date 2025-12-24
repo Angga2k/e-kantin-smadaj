@@ -55,9 +55,12 @@ class AuthController extends Controller
         // dd('gagal masuk redirect');
 
         // 4. Autentikasi Gagal
+        if (!Auth::attempt($credentials)) {
+            // ...
         throw ValidationException::withMessages([
             'username' => ['Username atau kata sandi tidak cocok.'],
-        ])->redirectTo(route('login'))->withInput($request->only('username'));
+        ])->redirectTo(route('login'));
+        }
     }
 
     public function logout(Request $request)
