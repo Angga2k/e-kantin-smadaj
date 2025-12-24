@@ -222,7 +222,6 @@
                             name="username"
                             placeholder="Masukkan Username Anda"
                             {{-- value="{{ old('username') }}" --}}
-                            value="admin"
                             required
                         >
                         @error('username')
@@ -238,7 +237,6 @@
                             id="password"
                             name="password"
                             placeholder="Password"
-                            value="admin123"
                             required
                         >
                         @error('password')

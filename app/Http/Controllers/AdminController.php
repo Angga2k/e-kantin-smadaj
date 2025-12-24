@@ -19,16 +19,21 @@ class AdminController extends Controller
     public function index(Request $request)
     {
         $roleFilter = $request->query('role', 'all');
-
+    
+        // Mulai query
         $query = User::with(['siswa', 'penjual', 'civitasAkademik']);
-
+    
+        // 1. Opsi A: Sembunyikan Admin SELAMANYA dari list ini
+        $query->where('role', '!=', 'admin'); 
+    
+        // 2. Filter berdasarkan pilihan dropdown
         if ($roleFilter !== 'all') {
             $query->where('role', $roleFilter);
         }
-
+    
         // Urutkan terbaru
         $users = $query->latest()->paginate(10)->withQueryString();
-
+    
         return view('admin.index', compact('users', 'roleFilter'));
     }
 
