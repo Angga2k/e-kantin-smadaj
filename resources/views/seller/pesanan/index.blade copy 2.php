@@ -3,9 +3,6 @@
 @section('title', 'Pesanan')
 
 @section('content')
-{{-- Tambahkan CDN SweetAlert2 --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <div class="mb-3">
     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -18,6 +15,7 @@
 
 {{-- Filter Tombol Status --}}
 <div class="status-filters d-flex gap-2 mb-4">
+    {{-- route() harus merujuk ke statusFilter di URL --}}
     <a href="{{ route('seller.pesanan.index', ['statusFilter' => 'baru']) }}"
        class="btn {{ $statusFilter == 'baru' ? 'active' : '' }}" data-status="baru">Pesanan Baru</a>
     <a href="{{ route('seller.pesanan.index', ['statusFilter' => 'diproses']) }}"
@@ -33,8 +31,10 @@
         {{-- LOOP GROUPED TRANSACTIONS --}}
         @foreach($pesananGrouped as $id_transaksi => $details)
             @php
+                // Ambil data transaksi utama (sama untuk semua detail)
                 $transaksi = $details->first()->transaksi;
                 $grandTotal = $transaksi->total_harga;
+                // Tentukan status saat ini dari detail (ini hanya untuk tampilan)
                 $currentDetailStatus = $details->first()->status_barang;
             @endphp
 
@@ -44,16 +44,19 @@
 
                     <div class="order-card-body">
                         <dl class="mb-0">
+                            {{-- Nama Pelanggan (Asumsi ada relasi ke Model User) --}}
                             <div class="order-row">
                                 <dt>Nama Pelanggan</dt>
                                 <dd>{{ $transaksi->id_user_pembeli }}</dd>
                             </div>
 
+                            {{-- Waktu Pesan --}}
                             <div class="order-row">
                                 <dt>Waktu Pesan</dt>
                                 <dd>{{ \Carbon\Carbon::parse($transaksi->waktu_transaksi)->translatedFormat('j M Y, H:i') }}</dd>
                             </div>
 
+                            {{-- Detail Pesanan --}}
                             <div class="order-row">
                                 <dt>Detail Pesan</dt>
                                 <dd>
@@ -63,11 +66,13 @@
                                 </dd>
                             </div>
 
+                            {{-- Pengambilan --}}
                             <div class="order-row">
                                 <dt>Pengambilan</dt>
                                 <dd>{{ \Carbon\Carbon::parse($transaksi->waktu_pengambilan)->translatedFormat('j M Y') }}, {{ $transaksi->detail_pengambilan }}</dd>
                             </div>
 
+                            {{-- Total --}}
                             <div class="order-row">
                                 <dt>Total</dt>
                                 <dd class="fw-bold">Rp. {{ number_format($grandTotal, 0, ',', '.') }}</dd>
@@ -79,15 +84,19 @@
 
                     <div class="order-card-footer">
                         <div class="row g-2">
+                            {{-- Aksi Tombol (Sesuai statusFilter) --}}
                             <div class="col-6">
-                                {{-- <button class="btn btn-cancel">Detail</button> --}}
+                                <button class="btn btn-cancel">Detail</button>
                             </div>
                             <div class="col-6">
                                 @if ($statusFilter == 'baru')
+                                    {{-- NEXT STATUS: 'proses' --}}
                                     <button class="btn btn-action-process btn-status-update" data-transaksi-id="{{ $id_transaksi }}" data-status="proses">Terima & Proses</button>
                                 @elseif ($statusFilter == 'diproses')
+                                    {{-- NEXT STATUS: 'belum_diambil' (Siap Ambil) --}}
                                     <button class="btn btn-action-ready btn-status-update" data-transaksi-id="{{ $id_transaksi }}" data-status="belum_diambil">Siap Ambil</button>
                                 @elseif ($statusFilter == 'siap')
+                                    {{-- NEXT STATUS: 'sudah_diambil' --}}
                                     <button class="btn btn-action-done btn-status-update" data-transaksi-id="{{ $id_transaksi }}" data-status="sudah_diambil">Telah Diambil</button>
                                 @endif
                             </div>
@@ -104,9 +113,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     const orderGrid = document.getElementById('order-grid');
 
+    // Fungsi umum untuk mengirim AJAX update status
     const updateOrderStatus = async (transactionId, newStatus) => {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        // Dapatkan elemen kolom utama yang membungkus kartu (col-lg-4)
         const itemColumn = document.querySelector(`.order-item-col[data-transaksi-id="${transactionId}"]`);
+
+        // Dapatkan tombol (untuk status Loading)
         const currentButton = itemColumn ? itemColumn.querySelector('.btn-status-update') : null;
 
         if (currentButton) {
@@ -114,11 +128,8 @@ document.addEventListener('DOMContentLoaded', function() {
             currentButton.disabled = true;
         }
 
-        // Deklarasikan response di luar try agar bisa diakses di finally (untuk cek !response.ok)
-        let response = null;
-
         try {
-            response = await fetch('{{ route('seller.pesanan.update_status') }}', {
+            const response = await fetch('{{ route('seller.pesanan.update_status') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -134,80 +145,45 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                // --- SUKSES ---
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Status berhasil diperbarui! Pesanan dipindahkan.',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
+                // --- PERBAIKAN: HAPUS CARD DARI DOM ---
+                alert('Status berhasil diperbarui! Pesanan dipindahkan.');
                 if (itemColumn) {
+                    // Cari parent row dan hapus kolom item
                     itemColumn.remove();
+                    // Optional: Cek apakah grid kosong dan tampilkan pesan "Tidak ada pesanan"
                     if (orderGrid.children.length === 0) {
                         orderGrid.innerHTML = '<p class="text-center text-muted my-5">Semua pesanan di status ini telah selesai diproses.</p>';
                     }
                 }
 
             } else {
-                // --- GAGAL DARI SERVER ---
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Gagal update status: ' + (result.message || 'Error server.')
-                });
+                alert('Gagal update status: ' + (result.message || 'Error server.'));
             }
 
         } catch (error) {
             console.error('AJAX Error:', error);
-            // --- GAGAL KONEKSI ---
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Gagal terhubung ke server. Periksa koneksi internet Anda.'
-            });
+            alert('Gagal terhubung ke server.');
         } finally {
-            // Jika gagal (response null atau status tidak ok), kembalikan tombol
-            if (currentButton && (!response || !response.ok)) {
-                // --- GAGAL TOTAL & RELOAD ---
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Gagal Memuat',
-                    text: 'Aksi gagal total. Silakan coba muat ulang halaman.',
-                    confirmButtonText: 'Muat Ulang',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    }
-                });
+            // Jika gagal, kembalikan tombol
+            if (currentButton && !response.ok) {
+                currentButton.disabled = false;
+                // Logika pengembalian teks tombol asli sangat kompleks.
+                // Cukup reload jika gagal total, atau biarkan pengguna mencoba lagi.
+                alert('Aksi gagal total. Silakan coba muat ulang halaman.');
+                window.location.reload();
             }
         }
     };
 
-    // Event Delegation
+    // Pasang listener pada seluruh grid (event delegation)
     orderGrid.addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-status-update')) {
             const button = e.target;
             const transactionId = button.dataset.transaksiId;
             const newStatus = button.dataset.status;
 
-            // Konfirmasi sebelum proses (Opsional, agar tidak salah klik)
-            Swal.fire({
-                title: 'Konfirmasi',
-                text: "Apakah Anda yakin ingin mengubah status pesanan ini?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Lanjutkan!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    updateOrderStatus(transactionId, newStatus);
-                }
-            });
+            // Panggil fungsi update
+            updateOrderStatus(transactionId, newStatus);
         }
     });
 
