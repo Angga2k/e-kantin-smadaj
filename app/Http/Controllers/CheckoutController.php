@@ -228,4 +228,13 @@ class CheckoutController extends Controller
         // Tampilkan view detail pembayaran (Custom UI Sukses)
         return view('payment.show', compact('transaksi'));
     }
+
+    public function paymentStatus(Request $request)
+    {
+        // Ambil parameter 'status' dari URL, default 'failed'
+        $status = $request->query('status', 'failed');
+
+        // Return ke view errors/payment.blade.php
+        return view('errors.payment', compact('status'));
+    }
 }
