@@ -18,7 +18,6 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         // ... ambil data profile ...
-        $profile = $user->siswa ?? $user->civitasAkademik ?? $user->penjual;
 
         // JIKA PENJUAL -> Tampilkan View khusus Penjual (Layout Seller)
         if ($user->role === 'penjual') {
@@ -52,88 +51,74 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Tentukan Model Profile untuk diupdate
         $profile = null;
-        if ($user->role === 'siswa') $profile = $user->siswa;
-        elseif ($user->role === 'civitas_akademik') $profile = $user->civitasAkademik;
-        elseif ($user->role === 'penjual') $profile = $user->penjual;
+        if ($user->role === 'siswa') {
+            $profile = $user->siswa;
+        } elseif ($user->role === 'civitas_akademik') {
+            $profile = $user->civitasAkademik;
+        } elseif ($user->role === 'penjual') {
+            $profile = $user->penjual;
+        }
 
         if (!$profile) {
             return back()->with('error', 'Data profil tidak ditemukan.');
         }
 
-        // 2. LOGIKA VALIDASI & UPDATE DATA (BERDASARKAN ROLE)
-        if ($user->role === 'penjual') {
-            // --- KHUSUS PENJUAL ---
-            $request->validate([
-                'nama_toko' => 'required|string|max:255',
-                'nama_penanggungjawab' => 'required|string|max:255',
-                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            ]);
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'tgl_lahir' => 'nullable|date',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-            // Update kolom khusus penjual
-            // Pastikan kolom 'nama_toko' ada di tabel penjual
-            if ($request->filled('nama_toko')) {
-                $profile->nama_toko = $request->nama_toko;
-            }
-            // Update nama penanggung jawab
-            $profile->nama_penanggungjawab = $request->nama_penanggungjawab;
-            $next_url = 'seller.profile.index';
+        $profile->nama = $request->nama;
 
-        } else {
-            // --- KHUSUS SISWA / CIVITAS ---
-            $request->validate([
-                'nama' => 'required|string|max:255',
-                'tgl_lahir' => 'nullable|date',
-                'jenis_kelamin' => 'nullable|in:L,P',
-                'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            ]);
-
-            // Update kolom khusus siswa/civitas
-            $profile->nama = $request->nama;
-
-            if ($request->filled('tgl_lahir')) {
-                $profile->tgl_lahir = $request->tgl_lahir;
-            }
-
-            if ($request->filled('jenis_kelamin')) {
-                $profile->jenis_kelamin = $request->jenis_kelamin;
-            }
-            $next_url = 'profile.index';
+        if ($request->filled('tgl_lahir')) {
+            $profile->tgl_lahir = $request->tgl_lahir;
         }
 
-        // 3. LOGIKA UPLOAD FOTO (SAMA UNTUK SEMUA ROLE)
+        if ($request->filled('jenis_kelamin')) {
+            $profile->jenis_kelamin = $request->jenis_kelamin;
+        }
+
+        // Handle Upload Foto
         if ($request->hasFile('foto')) {
             try {
-                // Hapus foto lama
+                // 1. HAPUS FOTO LAMA
+                // Kita ambil path lengkap dari DB, misal: "foto_profile/abc.jpg"
                 $oldPathDB = $profile->foto_profile;
+
+                // Ambil nama filenya saja (abc.jpg) untuk menghindari duplikasi folder saat penyusunan path
                 $oldFileName = basename($oldPathDB);
 
                 $defaultImages = ['default.png', 'profile.png', 'L.png', 'P.png', 'default-profile.png'];
 
                 if ($oldFileName && !in_array($oldFileName, $defaultImages)) {
-                    // Hapus di public/foto_profile
+
+                    // Cek lokasi BARU: public/foto_profile/abc.jpg
                     $pathPublic = public_path('foto_profile/' . $oldFileName);
+
                     if (File::exists($pathPublic)) {
                         File::delete($pathPublic);
                     }
 
-                    // Hapus sisa di storage jika ada (cleanup sisa lama)
+                    // Cek lokasi LAMA (storage) untuk bersih-bersih
                     $pathStorage = storage_path('app/public/foto_profile/' . $oldFileName);
                     if (File::exists($pathStorage)) {
                         File::delete($pathStorage);
                     }
                 }
 
-                // Simpan foto baru
+                // 2. SIMPAN FOTO BARU
                 $file = $request->file('foto');
+                // Format nama file: dmy-Hisu (tanggal-jam-mikrodetik) di-hash md5
                 $timestamp = now()->format('dmY-Hisu');
                 $filename = md5($timestamp) . '.' . $file->getClientOriginalExtension();
 
                 // Pindahkan langsung ke public/foto_profile
                 $file->move(public_path('foto_profile'), $filename);
 
-                // Simpan path relatif di database (dengan prefix folder)
+                // Update nama file di database dengan prefix folder
                 $profile->foto_profile = 'foto_profile/' . $filename;
 
             } catch (\Exception $e) {
@@ -143,7 +128,7 @@ class ProfileController extends Controller
 
         $profile->save();
 
-        return redirect()->route($next_url)->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui!');
     }
 
     /**

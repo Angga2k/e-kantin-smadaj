@@ -71,6 +71,12 @@ Route::middleware(['auth'])->group(function () {
     });
     // Route Penjual
     Route::middleware([RoleChecker::class . ':penjual'])->prefix('penjual')->group(function () {
+        Route::controller(ProfileController::class)->group(function () {
+            Route::get('/foto-profile', 'index')->name('seller.profile.index');
+            Route::get('/profile/edit', 'edit')->name('seller.profile.edit');
+            Route::put('/profile/update', 'update')->name('seller.profile.update');
+            Route::post('/profile/password', 'updatePassword')->name('seller.profile.password');
+        });
 
         // Dashboard & Pesanan
         Route::get('/', [PenjualController::class, 'beranda'])->name('seller.beranda.index');

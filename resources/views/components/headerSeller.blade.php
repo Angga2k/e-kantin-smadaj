@@ -22,8 +22,8 @@
                 </button>
             </form>
 
-            <a href="/profile">
-                <img src="https://i.pravatar.cc/40" class="rounded-circle" alt="Profil" style="height: 30px; width: 30px; object-fit: cover;">
+            <a href="{{ route('seller.profile.index') }}">
+                <img src="{{ asset(Auth::user()->foto_profile ?? 'icon/profile.png') }}" class="rounded-circle" alt="Profil" style="height: 30px; width: 30px; object-fit: cover;">
             </a>
 
         </div>
@@ -74,8 +74,8 @@
                         <i class="bi bi-box-arrow-right me-1"></i> Logout
                     </button>
                 </form>
-                <a href="/profile">
-                    <img src="https://i.pravatar.cc/40" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
+                <a href={{ route('seller.profile.index') }}>
+                    <img src="{{ asset(Auth::user()->foto_profile ?? 'icon/profile.png') }}" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
                 </a>
             </div>
 
