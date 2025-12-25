@@ -105,8 +105,8 @@ class PenjualController extends Controller
 
     public function index(string $statusFilter = 'baru')
     {
-        $idPenjual = '14fe0afc-13ef-4db2-94a3-98bc0de0a9c3'; // Hardcode ID Penjual (Sesuai sesi sebelumnya)
-        // $idPenjual = auth()->id(); // Gunakan ini jika login sudah fix
+        // $idPenjual = '14fe0afc-13ef-4db2-94a3-98bc0de0a9c3'; // Hardcode ID Penjual (Sesuai sesi sebelumnya)
+        $idPenjual = auth()->id(); // Gunakan ini jika login sudah fix
 
         $detailStatusMap = ['baru' => 'baru', 'diproses' => 'proses', 'siap' => 'belum_diambil'];
         $detailStatus = $detailStatusMap[$statusFilter] ?? 'baru';
