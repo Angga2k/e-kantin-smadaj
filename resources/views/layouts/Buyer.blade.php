@@ -1,3 +1,16 @@
+@php
+    if (auth()->check()) {
+        $role = auth()->user()->role;
+        if ($role === 'penjual') {
+            header("Location: " . url('/penjual'));
+            exit;
+        } elseif ($role === 'admin') {
+            header("Location: " . url('/admin'));
+            exit;
+        }
+    }
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -124,19 +137,26 @@
 
     {{-- UPDATE PROFILE --}}
     <script>
-        flatpickr("#ttl", {
-            altInput: true,
-            altFormat: "j F Y",
-            dateFormat: "Y-m-d",
-            defaultDate: "2007-01-13",
-            "locale": "id"
-        });
-        document.getElementById('file-upload').onchange = function (evt) {
-            const [file] = this.files;
-            if (file) {
-                document.getElementById('profile-image').src = URL.createObjectURL(file);
-            }
-        };
+        // Ambil elemen input tanggal
+        const ttlInput = document.getElementById("ttl");
+
+        // Cek apakah elemen ada (agar tidak error di halaman lain)
+        if(ttlInput) {
+            flatpickr("#ttl", {
+                altInput: true,
+                altFormat: "j F Y", // Tampilan: 20 Mei 2024
+                dateFormat: "Y-m-d", // Format kirim ke server: 2024-05-20
+
+                // LOGIKA PENTING:
+                // Jika input punya value (dari database), pakai itu.
+                // Jika kosong, baru pakai tanggal default.
+                defaultDate: ttlInput.value ? ttlInput.value : "2007-01-13",
+
+                "locale": "id"
+            });
+        }
+
+        // ... script upload foto ...
     </script>
 
 </body>

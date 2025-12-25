@@ -113,6 +113,8 @@ class PenjualController extends Controller
 
         $pesananDetail = DetailTransaksi::whereHas('barang', function ($query) use ($idPenjual) {
             $query->where('id_user_penjual', $idPenjual);
+        })->whereHas('transaksi', function ($query) {
+            $query->where('status_pembayaran', 'success');
         })
         ->where('status_barang', $detailStatus)
         ->whereNotIn('status_barang', ['sudah_diambil'])

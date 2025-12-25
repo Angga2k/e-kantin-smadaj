@@ -5,6 +5,7 @@ use App\Http\Controllers\MakananController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PenjualController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\RoleChecker;
 
 /*
@@ -22,7 +23,7 @@ Route::get('/a', function () {
 });
 
 Route::get('/tesssss', function () {
-    return view('admin.tes');
+    return view('buyer.profile.index');
 });
 
 Route::get('/tesauth', function () {
@@ -48,7 +49,19 @@ Route::get('/payment/status', [CheckoutController::class, 'paymentStatus'])->nam
 
 // Route Authenticated
 Route::middleware(['auth'])->group(function () {
-    
+
+    // Route Siswa / Civitas
+    Route::middleware([RoleChecker::class . ':siswa,civitas_akademik'])->group(function () {
+        Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::controller(ProfileController::class)->group(function () {
+            Route::get('/foto-profile', 'index')->name('profile.index');
+            Route::get('/profile/edit', 'edit')->name('profile.edit');
+            Route::put('/profile/update', 'update')->name('profile.update');
+            Route::post('/profile/password', 'updatePassword')->name('profile.password');
+        });
+    });
+
+
     Route::middleware([RoleChecker::class . ':admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::get('/tambah', [AdminController::class, 'create'])->name('create');
@@ -56,12 +69,6 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/user/{id}/password', [AdminController::class, 'updatePassword'])->name('updatePassword');
         Route::delete('/user/{id}', [AdminController::class, 'destroy'])->name('destroy');
     });
-
-    // Route Siswa / Civitas
-    Route::middleware([RoleChecker::class . ':siswa,civitas_akademik'])->group(function () {
-        Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
-    });
-
     // Route Penjual
     Route::middleware([RoleChecker::class . ':penjual'])->prefix('penjual')->group(function () {
 

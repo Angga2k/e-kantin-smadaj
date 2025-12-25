@@ -17,7 +17,7 @@
                     <button class="btn btn-keranjang mx-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                         <i class="bi bi-cart-fill"></i>
                     </button>
-                    <a href='/profile'>
+                    <a href='{{ route('profile.index') }}'>
                         @if($profile)
                             <img src="{{ asset($profile) }}" class="rounded-circle me-2" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
                         @endif
@@ -84,7 +84,7 @@
                     <button class="btn btn-keranjang me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                         <i class="bi bi-cart-fill me-2"></i>Keranjang
                     </button>
-                    <a href="{{ $profile ? '/profile' : '' }}" @if(!$profile) style="pointer-events: none; cursor: default;" @endif>
+                    <a href='{{ route('profile.index') }}'>
                         @if($profile)
                             <img src="{{ asset($profile) }}" class="rounded-circle me-2" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
                         @endif
