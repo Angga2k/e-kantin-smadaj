@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/">
             <img src="{{ asset('asset/logo.png') }}" alt="Logo" style="height: 40px;">
             <span class="fw-bold d-none d-md-inline">SMA NEGERI 2 JEMBER</span> </a>
         <div class="d-flex align-items-center d-lg-none ms-auto">

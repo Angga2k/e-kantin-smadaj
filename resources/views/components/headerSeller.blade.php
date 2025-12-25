@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-custom-pill shadow-sm">
     <div class="container-fluid">
 
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/penjual">
             <img src="{{ asset('asset/logo.png') }}" alt="Logo" style="height: 35px;">
             <span class="fw-bold d-none d-md-inline">SMA NEGERI 2 JEMBER</span>
         </a>
