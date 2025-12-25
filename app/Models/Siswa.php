@@ -28,6 +28,7 @@ class Siswa extends Model
         'nisn',
         'nama',
         'tgl_lahir',
+        'foto_profile',
         'jenis_kelamin',
     ];
 

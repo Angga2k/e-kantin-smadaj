@@ -27,6 +27,7 @@ class Penjual extends Model
         'id_user',
         'nama_toko',
         'nama_penanggungjawab',
+        'foto_profile',
         'no_rekening',
         'nama_bank',
     ];

@@ -28,6 +28,7 @@ class CivitasAkademik extends Model
         'nama',
         'tgl_lahir',
         'jenis_kelamin',
+        'foto_profile',
     ];
 
     /**

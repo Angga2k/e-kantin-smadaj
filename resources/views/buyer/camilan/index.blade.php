@@ -50,7 +50,7 @@
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3 mb-5">
         @foreach($barang as $item)
             <div class="col">
-                <a href="{{ route('detail.index', $item->id_barang) }}">
+                <a href="{{ route('detail.index', $item->id_barang) }}"  class="text-decoration-none text-dark">
                     <div class="card card3 h-100">
                         <div style="position: relative;">
                             @if($item->foto_barang)
@@ -65,12 +65,30 @@
                             @if($avgRating > 0)
                                 <div class="rating-badge"><i class="bi bi-star-fill"></i>{{ number_format($avgRating, 1) }}</div>
                                 @else
-                                <div class="rating-badge"><i class="bi bi-star-fill"></i>5.0</div>
+                                <div class="rating-badge"><i class="bi bi-star-fill"></i>0</div>
                             @endif
                         </div>
                         <div class="card-body">
-                            <p class="stall-name mb-1">{{ $item->penjual->nama_toko ?? 'Stand' }}</p>
-                            <h5 class="card-title">{{ $item->nama_barang }}</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                {{-- Foto Profil Toko --}}
+                                <div class="flex-shrink-0 me-2">
+                                    <img src="{{ asset($item->penjual->foto_profile ?? 'icon/toko.png') }}" 
+                                         alt="Toko" 
+                                         class="rounded-circle border" 
+                                         style="width: 40px; height: 40px; object-fit: cover;"
+                                         onerror="this.src='{{ asset('asset/default-profile.png') }}'">
+                                </div>
+                                
+                                {{-- Nama Toko & Nama Barang --}}
+                                <div class="overflow-hidden">
+                                    <p class="stall-name mb-0 text-muted small text-truncate" style="line-height: 1.2;">
+                                        {{ $item->penjual->nama_toko ?? 'Stand' }}
+                                    </p>
+                                    <h6 class="card-title mb-0 text-truncate fw-bold" style="font-size: 1rem;">
+                                        {{ $item->nama_barang }}
+                                    </h6>
+                                </div>
+                            </div>
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <p class="price mb-0">Rp. {{ number_format($item->harga, 0, ',', '.') }}</p>
                                 {{-- <a href="#" class="add-button">+</a> --}}
