@@ -86,6 +86,24 @@
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {{-- SCRIPT AUTO REFRESH SESSION --}}
+    <script>
+        // Ambil waktu lifetime session dari config Laravel (dalam menit)
+        // Default biasanya 120 menit. Kita ubah ke milidetik.
+        let sessionLifetime = {{ config('session.lifetime') }} * 60 * 1000;
+
+        // Kurangi 2 menit (120000 ms) sebagai buffer aman sebelum benar-benar expired
+        let refreshTime = sessionLifetime - 120000; 
+
+        setTimeout(function() {
+            // Opsi 1: Reload halaman (User akan otomatis terlempar ke login jika session habis)
+            window.location.reload();
+            
+            // Opsi 2 (Alternatif): Langsung arahkan ke halaman login
+            // window.location.href = "{{ route('login') }}";
+        }, refreshTime);
+    </script>
     @stack('scripts')
 </body>
 </html>

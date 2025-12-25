@@ -1,23 +1,3 @@
-@php
-    // === LOGIKA PENGECEKAN TRANSAKSI PENDING ===
-    $pendingTransaction = null;
-    $deadlineTimestamp = 0;
-
-    if (auth()->check()) {
-        // Cari transaksi milik user ini yang statusnya 'pending' & belum lewat 30 menit
-        $pendingTransaction = \App\Models\Transaksi::where('id_user_pembeli', auth()->id())
-            ->where('status_pembayaran', 'pending')
-            ->where('waktu_transaksi', '>=', now()->subMinutes(30)) 
-            ->latest('waktu_transaksi')
-            ->first();
-
-        if ($pendingTransaction) {
-            $deadline = \Carbon\Carbon::parse($pendingTransaction->waktu_transaksi)->addMinutes(30);
-            $deadlineTimestamp = $deadline->timestamp * 1000; 
-        }
-    }
-@endphp
-
 <div class="offcanvas-header border-bottom">
     <h5 class="offcanvas-title fw-bold" id="cartOffcanvasLabel">Keranjang</h5>
     <span class="text-muted cart-count-span">0 barang</span>
@@ -37,12 +17,7 @@
     <hr>
 
     {{-- FORM CHECKOUT --}}
-    {{-- Data Pending disisipkan di sini agar bisa dibaca JS --}}
-    <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm"
-          data-has-pending="{{ $pendingTransaction ? 'true' : 'false' }}"
-          data-pending-deadline="{{ $deadlineTimestamp }}"
-          data-orders-url="{{ route('buyer.orders.index') }}">
-        
+    <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
         @csrf
 
         {{-- Container Input Hidden (Diisi oleh cart.js) --}}
@@ -95,3 +70,35 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const checkoutForm = document.getElementById('checkoutForm');
+        const btnKonfirmasi = document.getElementById('btnKonfirmasi');
+
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', function(e) {
+                // Event submit hanya akan triggger jika validasi HTML (required) lolos
+
+                // 1. Tampilkan SweetAlert Loading (Memblokir layar)
+                Swal.fire({
+                    title: 'Memproses Pesanan...',
+                    html: 'Mohon tunggu, sedang mengalihkan ke pembayaran.<br><small class="text-muted">Jangan tutup halaman ini.</small>',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // 2. Ubah tampilan tombol biar user tau sedang proses (opsional, karena layar sudah diblokir swal)
+                if (btnKonfirmasi) {
+                    btnKonfirmasi.disabled = true;
+                    btnKonfirmasi.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+                }
+
+                // 3. Biarkan form submit secara natural ke server
+            });
+        }
+    });
+</script>

@@ -33,7 +33,7 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    /* Modifikasi List Barang untuk Akomodasi Bintang */
+    /* Modifikasi List Barang */
     .item-list {
         list-style: none;
         padding: 0;
@@ -42,7 +42,7 @@
     .item-list li {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start; /* Supaya harga tetap di atas jika nama barang punya bintang di bawahnya */
+        align-items: flex-start;
         margin-bottom: 0.75rem;
         font-size: 0.95rem;
         color: #495057;
@@ -67,10 +67,10 @@
     /* Rating Stars Tampilan Statis (di List) */
     .static-rating i {
         font-size: 0.8rem;
-        color: #e0e0e0; /* Warna abu untuk bintang kosong */
+        color: #e0e0e0;
     }
     .static-rating i.filled {
-        color: #ffc107; /* Warna kuning untuk bintang isi */
+        color: #ffc107;
     }
 
     /* Rating Stars Interaktif (di Modal) */
@@ -89,139 +89,153 @@
 
     /* Style Item Status Badge Kecil */
     .item-status { font-size: 0.7rem; font-weight: bold; margin-left: 5px; }
-    .text-process { color: #ff9800; }
-    .text-done { color: #198754; }
+    .text-process { color: #ff9800; } /* Orange */
+    .text-ready { color: #0d6efd; }   /* Biru */
+    .text-done { color: #198754; }    /* Hijau */
 </style>
 
 <div class="container my-5" style="max-width: 800px;">
     <h3 class="fw-bold mb-4">Riwayat Pesanan</h3>
 
-    {{-- Contoh Card: Pesanan Selesai --}}
-    <div class="card card-history card-soft-success">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h6 class="fw-bold mb-1">10 November 2025</h6>
-                    <small class="text-muted">INV-20251110-001</small>
-                </div>
-                <span class="badge bg-success status-badge">Pembayaran Berhasil</span>
-            </div>
+    @if($orders->isEmpty())
+        <div class="text-center py-5">
+            <i class="bi bi-receipt text-muted opacity-25" style="font-size: 4rem;"></i>
+            <p class="text-muted mt-3">Belum ada riwayat pesanan.</p>
+            <a href="{{ route('buyer.menu.index') ?? '#' }}" class="btn btn-primary btn-sm rounded-pill px-4">Pesan Sekarang</a>
+        </div>
+    @else
+        @foreach($orders as $order)
+            @php
+                // --- LOGIKA STATUS CARD SESUAI ENUM DB ---
+                $status = strtolower($order->status_pembayaran);
 
-            <hr class="opacity-25 border-dark">
+                $cardClass = 'card-soft-danger';
+                $badgeClass = 'bg-danger';
+                $statusLabel = 'Pembayaran Gagal';
+                $isSuccess = false;
+                $isPending = false;
 
-            <ul class="item-list mb-3">
-                <li>
-                    <div class="d-flex flex-column">
-                        <span>
-                            2x Ayam Goreng Lengkuas 
-                            <small class="item-status text-done"><i class="bi bi-check-circle-fill"></i> Diambil</small>
-                        </span>
-                        {{-- Contoh Rating Statis (Jika sudah dirating) --}}
-                        <div class="static-rating mt-1">
-                            <i class="bi bi-star-fill filled"></i>
-                            <i class="bi bi-star-fill filled"></i>
-                            <i class="bi bi-star-fill filled"></i>
-                            <i class="bi bi-star-fill"></i> <i class="bi bi-star-fill"></i> <span class="ms-1 text-muted" style="font-size: 0.75rem;">(3.0)</span>
+                if ($status == 'success') {
+                    $cardClass = 'card-soft-success';
+                    $badgeClass = 'bg-success';
+                    $statusLabel = 'Pembayaran Berhasil';
+                    $isSuccess = true;
+                } 
+                elseif ($status == 'pending') {
+                    $cardClass = 'card-soft-warning';
+                    $badgeClass = 'bg-warning text-dark';
+                    $statusLabel = 'Menunggu Pembayaran';
+                    $isPending = true;
+                }
+                elseif ($status == 'expired') {
+                    $statusLabel = 'Kadaluarsa';
+                }
+            @endphp
+
+            <div class="card card-history {{ $cardClass }}">
+                <div class="card-body p-4">
+                    {{-- Header Card --}}
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h6 class="fw-bold mb-1">
+                                {{ $order->waktu_transaksi ? \Carbon\Carbon::parse($order->waktu_transaksi)->translatedFormat('d F Y') : '-' }}
+                            </h6>
+                            <small class="text-muted">{{ $order->kode_transaksi }}</small>
                         </div>
+                        <span class="badge {{ $badgeClass }} status-badge">{{ $statusLabel }}</span>
                     </div>
-                    <span class="fw-bold">Rp 24.000</span>
-                </li>
-                
-                <li>
-                    <div class="d-flex flex-column">
-                        <span>
-                            1x Es Teh Manis 
-                            <small class="item-status text-process"><i class="bi bi-hourglass-split"></i> Proses</small>
-                        </span>
+
+                    <hr class="opacity-25 border-dark">
+
+                    {{-- List Item Barang --}}
+                    <ul class="item-list mb-3">
+                        @foreach($order->detailTransaksi as $detail)
+                            <li>
+                                <div class="d-flex flex-column">
+                                    <span>
+                                        {{ $detail->jumlah }}x {{ $detail->barang->nama_barang ?? 'Produk Dihapus' }}
+                                        
+                                        {{-- LOGIKA TAMPILAN STATUS BARANG (ENUM: baru, proses, sudah_diambil, belum_diambil) --}}
+                                        @php
+                                            $statusItem = strtolower(trim($detail->status_barang));
+                                        @endphp
+
+                                        @if($statusItem == 'sudah_diambil')
+                                            {{-- Status: Done --}}
+                                            <small class="item-status text-done"><i class="bi bi-check-circle-fill"></i> Diambil</small>
+                                        @elseif($statusItem == 'belum_diambil')
+                                            {{-- Status: Siap Diambil --}}
+                                            <small class="item-status text-ready"><i class="bi bi-box-seam-fill"></i> Siap Diambil</small>
+                                        @else
+                                            {{-- Status: Baru / Proses --}}
+                                            <small class="item-status text-process"><i class="bi bi-hourglass-split"></i> Proses</small>
+                                        @endif
+                                    </span>
+
+                                    {{-- Rating Statis --}}
+                                    @if($isSuccess && $detail->ratingUlasan)
+                                        <div class="static-rating mt-1">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <i class="bi bi-star-fill {{ $i <= $detail->ratingUlasan->rating ? 'filled' : '' }}"></i>
+                                            @endfor
+                                            <span class="ms-1 text-muted" style="font-size: 0.75rem;">({{ number_format($detail->ratingUlasan->rating, 1) }})</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <span class="fw-bold">Rp {{ number_format($detail->harga_saat_transaksi * $detail->jumlah, 0, ',', '.') }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+
+                    <hr class="opacity-25 border-dark">
+
+                    {{-- Footer Card --}}
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <small class="text-muted d-block">Total Pembayaran</small>
+                            <h5 class="fw-bold {{ $isPending ? 'text-dark' : ($isSuccess ? 'text-success' : 'text-danger') }} mb-0">
+                                Rp {{ number_format($order->total_harga, 0, ',', '.') }}
+                            </h5>
+                        </div>
+                        
+                        @if ($isSuccess)
+                            @php
+                                $itemsForJs = $order->detailTransaksi->map(function($d) {
+                                    return [
+                                        'id_detail' => $d->id_detail,
+                                        'name' => $d->barang->nama_barang ?? 'Produk',
+                                        'status' => strtolower(trim($d->status_barang)), // Bersihkan status untuk JS
+                                        'rating' => $d->ratingUlasan ? $d->ratingUlasan->rating : null,
+                                        'ulasan' => $d->ratingUlasan ? $d->ratingUlasan->ulasan : ''
+                                    ];
+                                })->toJson();
+                            @endphp
+
+                            <button class="btn btn-success btn-sm px-3 rounded-pill fw-bold shadow-sm" 
+                                data-transaction="{{ $order->kode_transaksi }}"
+                                data-items="{{ $itemsForJs }}"
+                                onclick="handleRatingButton(this)">
+                                <i class="bi bi-star-fill me-1"></i> Beri/Edit Ulasan
+                            </button>
+
+                        @elseif ($isPending)
+                            <a href="{{ $order->payment_link ?? '#' }}" target="_blank" class="btn btn-warning btn-sm px-3 rounded-pill fw-bold text-dark shadow-sm">
+                                <i class="bi bi-wallet2 me-1"></i> Bayar Sekarang
+                            </a>
+                        
+                        @else
+                            <span class="text-muted small fst-italic">
+                                {{ $status == 'expired' ? 'Waktu pembayaran habis' : 'Transaksi dibatalkan' }}
+                            </span>
+                        @endif
                     </div>
-                    <span class="fw-bold">Rp 3.000</span>
-                </li>
-            </ul>
-
-            <hr class="opacity-25 border-dark">
-
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>
-                    <small class="text-muted d-block">Total Pembayaran</small>
-                    <h5 class="fw-bold text-success mb-0">Rp 27.000</h5>
-                </div>
-                
-                {{-- Tombol Trigger Modal --}}
-                <button class="btn btn-success btn-sm px-3 rounded-pill fw-bold shadow-sm" 
-                    onclick='handleRatingButton("TRX-001", [
-                        {name: "Ayam Goreng Lengkuas", status: "diambil", rating: 3},
-                        {name: "Es Teh Manis", status: "proses", rating: null}
-                    ])'>
-                    <i class="bi bi-star-fill me-1"></i> Beri/Edit Ulasan
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- Contoh Card: Menunggu Pembayaran --}}
-    <div class="card card-history card-soft-warning">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h6 class="fw-bold mb-1">11 November 2025</h6>
-                    <small class="text-muted">INV-20251111-045</small>
-                </div>
-                <span class="badge bg-warning text-dark status-badge">Menunggu Pembayaran</span>
-            </div>
-
-            <ul class="item-list mb-3">
-                <li>
-                    <span>1x Nasi Pecel Spesial</span>
-                    <span class="fw-bold">Rp 12.000</span>
-                </li>
-            </ul>
-
-            <hr class="opacity-25 border-dark">
-
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>
-                    <small class="text-muted d-block">Total Pembayaran</small>
-                    <h5 class="fw-bold text-dark mb-0">Rp 12.000</h5>
-                </div>
-                <button class="btn btn-warning btn-sm px-3 rounded-pill fw-bold text-dark shadow-sm">
-                    <i class="bi bi-wallet2 me-1"></i> Bayar Sekarang
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- Contoh Card: Pembayaran Gagal --}}
-    <div class="card card-history card-soft-danger">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h6 class="fw-bold mb-1">05 November 2025</h6>
-                    <small class="text-muted">INV-20251105-099</small>
-                </div>
-                <span class="badge bg-danger status-badge">Pembayaran Gagal</span>
-            </div>
-
-            <ul class="item-list mb-3">
-                <li>
-                    <span>5x Tahu Walik</span>
-                    <span class="fw-bold">Rp 10.000</span>
-                </li>
-            </ul>
-
-            <hr class="opacity-25 border-dark">
-
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <div>
-                    <small class="text-muted d-block">Total Pembayaran</small>
-                    <h5 class="fw-bold text-danger mb-0">Rp 10.000</h5>
                 </div>
             </div>
-        </div>
-    </div>
-
+        @endforeach
+    @endif
 </div>
 
-{{-- MODAL RATING --}}
+{{-- MODAL RATING (TIDAK BERUBAH) --}}
 <div class="modal fade" id="ratingModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -234,32 +248,39 @@
                 <form id="ratingForm">
                     <div class="mb-3 text-start" id="productSelectContainer">
                         <label class="form-label fw-bold small text-muted">Pilih Produk untuk Diulas:</label>
-                        <select class="form-select" id="productSelect">
-                        </select>
-                        <div id="statusWarning" class="form-text text-danger d-none small fst-italic mt-1">
-                            * Item yang masih diproses tidak dapat diberi ulasan.
+                        <select class="form-select" id="productSelect"></select>
+                    </div>
+
+                    <div id="reviewUnavailableMessage" class="alert alert-warning d-none" role="alert">
+                        <i class="bi bi-exclamation-circle d-block fs-1 mb-2 text-warning opacity-75"></i>
+                        <h6 class="fw-bold mb-1">Ups, belum bisa diulas!</h6>
+                        <small>Tidak dapat memberi ulasan pada barang ini karena status barang <strong>belum diambil</strong>.</small>
+                    </div>
+
+                    <div id="activeReviewSection">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-block">Rating Anda</label>
+                            <div id="starContainer">
+                                <i class="bi bi-star star-rating" data-value="1"></i>
+                                <i class="bi bi-star star-rating" data-value="2"></i>
+                                <i class="bi bi-star star-rating" data-value="3"></i>
+                                <i class="bi bi-star star-rating" data-value="4"></i>
+                                <i class="bi bi-star star-rating" data-value="5"></i>
+                            </div>
+                            <input type="hidden" name="rating" id="ratingValue">
                         </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold d-block">Rating Anda</label>
-                        <div id="starContainer">
-                            <i class="bi bi-star star-rating" data-value="1"></i>
-                            <i class="bi bi-star star-rating" data-value="2"></i>
-                            <i class="bi bi-star star-rating" data-value="3"></i>
-                            <i class="bi bi-star star-rating" data-value="4"></i>
-                            <i class="bi bi-star star-rating" data-value="5"></i>
+                        <div class="mb-3 text-start">
+                            <label for="reviewText" class="form-label fw-bold small text-muted">Ulasan (Opsional)</label>
+                            <textarea class="form-control" id="reviewText" name="ulasan" rows="3" placeholder="Bagaimana rasa makanannya?"></textarea>
                         </div>
-                        <input type="hidden" name="rating" id="ratingValue">
-                    </div>
 
-                    <div class="mb-3 text-start">
-                        <label for="reviewText" class="form-label fw-bold small text-muted">Ulasan (Opsional)</label>
-                        <textarea class="form-control" id="reviewText" rows="3" placeholder="Bagaimana rasa makanannya?"></textarea>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success fw-bold py-2" id="btnSubmitRating">Kirim Ulasan</button>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success fw-bold py-2" id="btnSubmitRating">
+                                <span id="btnText">Kirim Ulasan</span>
+                                <span id="btnLoading" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            </button>
+                        </div>
                     </div>
                 </form>
 
@@ -273,99 +294,96 @@
 
 <script>
     // === LOGIKA RATING ===
-
-    // Data Global Sementara untuk menyimpan item yang sedang dibuka di modal
     let currentItems = [];
 
-    // 1. Handle Klik Tombol (Menerima Array Object Items)
-    function handleRatingButton(transactionId, items) {
-        currentItems = items; // Simpan ke variabel global
-        openRatingModal();
+    function handleRatingButton(btnElement) {
+        try {
+            const items = JSON.parse(btnElement.getAttribute('data-items'));
+            currentItems = items; 
+            openRatingModal();
+        } catch (e) {
+            console.error("Gagal memproses data item:", e);
+            Swal.fire('Error', 'Gagal memuat data produk.', 'error');
+        }
     }
 
-    // 2. Buka Modal & Render Dropdown
     function openRatingModal() {
         const modal = new bootstrap.Modal(document.getElementById('ratingModal'));
         const select = document.getElementById('productSelect');
-        const statusWarning = document.getElementById('statusWarning');
         const btnSubmit = document.getElementById('btnSubmitRating');
         
-        // Reset Form
         document.getElementById('ratingForm').reset();
         resetStars();
-        select.innerHTML = ''; // Kosongkan dropdown
+        select.innerHTML = '';
         
-        let hasProcessItem = false;
-        let firstSelectableIndex = -1;
-
-        // Loop Barang untuk membuat Option
         currentItems.forEach((item, index) => {
             const option = document.createElement('option');
-            option.value = index; // Kita pakai index array sebagai value
+            option.value = index; 
             
-            if (item.status !== 'diambil') {
-                // KONDISI: BARANG BELUM DITERIMA -> DISABLED
-                option.text = item.name + " (Belum Diterima)";
-                option.disabled = true; // Tidak bisa dipilih
-                option.style.color = "#999"; // Visual abu-abu
-                hasProcessItem = true;
-            } else {
-                // KONDISI: BARANG SUDAH DITERIMA -> BISA RATING
+            const status = item.status ? item.status.toLowerCase() : '';
+
+            // LOGIKA LABEL DROPDOWN JS
+            if (status === 'sudah_diambil') {
                 option.text = item.name;
-                
-                // Cek jika sudah pernah rating
                 if(item.rating) {
                     option.text += " (Edit Ulasan)";
                 }
-                
-                // Simpan index item pertama yang bisa dipilih
-                if (firstSelectableIndex === -1) firstSelectableIndex = index;
+            } else if (status === 'belum_diambil') {
+                option.text = item.name + " (Siap Diambil)";
+            } else {
+                // status 'baru' atau 'proses'
+                option.text = item.name + " (Proses)";
             }
-            
             select.appendChild(option);
         });
 
-        // Tampilkan warning text jika ada item yg disable
-        if(hasProcessItem) {
-            statusWarning.classList.remove('d-none');
-        } else {
-            statusWarning.classList.add('d-none');
-        }
-
-        // Auto Select item pertama yang valid
-        if (firstSelectableIndex !== -1) {
-            select.value = firstSelectableIndex;
-            loadExistingRating(firstSelectableIndex); // Load bintang jika sudah ada
-            btnSubmit.disabled = false;
-        } else {
-            // Jika SEMUA barang masih proses
-            const option = document.createElement('option');
-            option.text = "Tidak ada barang yang bisa diulas";
-            select.appendChild(option);
-            select.disabled = true;
-            btnSubmit.disabled = true;
+        if (currentItems.length > 0) {
+            select.value = 0;
+            updateModalUI(0); 
         }
 
         modal.show();
     }
 
-    // 3. Event Listener saat Dropdown Berubah (Pindah barang)
     document.getElementById('productSelect').addEventListener('change', function() {
         const index = this.value;
-        loadExistingRating(index);
+        updateModalUI(index);
     });
 
-    // Fungsi untuk memunculkan bintang lama jika user memilih barang yg sudah dirating
-    function loadExistingRating(index) {
-        resetStars();
+    function updateModalUI(index) {
         const item = currentItems[index];
-        if (item && item.rating) {
-            updateStars(item.rating);
-            document.getElementById('ratingValue').value = item.rating;
+        if (!item) return;
+
+        const activeSection = document.getElementById('activeReviewSection');
+        const warningMessage = document.getElementById('reviewUnavailableMessage');
+        const status = item.status ? item.status.toLowerCase() : '';
+
+        resetStars();
+        document.getElementById('reviewText').value = '';
+
+        // Hanya boleh rating jika status == 'sudah_diambil'
+        if (status !== 'sudah_diambil') {
+            activeSection.classList.add('d-none');
+            warningMessage.classList.remove('d-none');
+            
+            // Opsional: Ubah pesan warning jika statusnya 'belum_diambil'
+            const warningText = warningMessage.querySelector('small');
+            if(status === 'belum_diambil') {
+                warningText.innerHTML = "Silakan ambil pesanan Anda terlebih dahulu sebelum memberi ulasan.";
+            } else {
+                warningText.innerHTML = "Tidak dapat memberi ulasan karena pesanan masih dalam <strong>proses</strong>.";
+            }
+        } else {
+            activeSection.classList.remove('d-none');
+            warningMessage.classList.add('d-none');
+            document.getElementById('reviewText').value = item.ulasan || '';
+            if (item && item.rating) {
+                updateStars(item.rating);
+                document.getElementById('ratingValue').value = item.rating;
+            }
         }
     }
 
-    // 4. Interaksi Klik Bintang
     const stars = document.querySelectorAll('.star-rating');
     const ratingInput = document.getElementById('ratingValue');
 
@@ -400,25 +418,79 @@
         });
     }
 
-    // 5. Submit Form
     document.getElementById('ratingForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const rating = document.getElementById('ratingValue').value;
         
+        const rating = document.getElementById('ratingValue').value;
+        const reviewText = document.getElementById('reviewText').value;
+        const selectedIndex = document.getElementById('productSelect').value;
+        const selectedItem = currentItems[selectedIndex];
+        const status = selectedItem.status ? selectedItem.status.toLowerCase() : '';
+
+        // Validasi Status lagi
+        if (status !== 'sudah_diambil') {
+             Swal.fire('Error', 'Barang ini belum selesai diambil, tidak bisa diberi ulasan.', 'error');
+             return;
+        }
+
         if (!rating) {
             Swal.fire('Eits!', 'Jangan lupa pilih bintangnya ya!', 'warning');
             return;
         }
 
-        const modalEl = document.getElementById('ratingModal');
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        modal.hide();
+        if (!selectedItem || !selectedItem.id_detail) {
+            Swal.fire('Error', 'Terjadi kesalahan memilih produk.', 'error');
+            return;
+        }
 
-        Swal.fire({
-            title: 'Terima Kasih!',
-            text: 'Ulasan berhasil disimpan.',
-            icon: 'success',
-            confirmButtonColor: '#00897b'
+        const btn = document.getElementById('btnSubmitRating');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+        
+        btn.disabled = true;
+        btnText.classList.add('d-none');
+        btnLoading.classList.remove('d-none');
+
+        fetch("{{ route('buyer.orders.rating.store') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                id_detail: selectedItem.id_detail,
+                rating: rating,
+                ulasan: reviewText
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                const modalEl = document.getElementById('ratingModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: data.message,
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload(); 
+                });
+            } else {
+                Swal.fire('Gagal!', data.message || 'Terjadi kesalahan.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error!', 'Gagal menghubungi server.', 'error');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btnText.classList.remove('d-none');
+            btnLoading.classList.add('d-none');
         });
     });
 </script>

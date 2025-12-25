@@ -87,4 +87,23 @@ class BuyerOrderController extends Controller
             ], 500);
         }
     }
+
+    public function cancelOrder(Request $request)
+    {
+        $request->validate(['id_transaksi' => 'required']);
+
+        $transaksi = Transaksi::where('id_transaksi', $request->id_transaksi)
+            ->where('id_user_pembeli', Auth::id())
+            ->where('status_pembayaran', 'pending')
+            ->first();
+
+        if (!$transaksi) {
+            return response()->json(['status' => 'error', 'message' => 'Pesanan tidak ditemukan atau tidak dapat dibatalkan.']);
+        }
+
+        $transaksi->status_pembayaran = 'failed'; // Update status menjadi failed
+        $transaksi->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Pesanan berhasil dibatalkan.']);
+    }
 }

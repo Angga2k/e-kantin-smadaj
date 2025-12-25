@@ -54,7 +54,7 @@ Route::get('/pesanan', [BuyerOrderController::class, 'index'])
 // Aksi Simpan Rating (AJAX)
 Route::post('/pesanan/ulasan', [BuyerOrderController::class, 'storeRating'])
     ->name('buyer.orders.rating.store');
-
+Route::post('/pesanan/cancel', [BuyerOrderController::class, 'cancelOrder'])->name('buyer.orders.cancel');
 
 // Route Authenticated
 Route::middleware(['auth'])->group(function () {

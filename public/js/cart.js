@@ -1,10 +1,10 @@
-const CART_STORAGE_KEY = 'e_kantin_cart';
+const CART_STORAGE_KEY = "e_kantin_cart";
 
 /**
  * Helper: Format angka menjadi format Rupiah tanpa desimal.
  */
 function formatRupiah(number) {
-    if (number === null || number === undefined) return '0';
+    if (number === null || number === undefined) return "0";
     return number.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
@@ -39,15 +39,18 @@ function saveCartItems(items) {
  */
 function renderCart() {
     const items = getCartItems();
-    const container = document.getElementById('cartItemsContainer');
-    const totalEl = document.getElementById('cartGrandTotal');
-    const btn = document.getElementById('btnKonfirmasi');
-    const countSpan = document.querySelector('.cart-count-span');
+    const container = document.getElementById("cartItemsContainer");
+    const totalEl = document.getElementById("cartGrandTotal");
+    const btn = document.getElementById("btnKonfirmasi");
+    const countSpan = document.querySelector(".cart-count-span");
 
     // Update Badge Count di Header Offcanvas
     if (countSpan) {
-        const totalQty = items.reduce((sum, item) => sum + parseInt(item.quantity), 0);
-        countSpan.innerText = totalQty + ' barang';
+        const totalQty = items.reduce(
+            (sum, item) => sum + parseInt(item.quantity),
+            0
+        );
+        countSpan.innerText = totalQty + " barang";
     }
 
     if (!container) return;
@@ -61,7 +64,7 @@ function renderCart() {
             </div>
         `;
         if (btn) btn.disabled = true;
-        if (totalEl) totalEl.innerText = 'Rp 0';
+        if (totalEl) totalEl.innerText = "Rp 0";
         return;
     }
 
@@ -70,14 +73,14 @@ function renderCart() {
     let total = 0;
     let html = '<ul class="list-group list-group-flush">';
 
-    items.forEach(item => {
+    items.forEach((item) => {
         let subtotal = item.price * item.quantity;
         total += subtotal;
 
         // Cek gambar (fallback jika tidak ada)
         let imageSrc = item.photo_url;
-        if (!imageSrc || imageSrc === 'undefined') {
-            imageSrc = '/icon/Makanan.png'; // Gambar default
+        if (!imageSrc || imageSrc === "undefined") {
+            imageSrc = "/icon/Makanan.png"; // Gambar default
         }
 
         html += `
@@ -85,27 +88,39 @@ function renderCart() {
                 <div class="d-flex align-items-center" style="max-width: 70%;">
                     <img src="${imageSrc}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" class="me-3 border">
                     <div>
-                        <h6 class="mb-1 text-truncate fw-bold" style="font-size: 0.9rem;">${item.name}</h6>
+                        <h6 class="mb-1 text-truncate fw-bold" style="font-size: 0.9rem;">${
+                            item.name
+                        }</h6>
                         <div class="text-muted small">
                             Rp ${formatRupiah(item.price)} x ${item.quantity}
                         </div>
-                        ${item.varian ? `<span class="badge bg-light text-dark border">${item.varian}</span>` : ''}
+                        ${
+                            item.varian
+                                ? `<span class="badge bg-light text-dark border">${item.varian}</span>`
+                                : ""
+                        }
                     </div>
                 </div>
                 <div class="text-end">
-                    <span class="fw-bold text-dark d-block mb-2">Rp ${formatRupiah(subtotal)}</span>
+                    <span class="fw-bold text-dark d-block mb-2">Rp ${formatRupiah(
+                        subtotal
+                    )}</span>
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary btn-minus" data-id="${item.id}" style="padding: 0.1rem 0.4rem;">-</button>
-                        <button type="button" class="btn btn-outline-secondary btn-plus" data-id="${item.id}" style="padding: 0.1rem 0.4rem;">+</button>
+                        <button type="button" class="btn btn-outline-secondary btn-minus" data-id="${
+                            item.id
+                        }" style="padding: 0.1rem 0.4rem;">-</button>
+                        <button type="button" class="btn btn-outline-secondary btn-plus" data-id="${
+                            item.id
+                        }" style="padding: 0.1rem 0.4rem;">+</button>
                     </div>
                 </div>
             </li>
         `;
     });
-    html += '</ul>';
+    html += "</ul>";
 
     container.innerHTML = html;
-    if (totalEl) totalEl.innerText = 'Rp ' + formatRupiah(total);
+    if (totalEl) totalEl.innerText = "Rp " + formatRupiah(total);
 
     // Re-attach event listeners untuk tombol +/-
     addCartEventListeners();
@@ -115,14 +130,14 @@ function renderCart() {
  * Menambahkan listener ke tombol +/- di dalam keranjang
  */
 function addCartEventListeners() {
-    document.querySelectorAll('.btn-plus').forEach(button => {
+    document.querySelectorAll(".btn-plus").forEach((button) => {
         button.onclick = (e) => {
             e.stopPropagation(); // Mencegah event bubbling
             updateQuantity(button.dataset.id, 1);
         };
     });
 
-    document.querySelectorAll('.btn-minus').forEach(button => {
+    document.querySelectorAll(".btn-minus").forEach((button) => {
         button.onclick = (e) => {
             e.stopPropagation();
             updateQuantity(button.dataset.id, -1);
@@ -135,7 +150,7 @@ function addCartEventListeners() {
  */
 function updateQuantity(itemId, amount) {
     const cart = getCartItems();
-    const itemIndex = cart.findIndex(item => item.id === itemId);
+    const itemIndex = cart.findIndex((item) => item.id === itemId);
 
     if (itemIndex !== -1) {
         cart[itemIndex].quantity += amount;
@@ -152,7 +167,7 @@ function updateQuantity(itemId, amount) {
  */
 function addToCart(newItem) {
     const cart = getCartItems();
-    const existingItemIndex = cart.findIndex(item => item.id === newItem.id);
+    const existingItemIndex = cart.findIndex((item) => item.id === newItem.id);
 
     if (existingItemIndex !== -1) {
         cart[existingItemIndex].quantity += newItem.quantity;
@@ -162,12 +177,16 @@ function addToCart(newItem) {
 
     saveCartItems(cart);
 
-    // Tampilkan notifikasi kecil (Opsional)
-    if (typeof Swal !== 'undefined') {
+    // Tampilkan notifikasi kecil
+    if (typeof Swal !== "undefined") {
         const Toast = Swal.mixin({
-            toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, timerProgressBar: true
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
         });
-        Toast.fire({ icon: 'success', title: 'Masuk keranjang!' });
+        Toast.fire({ icon: "success", title: "Masuk keranjang!" });
     }
 }
 
@@ -176,38 +195,43 @@ function addToCart(newItem) {
  */
 function handleAddToCart(event) {
     const btn = event.currentTarget;
-    const inputQty = document.getElementById('inputQty');
+    const inputQty = document.getElementById("inputQty");
 
-    const quantity = inputQty ? (parseInt(inputQty.value) || 1) : 1;
+    const quantity = inputQty ? parseInt(inputQty.value) || 1 : 1;
     const itemPrice = parseFloat(btn.dataset.price);
     const itemId = btn.dataset.id;
 
     // Cek Varian Radio Button
-    const selectedVarian = document.querySelector('input[name="varian"]:checked');
-    // Ambil nama varian dari Label yang sesuai dengan ID radio
-    let varianName = '';
+    const selectedVarian = document.querySelector(
+        'input[name="varian"]:checked'
+    );
+    let varianName = "";
     if (selectedVarian) {
-        const label = document.querySelector(`label[for="${selectedVarian.id}"]`);
+        const label = document.querySelector(
+            `label[for="${selectedVarian.id}"]`
+        );
         if (label) varianName = label.innerText.trim();
     }
 
     const newItem = {
-        id: itemId + (varianName ? '-' + varianName.replace(/\s+/g, '') : ''), // ID Unik kombinasi
+        id: itemId + (varianName ? "-" + varianName.replace(/\s+/g, "") : ""),
         original_id: itemId,
         name: btn.dataset.name,
         price: itemPrice,
         quantity: quantity,
         jenis_barang: btn.dataset.jenis,
         photo_url: btn.dataset.photo,
-        varian: varianName
+        varian: varianName,
     };
 
     addToCart(newItem);
 
     // Buka Offcanvas Otomatis
-    const offcanvasEl = document.getElementById('cartOffcanvas');
-    if (offcanvasEl && typeof bootstrap !== 'undefined') {
-        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
+    const offcanvasEl = document.getElementById("cartOffcanvas");
+    if (offcanvasEl && typeof bootstrap !== "undefined") {
+        const bsOffcanvas =
+            bootstrap.Offcanvas.getInstance(offcanvasEl) ||
+            new bootstrap.Offcanvas(offcanvasEl);
         bsOffcanvas.show();
     }
 }
@@ -217,86 +241,181 @@ function handleAddToCart(event) {
  */
 function updateCartCount() {
     const items = getCartItems();
-    const totalItems = items.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+    const totalItems = items.reduce(
+        (sum, item) => sum + parseInt(item.quantity),
+        0
+    );
 
-    // Selector untuk span 'Rp 0' atau badge di header layout
-    const headerCountElements = document.querySelectorAll('.header-cart-count'); // Tambahkan class ini di navbar jika perlu
-
-    // Update badge di dalam offcanvas title juga
-    const offcanvasBadge = document.querySelector('.cart-count-span');
-    if (offcanvasBadge) offcanvasBadge.innerText = totalItems + ' barang';
+    const offcanvasBadge = document.querySelector(".cart-count-span");
+    if (offcanvasBadge) offcanvasBadge.innerText = totalItems + " barang";
 }
 
 // --- INISIALISASI SAAT DOM READY ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     updateCartCount();
 
     // 1. Render saat offcanvas dibuka
-    const cartOffcanvas = document.getElementById('cartOffcanvas');
+    const cartOffcanvas = document.getElementById("cartOffcanvas");
     if (cartOffcanvas) {
-        cartOffcanvas.addEventListener('show.bs.offcanvas', renderCart);
+        cartOffcanvas.addEventListener("show.bs.offcanvas", renderCart);
     }
 
     // 2. Listener Tombol Tambah (Halaman Detail)
-    const addToCartButton = document.getElementById('addToCartButton');
+    const addToCartButton = document.getElementById("addToCartButton");
     if (addToCartButton) {
-        addToCartButton.addEventListener('click', handleAddToCart);
+        addToCartButton.addEventListener("click", handleAddToCart);
     }
 
-    // 3. Listener FORM CHECKOUT (Pengganti fungsi checkout() lama)
-    const checkoutForm = document.getElementById('checkoutForm');
+    // 3. Listener FORM CHECKOUT
+    const checkoutForm = document.getElementById("checkoutForm");
     if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Stop submit standar
+        checkoutForm.addEventListener("submit", function (e) {
+            e.preventDefault(); // Stop default submit
 
+            const btnKonfirmasi = document.getElementById("btnKonfirmasi");
+
+            // --- A. CEK TRANSAKSI PENDING ---
+            const hasPending = this.dataset.hasPending === "true";
+            const pendingDeadline = parseInt(this.dataset.pendingDeadline || 0);
+            const ordersUrl = this.dataset.ordersUrl;
+
+            if (hasPending) {
+                let timerInterval;
+                Swal.fire({
+                    title: "Transaksi Pending!",
+                    icon: "warning",
+                    html: `
+                        <div class="text-start fs-6">
+                            <p class="mb-2">Anda tidak dapat melakukan transaksi baru karena masih ada pesanan dengan status <strong>Pending</strong>.</p>
+                            <p class="small text-muted mb-3">Silakan selesaikan pembayaran atau batalkan pesanan tersebut di halaman Pesanan.</p>
+                            
+                            <div class="alert alert-danger d-flex flex-column align-items-center justify-content-center p-2 mb-0">
+                                <span class="small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 1px;">Sisa Waktu Pembayaran</span>
+                                <div class="d-flex align-items-center mt-1">
+                                    <i class="bi bi-stopwatch-fill me-2 fs-4"></i>
+                                    <div id="swal-timer" class="fw-bold fs-3 lh-1" style="font-variant-numeric: tabular-nums;">--:--</div>
+                                </div>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText:
+                        '<i class="bi bi-receipt me-1"></i> Lihat Pesanan',
+                    cancelButtonText: "OK",
+                    confirmButtonColor: "#0d6efd",
+                    cancelButtonColor: "#6c757d",
+                    reverseButtons: true,
+                    didOpen: () => {
+                        const timerEl =
+                            Swal.getHtmlContainer().querySelector(
+                                "#swal-timer"
+                            );
+                        const updateTimer = () => {
+                            const now = new Date().getTime();
+                            const distance = pendingDeadline - now;
+                            if (distance < 0) {
+                                clearInterval(timerInterval);
+                                timerEl.innerHTML = "00:00";
+                                return;
+                            }
+                            const minutes = Math.floor(
+                                (distance % (1000 * 60 * 60)) / (1000 * 60)
+                            );
+                            const seconds = Math.floor(
+                                (distance % (1000 * 60)) / 1000
+                            );
+                            const m = minutes < 10 ? "0" + minutes : minutes;
+                            const s = seconds < 10 ? "0" + seconds : seconds;
+                            timerEl.innerHTML = `${m}:${s}`;
+                        };
+                        updateTimer();
+                        timerInterval = setInterval(updateTimer, 1000);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = ordersUrl;
+                    }
+                });
+
+                return; // STOP EXECUTION HERE
+            }
+
+            // --- B. CEK DATA KERANJANG ---
             const cart = getCartItems();
-
-            // Validasi Kosong
             if (cart.length === 0) {
-                if(typeof Swal !== 'undefined') Swal.fire('Ops!', 'Keranjang kosong.', 'warning');
-                else alert('Keranjang kosong!');
+                if (typeof Swal !== "undefined")
+                    Swal.fire("Ops!", "Keranjang kosong.", "warning");
+                else alert("Keranjang kosong!");
                 return;
             }
 
-            // Validasi Input Tanggal (Browser 'required' attribute handles empty, but logic check here is safer)
-            const dateInput = document.getElementById('tanggalPicker');
+            // --- C. CEK TANGGAL ---
+            const dateInput = document.getElementById("tanggalPicker");
             if (dateInput && !dateInput.value) {
-                if(typeof Swal !== 'undefined') Swal.fire('Lengkapi Data', 'Mohon pilih tanggal pengambilan.', 'warning');
-                else alert('Pilih tanggal pengambilan!');
+                if (typeof Swal !== "undefined")
+                    Swal.fire(
+                        "Lengkapi Data",
+                        "Mohon pilih tanggal pengambilan.",
+                        "warning"
+                    );
+                else alert("Pilih tanggal pengambilan!");
                 return;
             }
 
-            // Populate Input Hidden
-            const hiddenContainer = document.getElementById('hiddenItemsContainer');
-            const totalInput = document.getElementById('inputTotalBayar');
-            hiddenContainer.innerHTML = '';
+            // --- D. PROSES DATA & SUBMIT ---
+
+            // 1. Tampilkan Loading State
+            if (typeof Swal !== "undefined") {
+                Swal.fire({
+                    title: "Memproses Pesanan...",
+                    html: 'Mohon tunggu, sedang mengalihkan ke pembayaran.<br><small class="text-muted">Jangan tutup halaman ini.</small>',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading(),
+                });
+            }
+
+            if (btnKonfirmasi) {
+                btnKonfirmasi.disabled = true;
+                btnKonfirmasi.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+            }
+
+            // 2. Populate Input Hidden
+            const hiddenContainer = document.getElementById(
+                "hiddenItemsContainer"
+            );
+            const totalInput = document.getElementById("inputTotalBayar");
+            hiddenContainer.innerHTML = "";
 
             let totalHitung = 0;
 
             cart.forEach((item, index) => {
-                // Input: items[0][id_barang]
-                const inputId = document.createElement('input');
-                inputId.type = 'hidden';
+                // Input ID Barang
+                const inputId = document.createElement("input");
+                inputId.type = "hidden";
                 inputId.name = `items[${index}][id_barang]`;
-                inputId.value = item.original_id; // ID asli database
+                inputId.value = item.original_id;
                 hiddenContainer.appendChild(inputId);
 
-                // Input: items[0][jumlah]
-                const inputQty = document.createElement('input');
-                inputQty.type = 'hidden';
+                // Input Jumlah
+                const inputQty = document.createElement("input");
+                inputQty.type = "hidden";
                 inputQty.name = `items[${index}][jumlah]`;
                 inputQty.value = item.quantity;
                 hiddenContainer.appendChild(inputQty);
 
-                totalHitung += (item.price * item.quantity);
+                totalHitung += item.price * item.quantity;
             });
 
             totalInput.value = totalHitung;
 
-            // Submit Form ke Laravel (akan redirect ke Xendit)
-            // Opsional: Hapus keranjang setelah submit agar pas balik sudah kosong
+            // 3. Bersihkan Cart & Submit Manual
             localStorage.removeItem(CART_STORAGE_KEY);
-
             this.submit();
         });
     }
