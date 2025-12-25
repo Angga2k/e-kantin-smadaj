@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PenjualController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\BuyerOrderController;
 use App\Http\Middleware\RoleChecker;
 
 /*
@@ -23,7 +24,7 @@ Route::get('/a', function () {
 });
 
 Route::get('/tesssss', function () {
-    return view('buyer.profile.index');
+    return view('buyer.pesanan.index');
 });
 
 Route::get('/tesauth', function () {
@@ -46,6 +47,14 @@ Route::get('/camilan', [MakananController::class, 'camilan'])->name('camilan.ind
 Route::get('/detail/{barang}', [MakananController::class, 'show'])->name('detail.index');
 
 Route::get('/payment/status', [CheckoutController::class, 'paymentStatus'])->name('payment.status');
+
+Route::get('/pesanan', [BuyerOrderController::class, 'index'])
+        ->name('buyer.orders.index');
+
+// Aksi Simpan Rating (AJAX)
+Route::post('/pesanan/ulasan', [BuyerOrderController::class, 'storeRating'])
+    ->name('buyer.orders.rating.store');
+
 
 // Route Authenticated
 Route::middleware(['auth'])->group(function () {

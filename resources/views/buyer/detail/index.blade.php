@@ -137,8 +137,8 @@
                 // Hitung rating dan total ulasan
                 $avgRating = $barang->ratingUlasan->avg('rating') ?? 0;
                 $totalReviews = $barang->ratingUlasan->count();
-                // $roundedRating = floor($avgRating); // Pembulatan ke bawah sesuai permintaan terakhir
-                $roundedRating = 4.5; // Pembulatan ke bawah sesuai permintaan terakhir
+                $roundedRating = floor($avgRating); // Pembulatan ke bawah sesuai permintaan terakhir
+                // $roundedRating = 4.5; // Pembulatan ke bawah sesuai permintaan terakhir
             @endphp
 
             {{-- Tampilan Rating --}}

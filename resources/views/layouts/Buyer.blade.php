@@ -42,7 +42,7 @@
         @include('components.header')
     </header>
 
-    <section class="hero-banner d-none {{ request()->is('detail*', 'profile', 'profile/update') ? '' : 'd-md-block' }}">
+    <section class="hero-banner d-none {{ request()->is('detail*', 'profile', 'profile/update', 'pesanan', 'tesssss') ? '' : 'd-md-block' }}">
         <div class="container">
             <div class="d-flex align-items-center justify-content-center">
 
