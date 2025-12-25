@@ -15,12 +15,17 @@
                 </div>
                 <div class="card-body text-center">
                     {{-- Foto Profil --}}
-                    <img src="{{ asset(Auth::user()->foto_profile ?? 'icon/profile.png') }}"
-                         alt="{{ $profile->nama_toko ?? 'Toko' }}"
-                         class="img-fluid rounded-circle mb-2 border p-1"
-                         width="128" height="128"
-                         style="object-fit: cover; aspect-ratio: 1/1;"
-                         onerror="this.src='{{ asset('asset/default-profile.png') }}'">
+                    {{-- PERBAIKAN DI SINI: --}}
+                    {{-- 1. Hapus 'img-fluid' agar ukuran fix tidak diganggu --}}
+                    {{-- 2. Tambah object-fit: cover (agar gambar tidak gepeng, tapi ter-crop rapi) --}}
+                    {{-- 3. Tambah object-position: center (agar fokus gambar di tengah) --}}
+                    <div class="d-flex justify-content-center">
+                        <img src="{{ asset(Auth::user()->foto_profile ?? 'icon/profile.png') }}"
+                             alt="{{ $profile->nama_toko ?? 'Toko' }}"
+                             class="rounded-circle mb-2 border p-1"
+                             style="width: 128px; height: 128px; object-fit: cover; object-position: center;"
+                             onerror="this.src='{{ asset('asset/default-profile.png') }}'">
+                    </div>
 
                     <h5 class="card-title mb-0 fw-bold">{{ $profile->nama_toko ?? 'Nama Toko' }}</h5>
                     <div class="text-muted mb-2 small">Penjual Kantin</div>
@@ -34,7 +39,7 @@
 
                 <hr class="my-0" />
 
-                
+
             </div>
         </div>
 
@@ -100,19 +105,27 @@
     function openChangePasswordModal() {
         Swal.fire({
             title: 'Ganti Password',
+            width: '450px', // Batasi lebar modal agar lebih proporsional
             html: `
                 <div class="text-start">
-                    <label class="small fw-bold mb-1">Password Lama</label>
-                    <input type="password" id="current_password" class="swal2-input mt-0 mb-3 w-100" placeholder="Masukkan password lama">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted mb-1">Password Lama</label>
+                        <input type="password" id="current_password" class="form-control" placeholder="Masukkan password lama">
+                    </div>
 
-                    <label class="small fw-bold mb-1">Password Baru</label>
-                    <input type="password" id="new_password" class="swal2-input mt-0 mb-3 w-100" placeholder="Min. 8 Karakter">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted mb-1">Password Baru</label>
+                        <input type="password" id="new_password" class="form-control" placeholder="Min. 8 Karakter">
+                    </div>
 
-                    <label class="small fw-bold mb-1">Konfirmasi Password Baru</label>
-                    <input type="password" id="new_password_confirmation" class="swal2-input mt-0 w-100" placeholder="Ulangi password baru">
+                    <div class="mb-1">
+                        <label class="form-label small fw-bold text-muted mb-1">Konfirmasi Password Baru</label>
+                        <input type="password" id="new_password_confirmation" class="form-control" placeholder="Ulangi password baru">
+                    </div>
                 </div>
             `,
-            confirmButtonText: 'Simpan Password',
+            confirmButtonText: 'Simpan',
+            confirmButtonColor: '#0d6efd',
             showCancelButton: true,
             cancelButtonText: 'Batal',
             focusConfirm: false,

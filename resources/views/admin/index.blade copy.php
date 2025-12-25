@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-
+    
     {{-- Header & Tombol Tambah --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -95,15 +95,15 @@
                             <td class="text-center">
                                 <div class="btn-group">
                                     {{-- Tombol Ganti Password --}}
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-secondary"
-                                            data-bs-toggle="modal"
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-secondary" 
+                                            data-bs-toggle="modal" 
                                             data-bs-target="#modalPassword"
                                             data-userid="{{ $user->id_user }}"
                                             data-username="{{ $user->username }}">
                                         <i class="bi bi-key"></i> Ganti Sandi
                                     </button>
-
+                                    
                                     {{-- Tombol Hapus --}}
                                     @if($user->role !== 'admin')
                                     <form action="{{ route('admin.destroy', $user->id_user) }}" method="POST" onsubmit="return confirm('Yakin hapus user ini?')">
@@ -142,9 +142,7 @@
                 <p class="text-muted small">Mengganti password untuk user: <span id="spanUsername" class="fw-bold text-dark"></span></p>
                 <div class="mb-3">
                     <label class="form-label">Password Baru</label>
-                    {{-- Validasi HTML5: minlength --}}
-                    <input type="text" name="new_password" id="inputNewPassword" class="form-control" placeholder="Min. 8 karakter" required minlength="8">
-                    <div class="form-text text-danger d-none" id="errorPasswordMsg">Password harus minimal 8 karakter!</div>
+                    <input type="text" name="new_password" class="form-control" placeholder="Min. 8 karakter" required>
                     <div class="form-text">Password akan langsung terganti tanpa verifikasi lama.</div>
                 </div>
             </div>
@@ -164,39 +162,13 @@
         const button = event.relatedTarget;
         const userId = button.getAttribute('data-userid');
         const username = button.getAttribute('data-username');
-
+        
         const spanUsername = modalPassword.querySelector('#spanUsername');
         const form = modalPassword.querySelector('#formGantiPassword');
-
-        // Reset form & error message saat modal dibuka
-        form.reset();
-        document.getElementById('errorPasswordMsg').classList.add('d-none');
-        document.getElementById('inputNewPassword').classList.remove('is-invalid');
-
+        
         spanUsername.textContent = username;
         // Update action URL form
         form.action = `/admin/user/${userId}/password`;
-    });
-
-    // Validasi Manual JavaScript sebelum Submit
-    const formGantiPassword = document.getElementById('formGantiPassword');
-    formGantiPassword.addEventListener('submit', function(event) {
-        const passwordInput = document.getElementById('inputNewPassword');
-        const errorMsg = document.getElementById('errorPasswordMsg');
-
-        if (passwordInput.value.length < 8) {
-            // Cegah pengiriman form
-            event.preventDefault();
-            event.stopPropagation();
-
-            // Tampilkan pesan error visual
-            passwordInput.classList.add('is-invalid');
-            errorMsg.classList.remove('d-none');
-        } else {
-            // Jika valid, hapus pesan error
-            passwordInput.classList.remove('is-invalid');
-            errorMsg.classList.add('d-none');
-        }
     });
 </script>
 @endpush

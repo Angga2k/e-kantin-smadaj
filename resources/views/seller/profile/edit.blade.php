@@ -38,11 +38,14 @@
                                 <h5 class="mb-3 fw-bold text-muted small text-uppercase">Foto Profil</h5>
 
                                 <div class="position-relative d-inline-block">
+                                    {{-- PERBAIKAN DI SINI: --}}
+                                    {{-- 1. Hapus 'img-fluid' --}}
+                                    {{-- 2. Style width & height dipaksa 150px --}}
+                                    {{-- 3. object-position: center agar wajah di tengah --}}
                                     <img src="{{ asset(Auth::user()->foto_profile ?? 'icon/profile.png') }}"
-                                         class="img-fluid rounded-circle mb-3 shadow-sm"
+                                         class="rounded-circle mb-3 shadow-sm"
                                          id="profile-preview"
-                                         width="150" height="150"
-                                         style="object-fit: cover; border: 4px solid #f8f9fa;"
+                                         style="width: 150px; height: 150px; object-fit: cover; object-position: center; border: 4px solid #f8f9fa;"
                                          onerror="this.src='{{ asset('asset/default-profile.png') }}'">
 
                                     <div class="mt-2">
