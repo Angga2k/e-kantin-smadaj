@@ -34,7 +34,7 @@
         @foreach($pesananGrouped as $id_transaksi => $details)
             @php
                 $transaksi = $details->first()->transaksi;
-                $grandTotal = $transaksi->total_harga;
+                $grandTotal = $details->first()->jumlah * $details->first()->harga_saat_transaksi;
                 $currentDetailStatus = $details->first()->status_barang;
             @endphp
 

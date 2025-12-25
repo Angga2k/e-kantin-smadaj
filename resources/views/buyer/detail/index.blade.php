@@ -96,12 +96,6 @@
         .nutrition-info {
             gap: 0.5rem !important;
         }
-
-        .variant-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
     }
 </style>
 
@@ -177,19 +171,6 @@
                     @if($barang->lemak_g)
                         <div class="badge">{{ number_format($barang->lemak_g, 1) }}<span>lemak</span></div>
                     @endif
-                </div>
-            </div>
-
-            {{-- VARIAN (LOGIKA STATIS) --}}
-            <div class="my-4">
-                <h6 class="fw-bold mb-3">Varian</h6>
-                <div class="variant-options">
-                    {{-- Asumsi Varian dipilih di sini. ID Varian harus unik. --}}
-                    <input type="radio" class="btn-check" name="varian" id="varian-pedas" autocomplete="off" checked>
-                    <label class="btn btn-outline-secondary rounded-pill" for="varian-pedas">Pedas</label>
-
-                    <input type="radio" class="btn-check" name="varian" id="varian-tidak-pedas" autocomplete="off">
-                    <label class="btn btn-outline-secondary rounded-pill" for="varian-tidak-pedas">Tidak Pedas</label>
                 </div>
             </div>
             <hr>

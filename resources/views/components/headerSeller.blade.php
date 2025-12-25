@@ -50,7 +50,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('seller.dompet.*') ? 'active' : '' }}" href="{{ route('seller.dompet.index') }}">Dana</a>
                 </li>
-                <li class="nav-item dropdown">
+                {{-- <li class="nav-item dropdown">
                      <a class="nav-link dropdown-toggle {{ request()->is('asdasdas*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         asdadasds
                      </a>
@@ -58,7 +58,7 @@
                         <li><a class="dropdown-item" href="#">a</a></li>
                         <li><a class="dropdown-item" href="#">b</a></li>
                      </ul>
-                </li>
+                </li> --}}
             </ul>
 
             <div class="d-none d-lg-flex align-items-center">
