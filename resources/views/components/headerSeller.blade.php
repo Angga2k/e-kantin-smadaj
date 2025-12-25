@@ -8,7 +8,7 @@
 
         <div class="d-flex d-lg-none align-items-center ms-auto">
 
-            <span class="fw-bold me-2" style="font-size: 0.9rem;">Rp 0</span>
+            <span class="fw-bold me-2" style="font-size: 0.9rem;">Rp {{ number_format($saldoNavbar ?? 0, 0, ',', '.') }}</span>
 
             <a href="#" class="fs-5 text-secondary me-2"><i class="bi bi-bell-fill"></i></a>
 
