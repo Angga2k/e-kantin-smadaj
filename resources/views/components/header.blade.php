@@ -51,10 +51,10 @@
                         </li>
                      </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('aasdas') ? 'active' : '' }}" href="/pesanan">Pesanan</a>
-                </li>
                 @auth
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('aasdas') ? 'active' : '' }}" href="/pesanan">Pesanan</a>
+                    </li>
                     <li class="nav-item">
                         <form method="POST" action="{{ route('logout') }}" class="d-inline">
                             @csrf
