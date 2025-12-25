@@ -9,18 +9,22 @@
                 <input class="form-control search-filter-input" type="search" placeholder="Cari...">
             </div>
             @auth
-                @php
-                $userRole = Auth::user()->role;
-                $profile = Auth::user()->foto_profile;
-                @endphp
+                @php $userRole = Auth::user()->role; @endphp
                 @if ($userRole === 'siswa' || $userRole === 'civitas_akademik')
                     <button class="btn btn-keranjang mx-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                         <i class="bi bi-cart-fill"></i>
                     </button>
-                    <a href='/profile'>
-                        @if($profile)
-                            <img src="{{ asset($profile) }}" class="rounded-circle me-2" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
+                    <a href="/profile">
+                        @if($user->foto_profile)
+                            <img src="{{ asset($item->foto_barang) }}" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
+                        @else
+                            @if($user->jenis_kelamin === "L")
+                                <img src="{{ asset('icon\L.png') }}" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
+                            @else
+                                <img src="{{ asset('icon\P.png') }}" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
+                            @endif
                         @endif
+                        {{-- <img src="https://i.pravatar.cc/40" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;"> --}}
                     </a>
                 @endif
             @endauth
@@ -37,7 +41,7 @@
                 </li>
                 <li class="nav-item dropdown">
                      <a class="nav-link dropdown-toggle {{ request()->is('asdasdas*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Kategori
+                        Kategory
                      </a>
                      <ul class="dropdown-menu">
                         <li class="nav-item">
@@ -84,16 +88,16 @@
                     <button class="btn btn-keranjang me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                         <i class="bi bi-cart-fill me-2"></i>Keranjang
                     </button>
-                    <a href="{{ $profile ? '/profile' : '' }}" @if(!$profile) style="pointer-events: none; cursor: default;" @endif>
-                        @if($profile)
-                            <img src="{{ asset($profile) }}" class="rounded-circle me-2" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
-                        @endif
+                    <a href="/profile">
+                        <img src="https://i.pravatar.cc/40" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
                     </a>
                     @endif
                 @else
-                    <a class="nav-link btn btn-success btn-sm border rounded-pill p-2" href="{{ route('login') }}" style="width: 100%;">
-                        <i class="bi bi-person-fill me-1"></i> Login
-                    </a>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-success btn-sm border rounded-pill p-2" href="{{ route('login') }}" style="width: 100%;">
+                            <i class="bi bi-person-fill me-1"></i> Login
+                        </a>
+                    </li>
                 @endauth
             </div>
         </div>

@@ -15,6 +15,8 @@ class User extends Authenticatable
     protected $primaryKey = 'id_user';
     public $incrementing = false;
     protected $keyType = 'string';
+    protected $with = ['siswa', 'civitasAkademik', 'penjual'];
+    protected $appends = ['foto_profile'];
 
     /**
      * The attributes that are mass assignable.
@@ -69,5 +71,32 @@ class User extends Authenticatable
     public function penjual(): HasOne
     {
         return $this->hasOne(Penjual::class, 'id_user', 'id_user');
+    }
+
+    public function getFotoProfileAttribute()
+    {
+        $role = $this->role;
+        $profile = null;
+
+        // Ambil data profil berdasarkan role
+        if ($role === 'siswa') {
+            $profile = $this->siswa;
+        } elseif ($role === 'civitas_akademik') {
+            $profile = $this->civitasAkademik;
+        } elseif ($role === 'penjual') {
+            $profile = $this->penjual;
+        }
+
+        // 1. Cek jika foto profile asli ada
+        if ($profile && !empty($profile->foto_profile)) {
+            return $profile->foto_profile;
+        }
+
+        // 2. Jika tidak ada foto, cek jenis kelamin (untuk default gender)
+        if ($profile && !empty($profile->jenis_kelamin)) {
+            return 'icon/' .$profile->jenis_kelamin . '.png';
+        }
+
+        return null;
     }
 }
