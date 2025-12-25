@@ -85,7 +85,7 @@
 
 
     {{-- SEARCH --}}
-    <script>
+    {{-- <script>
         const searchInputs = document.querySelectorAll('.search-filter-input');
         searchInputs.forEach(input => {
             input.addEventListener('input', function() {
@@ -132,7 +132,60 @@
                 }
             });
         });
-    </script>
+    </script> --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInputs = document.querySelectorAll('.search-filter-input');
+        const productCards = document.querySelectorAll('.col');
+        const notFoundMessage = document.getElementById('notFoundMessage');
+        const textEarlyElement = document.querySelector('.early');
+
+        searchInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const searchTerm = input.value.toLowerCase().trim();
+
+                // 1. Sinkronisasi antar input (Mobile & Desktop)
+                searchInputs.forEach(inputToSync => {
+                    if (inputToSync !== input) inputToSync.value = input.value;
+                });
+
+                // 2. Kontrol Teks Headline (Early)
+                if (textEarlyElement) {
+                    searchTerm.length > 0 
+                        ? textEarlyElement.classList.add('d-none') 
+                        : textEarlyElement.classList.remove('d-none');
+                }
+
+                let visibleCount = 0;
+
+                // 3. Filter Produk
+                productCards.forEach(card => {
+                    const titleElement = card.querySelector('.card-title');
+                    if (titleElement) {
+                        const titleText = titleElement.textContent.toLowerCase();
+                        
+                        // PERBAIKAN: Gunakan includes agar bisa cari kata di tengah
+                        if (titleText.includes(searchTerm)) {
+                            card.style.setProperty('display', 'block', 'important');
+                            visibleCount++;
+                        } else {
+                            card.style.setProperty('display', 'none', 'important');
+                        }
+                    }
+                });
+
+                // 4. Pesan Tidak Ditemukan
+                if (notFoundMessage) {
+                    if (visibleCount === 0 && searchTerm.length > 0) {
+                        notFoundMessage.classList.remove('d-none');
+                    } else {
+                        notFoundMessage.classList.add('d-none');
+                    }
+                }
+            });
+        });
+    });
+</script>
 
 
     {{-- UPDATE PROFILE --}}

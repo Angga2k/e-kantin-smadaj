@@ -53,7 +53,7 @@
                 </li>
                 @auth
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('aasdas') ? 'active' : '' }}" href="/pesanan">Pesanan</a>
+                        <a class="nav-link {{ request()->is('pesanan') ? 'active' : '' }}" href="/pesanan">Pesanan</a>
                     </li>
                     <li class="nav-item">
                         <form method="POST" action="{{ route('logout') }}" class="d-inline">
@@ -73,7 +73,7 @@
             </ul>
 
             <div class="d-none d-lg-flex align-items-center">
-                <div class="search-box me-3">
+                <div class="search-box me-2">
                     <i class="bi bi-search search-icon"></i>
                     <input class="form-control search-filter-input" type="search" placeholder="Cari...">
                 </div>

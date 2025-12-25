@@ -11,7 +11,13 @@ body {
     justify-content: flex-end;
 }
 .navbar .search-box-mobile {
-    max-width: 180px;
+        max-width: 120px; /* Batasi lebar pencarian di HP */
+        margin-right: 5px !important;
+    }
+
+.navbar .search-box-mobile .form-control {
+    font-size: 14px;
+    padding-left: 30px; /* Ruang untuk ikon search */
 }
 .navbar .btn-keranjang,
 .navbar .navbar-toggler {
