@@ -70,3 +70,35 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const checkoutForm = document.getElementById('checkoutForm');
+        const btnKonfirmasi = document.getElementById('btnKonfirmasi');
+
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', function(e) {
+                // Event submit hanya akan triggger jika validasi HTML (required) lolos
+
+                // 1. Tampilkan SweetAlert Loading (Memblokir layar)
+                Swal.fire({
+                    title: 'Memproses Pesanan...',
+                    html: 'Mohon tunggu, sedang mengalihkan ke pembayaran.<br><small class="text-muted">Jangan tutup halaman ini.</small>',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // 2. Ubah tampilan tombol biar user tau sedang proses (opsional, karena layar sudah diblokir swal)
+                if (btnKonfirmasi) {
+                    btnKonfirmasi.disabled = true;
+                    btnKonfirmasi.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+                }
+
+                // 3. Biarkan form submit secara natural ke server
+            });
+        }
+    });
+</script>
