@@ -63,7 +63,7 @@
                             $cardClass = 'card1';
                         } elseif ($item->jenis_barang === 'Minuman') {
                             $cardClass = 'card2';
-                        } elseif ($item->jenis_barang === 'Snack') {
+                        } elseif ($item->jenis_barang === 'Camilan') {
                             $cardClass = 'card3';
                         }
                 @endphp
