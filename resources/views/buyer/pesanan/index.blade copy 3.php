@@ -4,24 +4,12 @@
 
 @section('content')
 <style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f8f9fa;
-    }
-
+    body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+    
     /* == Custom Soft Colors untuk Card == */
-    .card-soft-success {
-        background-color: #e8f5e9;
-        border: 1px solid #c8e6c9;
-    }
-    .card-soft-warning {
-        background-color: #fff8e1;
-        border: 1px solid #ffecb3;
-    }
-    .card-soft-danger {
-        background-color: #ffebee;
-        border: 1px solid #ffcdd2;
-    }
+    .card-soft-success { background-color: #e8f5e9; border: 1px solid #c8e6c9; }
+    .card-soft-warning { background-color: #fff8e1; border: 1px solid #ffecb3; }
+    .card-soft-danger { background-color: #ffebee; border: 1px solid #ffcdd2; }
 
     .card-history {
         border-radius: 12px;
@@ -34,11 +22,7 @@
     }
 
     /* Modifikasi List Barang */
-    .item-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+    .item-list { list-style: none; padding: 0; margin: 0; }
     .item-list li {
         display: flex;
         justify-content: space-between;
@@ -49,55 +33,24 @@
         border-bottom: 1px dashed #e0e0e0;
         padding-bottom: 0.5rem;
     }
-    .item-list li:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
+    .item-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
-    /* Badge Status */
-    .status-badge {
-        font-size: 0.8rem;
-        padding: 0.4em 0.8em;
-        border-radius: 20px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-
-    /* Rating Stars Tampilan Statis (di List) */
-    .static-rating i {
-        font-size: 0.8rem;
-        color: #e0e0e0;
-    }
-    .static-rating i.filled {
-        color: #ffc107;
-    }
-
-    /* Rating Stars Interaktif (di Modal) */
-    .star-rating {
-        font-size: 2rem;
-        color: #ddd;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-    .star-rating.active {
-        color: #ffc107;
-    }
-    .star-rating:hover {
-        color: #ffd54f;
-    }
-
-    /* Style Item Status Badge Kecil */
+    /* Badge & Text Styles */
+    .status-badge { font-size: 0.8rem; padding: 0.4em 0.8em; border-radius: 20px; font-weight: 600; letter-spacing: 0.5px; }
     .item-status { font-size: 0.7rem; font-weight: bold; margin-left: 5px; }
-    .text-process { color: #ff9800; } /* Orange */
-    .text-ready { color: #0d6efd; }   /* Biru */
-    .text-done { color: #198754; }    /* Hijau */
+    .text-process { color: #ff9800; }
+    .text-ready { color: #0d6efd; }
+    .text-done { color: #198754; }
+    
+    /* Rating Stars */
+    .static-rating i { font-size: 0.8rem; color: #e0e0e0; }
+    .static-rating i.filled { color: #ffc107; }
+    .star-rating { font-size: 2rem; color: #ddd; cursor: pointer; transition: color 0.2s; }
+    .star-rating.active { color: #ffc107; }
+    .star-rating:hover { color: #ffd54f; }
 
     /* Animasi Timer */
-    .countdown-timer {
-        font-variant-numeric: tabular-nums; /* Agar angka tidak bergeser saat berubah */
-        letter-spacing: 0.5px;
-    }
+    .countdown-timer { font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
 </style>
 
 <div class="container my-5" style="max-width: 800px;">
@@ -107,7 +60,7 @@
         <div class="text-center py-5">
             <i class="bi bi-receipt text-muted opacity-25" style="font-size: 4rem;"></i>
             <p class="text-muted mt-3">Belum ada riwayat pesanan.</p>
-            <a href="{{ route('beranda.index') ?? '#' }}" class="btn btn-primary btn-sm rounded-pill px-4">Pesan Sekarang</a>
+            <a href="{{ route('buyer.menu.index') ?? '#' }}" class="btn btn-primary btn-sm rounded-pill px-4">Pesan Sekarang</a>
         </div>
     @else
         @foreach($orders as $order)
@@ -120,7 +73,7 @@
                 // Cek apakah sudah lewat 30 menit
                 $isExpiredByTime = $now->greaterThan($deadline);
 
-                // --- LOGIKA STATUS CARD SESUAI ENUM DB ---
+                // --- LOGIKA STATUS CARD ---
                 $status = strtolower($order->status_pembayaran);
 
                 $cardClass = 'card-soft-danger';
@@ -150,8 +103,8 @@
                         $showTimer = true;
                     }
                 }
-                elseif ($status == 'expired') {
-                    $statusLabel = 'Kadaluarsa';
+                elseif ($status == 'expired' || $status == 'failed') {
+                    $statusLabel = $status == 'expired' ? 'Kadaluarsa' : 'Dibatalkan';
                 }
             @endphp
 
@@ -182,15 +135,19 @@
                                             $statusItem = strtolower(trim($detail->status_barang));
                                         @endphp
 
-                                        @if($statusItem == 'sudah_diambil')
-                                            <small class="item-status text-done"><i class="bi bi-check-circle-fill"></i> Diambil</small>
-                                        @elseif($statusItem == 'belum_diambil')
-                                            <small class="item-status text-ready"><i class="bi bi-box-seam-fill"></i> Siap Diambil</small>
-                                        @else
-                                            <small class="item-status text-process"><i class="bi bi-hourglass-split"></i> Proses</small>
+                                        {{-- LOGIKA TAMPILAN STATUS BARANG (Disembunyikan jika batal/expired) --}}
+                                        @if($status != 'expired' && $status != 'failed' && !($status == 'pending' && $isExpiredByTime))
+                                            @if($statusItem == 'sudah_diambil')
+                                                <small class="item-status text-done"><i class="bi bi-check-circle-fill"></i> Diambil</small>
+                                            @elseif($statusItem == 'belum_diambil')
+                                                <small class="item-status text-ready"><i class="bi bi-box-seam-fill"></i> Siap Diambil</small>
+                                            @else
+                                                <small class="item-status text-process"><i class="bi bi-hourglass-split"></i> Proses</small>
+                                            @endif
                                         @endif
                                     </span>
 
+                                    {{-- Rating Statis --}}
                                     @if($isSuccess && $detail->ratingUlasan)
                                         <div class="static-rating mt-1">
                                             @for($i = 1; $i <= 5; $i++)
@@ -207,7 +164,7 @@
 
                     <hr class="opacity-25 border-dark">
 
-                    {{-- Footer Card --}}
+                    {{-- Footer Card (Total & Action Button) --}}
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
                             <small class="text-muted d-block">Total Pembayaran</small>
@@ -217,6 +174,7 @@
                         </div>
                         
                         @if ($isSuccess)
+                            {{-- Jika SUCCESS: Tampilkan tombol Ulasan --}}
                             @php
                                 $itemsForJs = $order->detailTransaksi->map(function($d) {
                                     return [
@@ -237,15 +195,25 @@
                             </button>
 
                         @elseif ($isPending)
+                            {{-- Jika PENDING: Tampilkan tombol Bayar & Batalkan --}}
                             <div class="d-flex flex-column align-items-end">
-                                {{-- BUTTON BAYAR --}}
-                                <a href="{{ $order->payment_link ?? '#' }}" target="_blank" class="btn btn-warning btn-sm px-3 rounded-pill fw-bold text-dark shadow-sm mb-1">
-                                    <i class="bi bi-wallet2 me-1"></i> Bayar Sekarang
-                                </a>
+                                <div class="d-flex gap-2">
+                                    {{-- BUTTON BATALKAN --}}
+                                    <button type="button" class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-bold shadow-sm"
+                                            onclick="cancelOrder('{{ $order->id_transaksi }}')">
+                                        <i class="bi bi-x-circle me-1"></i> Batalkan
+                                    </button>
+
+                                    {{-- BUTTON BAYAR SEKARANG (Trigger Opsi Pembayaran) --}}
+                                    <button type="button" class="btn btn-warning btn-sm px-3 rounded-pill fw-bold text-dark shadow-sm"
+                                            onclick="showPaymentOptions('{{ $order->id_transaksi }}', '{{ $order->metode_pembayaran }}', '{{ $order->payment_link }}', 'Rp {{ number_format($order->total_harga, 0, ',', '.') }}')">
+                                        <i class="bi bi-wallet2 me-1"></i> Bayar Sekarang
+                                    </button>
+                                </div>
 
                                 {{-- TIMER HITUNG MUNDUR --}}
                                 @if($showTimer)
-                                    <small class="text-danger fw-bold countdown-timer" 
+                                    <small class="text-danger fw-bold countdown-timer mt-1" 
                                            data-deadline="{{ $deadline->timestamp * 1000 }}">
                                            <i class="bi bi-stopwatch"></i> Menghitung...
                                     </small>
@@ -253,7 +221,7 @@
                             </div>
                         
                         @else
-                            {{-- Jika status EXPIRED atau PENDING tapi WAKTU HABIS --}}
+                            {{-- Jika FAILED/EXPIRED --}}
                             <span class="text-muted small fst-italic text-end">
                                 @if($isExpiredByTime && $status == 'pending')
                                     Waktu pembayaran (30 menit) habis.<br>Transaksi dibatalkan otomatis.
@@ -269,7 +237,7 @@
     @endif
 </div>
 
-{{-- MODAL RATING (TIDAK BERUBAH) --}}
+{{-- MODAL RATING --}}
 <div class="modal fade" id="ratingModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -325,7 +293,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // === SCRIPT COUNTDOWN TIMER ===
+    // ==========================================
+    // 1. SCRIPT COUNTDOWN TIMER (30 Menit)
+    // ==========================================
     function startTimers() {
         const timers = document.querySelectorAll('.countdown-timer');
 
@@ -338,27 +308,175 @@
 
                 if (distance < 0) {
                     timer.innerHTML = "Waktu Habis";
-                    // Opsional: Reload halaman agar status berubah jadi 'Dibatalkan'
-                    // location.reload(); 
                     return;
                 }
 
-                // Hitung menit dan detik
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                 timer.innerHTML = `<i class="bi bi-stopwatch"></i> Sisa Waktu: ${minutes}m ${seconds}d`;
             };
 
-            updateTimer(); // Jalankan langsung biar gak nunggu 1 detik
+            updateTimer(); 
             setInterval(updateTimer, 1000);
         });
     }
-
-    // Jalankan timer saat halaman dimuat
     document.addEventListener('DOMContentLoaded', startTimers);
 
-    // === LOGIKA RATING ===
+
+    // ==========================================
+    // 2. LOGIKA PEMBAYARAN (BAYAR / GANTI METODE)
+    // ==========================================
+    // UPDATE: Menambahkan parameter 'totalFormatted'
+    function showPaymentOptions(transactionId, currentMethod, currentLink, totalFormatted) {
+        // Format teks metode lama agar lebih enak dibaca
+        let displayMethod = currentMethod.replace('_', ' ');
+        if(currentMethod === 'BANK_TRANSFER') displayMethod = 'Transfer Bank';
+        if(currentMethod === 'E_WALLET') displayMethod = 'E-Wallet / QRIS';
+
+        Swal.fire({
+            title: 'Lanjutkan Pembayaran?',
+            html: `
+                <div class="text-start">
+                    <div class="alert alert-light border d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted small">Total Tagihan</span>
+                        <span class="fw-bold text-primary fs-5">${totalFormatted}</span>
+                    </div>
+                    <p class="mb-2">Metode saat ini: <span class="badge bg-primary fs-6">${displayMethod}</span></p>
+                    <p class="text-muted small mb-0 mt-3">
+                        Anda dapat melanjutkan pembayaran dengan metode ini, atau menggantinya dengan metode lain.
+                        <br><span class="text-danger">*Mengganti metode akan membuat Invoice baru.</span>
+                    </p>
+                </div>
+            `,
+            icon: 'info',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-arrow-right"></i> Lanjut Bayar',
+            denyButtonText: '<i class="bi bi-arrow-repeat"></i> Ganti Metode',
+            cancelButtonText: 'Tutup',
+            confirmButtonColor: '#0d6efd',
+            denyButtonColor: '#ffc107',
+            customClass: {
+                denyButton: 'text-dark fw-bold'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Opsi 1: Lanjut link lama
+                window.open(currentLink, '_blank');
+            } else if (result.isDenied) {
+                // Opsi 2: Ganti Metode
+                // Pass currentMethod to pre-select it
+                selectNewMethod(transactionId, currentMethod);
+            }
+        });
+    }
+
+    function selectNewMethod(transactionId, currentMethod) {
+        Swal.fire({
+            title: 'Pilih Metode Baru',
+            input: 'select',
+            inputOptions: {
+                'BANK_TRANSFER': 'Transfer Bank (Admin Rp 4.500)',
+                'E_WALLET': 'E-Wallet / QRIS (Admin 2%)'
+            },
+            inputValue: currentMethod, // Set default value to current method
+            html: `
+                <div class="alert alert-warning text-start small mt-2 d-flex align-items-start">
+                    <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                    <div>
+                        <strong>Penting:</strong><br>
+                        Biaya admin dan total bayar akan dihitung ulang menyesuaikan metode yang Anda pilih.
+                    </div>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Proses Ganti',
+            showLoaderOnConfirm: true,
+            preConfirm: (value) => {
+                if (!value) {
+                    Swal.showValidationMessage('Silakan pilih metode pembayaran!');
+                    return false;
+                }
+                
+                // Kirim Request ke Server untuk buat invoice baru
+                return fetch("{{ route('buyer.orders.repay') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({ 
+                        id_transaksi: transactionId, 
+                        payment_method: value 
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(`Gagal memproses: ${error}`);
+                });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed && result.value.status === 'success') {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Invoice baru berhasil dibuat. Mengalihkan...',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Redirect ke link pembayaran baru
+                    window.location.href = result.value.new_link;
+                });
+            } else if (result.isConfirmed && result.value.status === 'error') {
+                Swal.fire('Gagal', result.value.message, 'error');
+            }
+        });
+    }
+
+    // ==========================================
+    // 3. LOGIKA BATALKAN PESANAN
+    // ==========================================
+    function cancelOrder(transactionId) {
+        Swal.fire({
+            title: 'Batalkan Pesanan?',
+            text: "Apakah Anda yakin ingin membatalkan pesanan ini?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Batalkan!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
+                
+                fetch("{{ route('buyer.orders.cancel') }}", { 
+                    method: "POST",
+                    headers: {"Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}"},
+                    body: JSON.stringify({ id_transaksi: transactionId })
+                })
+                .then(r => r.json())
+                .then(d => {
+                    if(d.status === 'success') {
+                        Swal.fire('Dibatalkan!', 'Pesanan berhasil dibatalkan.', 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Gagal', d.message, 'error');
+                    }
+                })
+                .catch(() => Swal.fire('Error', 'Gagal memproses permintaan', 'error'));
+            }
+        });
+    }
+
+    // ==========================================
+    // 4. LOGIKA RATING & ULASAN
+    // ==========================================
     let currentItems = [];
 
     function handleRatingButton(btnElement) {

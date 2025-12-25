@@ -46,17 +46,16 @@ Route::get('/makanan', [MakananController::class, 'makanan'])->name('makanan.ind
 Route::get('/camilan', [MakananController::class, 'camilan'])->name('camilan.index');
 Route::get('/detail/{barang}', [MakananController::class, 'show'])->name('detail.index');
 
+
+
+
 Route::get('/payment/status', [CheckoutController::class, 'paymentStatus'])->name('payment.status');
-
-Route::get('/pesanan', [BuyerOrderController::class, 'index'])
-        ->name('buyer.orders.index');
-
+Route::post('/pesanan/repay', [CheckoutController::class, 'repayOrder'])->name('buyer.orders.repay');
+Route::get('/pesanan', [BuyerOrderController::class, 'index'])->name('buyer.orders.index');
 // Aksi Simpan Rating (AJAX)
-Route::post('/pesanan/ulasan', [BuyerOrderController::class, 'storeRating'])
-    ->name('buyer.orders.rating.store');
+Route::post('/pesanan/ulasan', [BuyerOrderController::class, 'storeRating'])->name('buyer.orders.rating.store');
 Route::post('/pesanan/cancel', [BuyerOrderController::class, 'cancelOrder'])->name('buyer.orders.cancel');
 
-// Route Authenticated
 Route::middleware(['auth'])->group(function () {
 
     // Route Siswa / Civitas

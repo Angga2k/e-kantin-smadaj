@@ -18,7 +18,7 @@ class CheckoutController extends Controller
         // 1. Validasi Input
         $request->validate([
             // 'total_bayar' => 'required|numeric|min:1000', // Gunakan hitung ulang di backend agar aman
-            'payment_method' => 'required|string', // Contoh: BCA_VA, BRI_VA, QRIS
+            // 'payment_method' => 'required|string', // Contoh: BCA_VA, BRI_VA, QRIS
             // Pastikan frontend mengirim array items
             // 'items'       => 'required|array|min:1',
         ]);
@@ -33,6 +33,8 @@ class CheckoutController extends Controller
         $externalId = 'TRX-' . time() . '-' . Str::random(5);
         $kodeTransaksi = 'INV/' . date('Ymd') . '/' . strtoupper(Str::random(6));
 
+        dd("asdas");
+
         DB::beginTransaction();
         try {
             // 2. Simpan Transaksi Utama
@@ -41,7 +43,6 @@ class CheckoutController extends Controller
             $transaksi->kode_transaksi = $kodeTransaksi;
             $transaksi->id_user_pembeli = $user->id_user ?? 1; // Fallback id 1
             $transaksi->external_id = $externalId;
-            $transaksi->id_order_gateway = $externalId;
             $transaksi->total_harga = $totalBayar;
             $transaksi->status_pembayaran = 'pending';
             $transaksi->waktu_transaksi = now();

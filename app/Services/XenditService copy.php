@@ -29,29 +29,26 @@ class XenditService
      * ===============  MONEY IN (INVOICE) ====================
      * =======================================================
      */
-    public function createInvoice($externalId, $amount, $payerEmail, $description, $allowedPaymentMethods = [])
+    public function createInvoice($externalId, $amount, $payerEmail, $description)
     {
         $apiInstance = new InvoiceApi();
 
-        $params = [
+        $create_invoice_request = new CreateInvoiceRequest([
             'external_id' => $externalId,
             'amount' => (float)$amount,
             'payer_email' => $payerEmail,
             'description' => $description,
-            
-            // Durasi invoice 30 menit (1800 detik)
+            // --- TAMBAHAN PENTING ---
+            // Tetapkan durasi invois kepada 30 minit (1800 saat)
             'invoice_duration' => 1800, 
+            // ------------------------
 
+            
             'success_redirect_url' => route('payment.status', ['status' => 'success']),
+
+            // "Kalau user gagal bayar/expired, lempar ke sini"
             'failure_redirect_url' => route('payment.status', ['status' => 'failed']),
-        ];
-
-        // Jika ada pembatasan metode pembayaran (misal khusus E-Wallet saja)
-        if (!empty($allowedPaymentMethods)) {
-            $params['payment_methods'] = $allowedPaymentMethods;
-        }
-
-        $create_invoice_request = new CreateInvoiceRequest($params);
+        ]);
 
         try {
             return $apiInstance->createInvoice($create_invoice_request);
@@ -78,27 +75,6 @@ class XenditService
         
         // Default tanpa biaya tambahan
         return $amount;
-    }
-
-    /**
-     * =======================================================
-     * ===============  EXPIRE INVOICE (BARU) ================
-     * =======================================================
-     * Membatalkan invoice lama di Xendit agar tidak bisa dibayar lagi
-     */
-    public function expireInvoice($invoiceId)
-    {
-        $apiInstance = new InvoiceApi();
-        
-        try {
-            // Panggil API Xendit untuk expire invoice
-            return $apiInstance->expireInvoice($invoiceId);
-        } catch (Exception $e) {
-            // Kita hanya Log errornya, jangan sampai error di sini menghentikan proses pembuatan invoice baru
-            // Karena bisa jadi invoice lama memang sudah expired duluan
-            Log::warning("Gagal expire invoice lama ($invoiceId): " . $e->getMessage());
-            return null;
-        }
     }
 
 

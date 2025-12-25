@@ -92,6 +92,12 @@
     .text-process { color: #ff9800; } /* Orange */
     .text-ready { color: #0d6efd; }   /* Biru */
     .text-done { color: #198754; }    /* Hijau */
+
+    /* Animasi Timer */
+    .countdown-timer {
+        font-variant-numeric: tabular-nums; /* Agar angka tidak bergeser saat berubah */
+        letter-spacing: 0.5px;
+    }
 </style>
 
 <div class="container my-5" style="max-width: 800px;">
@@ -106,6 +112,14 @@
     @else
         @foreach($orders as $order)
             @php
+                // --- SETUP WAKTU & DEADLINE (30 MENIT) ---
+                $transaksiTime = \Carbon\Carbon::parse($order->waktu_transaksi);
+                $deadline = $transaksiTime->copy()->addMinutes(30);
+                $now = \Carbon\Carbon::now();
+                
+                // Cek apakah sudah lewat 30 menit
+                $isExpiredByTime = $now->greaterThan($deadline);
+
                 // --- LOGIKA STATUS CARD SESUAI ENUM DB ---
                 $status = strtolower($order->status_pembayaran);
 
@@ -114,6 +128,7 @@
                 $statusLabel = 'Pembayaran Gagal';
                 $isSuccess = false;
                 $isPending = false;
+                $showTimer = false;
 
                 if ($status == 'success') {
                     $cardClass = 'card-soft-success';
@@ -122,13 +137,21 @@
                     $isSuccess = true;
                 } 
                 elseif ($status == 'pending') {
-                    $cardClass = 'card-soft-warning';
-                    $badgeClass = 'bg-warning text-dark';
-                    $statusLabel = 'Menunggu Pembayaran';
-                    $isPending = true;
+                    if ($isExpiredByTime) {
+                        // JIKA PENDING TAPI WAKTU HABIS -> ANGGAP GAGAL VISUAL
+                        $statusLabel = 'Dibatalkan (Waktu Habis)';
+                        // Card tetap merah (danger)
+                    } else {
+                        // JIKA PENDING DAN WAKTU MASIH ADA
+                        $cardClass = 'card-soft-warning';
+                        $badgeClass = 'bg-warning text-dark';
+                        $statusLabel = 'Menunggu Pembayaran';
+                        $isPending = true;
+                        $showTimer = true;
+                    }
                 }
-                elseif ($status == 'expired') {
-                    $statusLabel = 'Kadaluarsa';
+                elseif ($status == 'expired' || $status == 'failed') {
+                    $statusLabel = $status == 'expired' ? 'Kadaluarsa' : 'Dibatalkan';
                 }
             @endphp
 
@@ -138,7 +161,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
                             <h6 class="fw-bold mb-1">
-                                {{ $order->waktu_transaksi ? \Carbon\Carbon::parse($order->waktu_transaksi)->translatedFormat('d F Y') : '-' }}
+                                {{ $transaksiTime->translatedFormat('d F Y, H:i') }}
                             </h6>
                             <small class="text-muted">{{ $order->kode_transaksi }}</small>
                         </div>
@@ -155,24 +178,22 @@
                                     <span>
                                         {{ $detail->jumlah }}x {{ $detail->barang->nama_barang ?? 'Produk Dihapus' }}
                                         
-                                        {{-- LOGIKA TAMPILAN STATUS BARANG (ENUM: baru, proses, sudah_diambil, belum_diambil) --}}
                                         @php
                                             $statusItem = strtolower(trim($detail->status_barang));
                                         @endphp
 
-                                        @if($statusItem == 'sudah_diambil')
-                                            {{-- Status: Done --}}
-                                            <small class="item-status text-done"><i class="bi bi-check-circle-fill"></i> Diambil</small>
-                                        @elseif($statusItem == 'belum_diambil')
-                                            {{-- Status: Siap Diambil --}}
-                                            <small class="item-status text-ready"><i class="bi bi-box-seam-fill"></i> Siap Diambil</small>
-                                        @else
-                                            {{-- Status: Baru / Proses --}}
-                                            <small class="item-status text-process"><i class="bi bi-hourglass-split"></i> Proses</small>
+                                        {{-- LOGIKA TAMPILAN STATUS BARANG (Disembunyikan jika batal/expired) --}}
+                                        @if($status != 'expired' && $status != 'failed' && !($status == 'pending' && $isExpiredByTime))
+                                            @if($statusItem == 'sudah_diambil')
+                                                <small class="item-status text-done"><i class="bi bi-check-circle-fill"></i> Diambil</small>
+                                            @elseif($statusItem == 'belum_diambil')
+                                                <small class="item-status text-ready"><i class="bi bi-box-seam-fill"></i> Siap Diambil</small>
+                                            @else
+                                                <small class="item-status text-process"><i class="bi bi-hourglass-split"></i> Proses</small>
+                                            @endif
                                         @endif
                                     </span>
 
-                                    {{-- Rating Statis --}}
                                     @if($isSuccess && $detail->ratingUlasan)
                                         <div class="static-rating mt-1">
                                             @for($i = 1; $i <= 5; $i++)
@@ -204,7 +225,7 @@
                                     return [
                                         'id_detail' => $d->id_detail,
                                         'name' => $d->barang->nama_barang ?? 'Produk',
-                                        'status' => strtolower(trim($d->status_barang)), // Bersihkan status untuk JS
+                                        'status' => strtolower(trim($d->status_barang)),
                                         'rating' => $d->ratingUlasan ? $d->ratingUlasan->rating : null,
                                         'ulasan' => $d->ratingUlasan ? $d->ratingUlasan->ulasan : ''
                                     ];
@@ -219,13 +240,37 @@
                             </button>
 
                         @elseif ($isPending)
-                            <a href="{{ $order->payment_link ?? '#' }}" target="_blank" class="btn btn-warning btn-sm px-3 rounded-pill fw-bold text-dark shadow-sm">
-                                <i class="bi bi-wallet2 me-1"></i> Bayar Sekarang
-                            </a>
+                            <div class="d-flex flex-column align-items-end">
+                                <div class="d-flex gap-2">
+                                    {{-- BUTTON BATALKAN --}}
+                                    <button type="button" class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-bold shadow-sm"
+                                            onclick="cancelOrder('{{ $order->id_transaksi }}')">
+                                        <i class="bi bi-x-circle me-1"></i> Batalkan
+                                    </button>
+
+                                    {{-- BUTTON BAYAR --}}
+                                    <a href="{{ $order->payment_link ?? '#' }}" target="_blank" class="btn btn-warning btn-sm px-3 rounded-pill fw-bold text-dark shadow-sm">
+                                        <i class="bi bi-wallet2 me-1"></i> Bayar Sekarang
+                                    </a>
+                                </div>
+
+                                {{-- TIMER HITUNG MUNDUR --}}
+                                @if($showTimer)
+                                    <small class="text-danger fw-bold countdown-timer mt-1" 
+                                           data-deadline="{{ $deadline->timestamp * 1000 }}">
+                                           <i class="bi bi-stopwatch"></i> Menghitung...
+                                    </small>
+                                @endif
+                            </div>
                         
                         @else
-                            <span class="text-muted small fst-italic">
-                                {{ $status == 'expired' ? 'Waktu pembayaran habis' : 'Transaksi dibatalkan' }}
+                            {{-- Jika status EXPIRED/FAILED atau PENDING tapi WAKTU HABIS --}}
+                            <span class="text-muted small fst-italic text-end">
+                                @if($isExpiredByTime && $status == 'pending')
+                                    Waktu pembayaran (30 menit) habis.<br>Transaksi dibatalkan otomatis.
+                                @else
+                                    {{ $status == 'expired' ? 'Waktu pembayaran habis' : 'Transaksi dibatalkan' }}
+                                @endif
                             </span>
                         @endif
                     </div>
@@ -244,7 +289,6 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center p-4">
-                
                 <form id="ratingForm">
                     <div class="mb-3 text-start" id="productSelectContainer">
                         <label class="form-label fw-bold small text-muted">Pilih Produk untuk Diulas:</label>
@@ -283,7 +327,6 @@
                         </div>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
@@ -293,6 +336,93 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    // === SCRIPT COUNTDOWN TIMER ===
+    function startTimers() {
+        const timers = document.querySelectorAll('.countdown-timer');
+
+        timers.forEach(timer => {
+            const deadline = parseInt(timer.getAttribute('data-deadline'));
+
+            const updateTimer = () => {
+                const now = new Date().getTime();
+                const distance = deadline - now;
+
+                if (distance < 0) {
+                    timer.innerHTML = "Waktu Habis";
+                    // Opsional: Reload halaman agar status berubah jadi 'Dibatalkan'
+                    // location.reload(); 
+                    return;
+                }
+
+                // Hitung menit dan detik
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                timer.innerHTML = `<i class="bi bi-stopwatch"></i> Sisa Waktu: ${minutes}m ${seconds}d`;
+            };
+
+            updateTimer(); // Jalankan langsung biar gak nunggu 1 detik
+            setInterval(updateTimer, 1000);
+        });
+    }
+
+    // Jalankan timer saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', startTimers);
+
+    // === LOGIKA BATALKAN PESANAN ===
+    function cancelOrder(transactionId) {
+        Swal.fire({
+            title: 'Batalkan Pesanan?',
+            text: "Apakah Anda yakin ingin membatalkan pesanan ini? Status akan berubah menjadi 'Gagal'.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Batalkan!',
+            cancelButtonText: 'Tidak'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Tampilkan Loading
+                Swal.fire({
+                    title: 'Memproses...',
+                    text: 'Sedang membatalkan pesanan...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Kirim Request ke Server
+                fetch("{{ route('buyer.orders.cancel') }}", { 
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({ id_transaksi: transactionId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            title: 'Dibatalkan!',
+                            text: 'Pesanan berhasil dibatalkan.',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload(); // Refresh halaman
+                        });
+                    } else {
+                        Swal.fire('Gagal!', data.message || 'Terjadi kesalahan.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error!', 'Gagal menghubungi server.', 'error');
+                });
+            }
+        });
+    }
+
     // === LOGIKA RATING ===
     let currentItems = [];
 
@@ -331,7 +461,6 @@
             } else if (status === 'belum_diambil') {
                 option.text = item.name + " (Siap Diambil)";
             } else {
-                // status 'baru' atau 'proses'
                 option.text = item.name + " (Proses)";
             }
             select.appendChild(option);
@@ -361,12 +490,10 @@
         resetStars();
         document.getElementById('reviewText').value = '';
 
-        // Hanya boleh rating jika status == 'sudah_diambil'
         if (status !== 'sudah_diambil') {
             activeSection.classList.add('d-none');
             warningMessage.classList.remove('d-none');
             
-            // Opsional: Ubah pesan warning jika statusnya 'belum_diambil'
             const warningText = warningMessage.querySelector('small');
             if(status === 'belum_diambil') {
                 warningText.innerHTML = "Silakan ambil pesanan Anda terlebih dahulu sebelum memberi ulasan.";
@@ -427,7 +554,6 @@
         const selectedItem = currentItems[selectedIndex];
         const status = selectedItem.status ? selectedItem.status.toLowerCase() : '';
 
-        // Validasi Status lagi
         if (status !== 'sudah_diambil') {
              Swal.fire('Error', 'Barang ini belum selesai diambil, tidak bisa diberi ulasan.', 'error');
              return;
