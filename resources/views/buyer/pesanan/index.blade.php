@@ -5,6 +5,12 @@
 @section('content')
     {{-- 1. Load Styles --}}
     @include('buyer.pesanan.partials.styles')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Beranda</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Pesenan</li>
+        </ol>
+    </nav>
 
     <div class="container my-5" style="max-width: 800px;">
         <h3 class="fw-bold mb-4">Riwayat Pesanan</h3>

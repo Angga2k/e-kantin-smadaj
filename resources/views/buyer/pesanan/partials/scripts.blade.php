@@ -68,7 +68,7 @@
             customClass: { denyButton: 'text-dark fw-bold' }
         }).then((result) => {
             if (result.isConfirmed) {
-                window.open(currentLink, '_blank');
+                window.location.href = currentLink;
             } else if (result.isDenied) {
                 // Oper rawTotal ke fungsi selectNewMethod
                 selectNewMethod(transactionId, currentMethod, rawTotal);
