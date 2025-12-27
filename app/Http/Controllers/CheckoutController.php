@@ -245,4 +245,37 @@ class CheckoutController extends Controller
         // Return ke view errors/payment.blade.php
         return view('errors.payment', compact('status'));
     }
+
+    public function checkPendingStatus()
+    {
+        if(!auth()->check()){
+            return response()->json([
+                'hasPending' => false
+            ]);
+        }
+
+        // Cek apakah ada transaksi pending dalam 30 menit terakhir
+        $hasPending = Transaksi::where('id_user_pembeli', auth()->id())
+            ->where('status_pembayaran', 'pending')
+            ->where('waktu_transaksi', '>=', now()->subMinutes(30))
+            ->exists(); // Mengembalikan true/false
+
+        return response()->json([
+            'hasPending' => $hasPending
+        ]);
+    }
+    public function checkPendingStatusss($id)
+    {
+
+        // Cek apakah ada transaksi pending dalam 30 menit terakhir
+        $hasPending = Transaksi::where('id_user_pembeli', $id)
+            ->where('status_pembayaran', 'pending')
+            ->where('waktu_transaksi', '>=', now()->subMinutes(30))
+            ->exists(); // Mengembalikan true/false
+
+        dd($hasPending);
+        return response()->json([
+            'hasPending' => $hasPending
+        ]);
+    }
 }

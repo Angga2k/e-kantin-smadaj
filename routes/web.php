@@ -61,6 +61,7 @@ Route::middleware(['auth'])->group(function () {
     // Route Siswa / Civitas
     Route::middleware([RoleChecker::class . ':siswa,civitas_akademik'])->group(function () {
         Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/check-pending-transaction', [CheckoutController::class, 'checkPendingStatus'])->name('api.check-pending');
         Route::controller(ProfileController::class)->group(function () {
             Route::get('/foto-profile', 'index')->name('profile.index');
             Route::get('/profile/edit', 'edit')->name('profile.edit');

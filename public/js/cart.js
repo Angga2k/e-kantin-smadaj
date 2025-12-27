@@ -34,7 +34,27 @@ function saveCartItems(items) {
 }
 
 /**
- * FUNGSI KALKULASI GABUNGAN (DARI BLADE)
+ * VALIDASI STATUS PENDING VIA AJAX (Anti-Bug Live Server)
+ */
+async function checkPendingStatus() {
+    try {
+        // Endpoint ini harus dikelola di sisi Laravel (Controller)
+        const response = await fetch('/check-pending-transaction', {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        });
+        const data = await response.json();
+        return data.hasPending; 
+    } catch (e) {
+        console.error("Gagal mengecek status pending:", e);
+        return false; // Fallback jika gagal koneksi agar tidak memblokir user secara total
+    }
+}
+
+/**
+ * FUNGSI KALKULASI GABUNGAN
  */
 function calculateFinalTotal() {
     const selectPayment = document.getElementById("selectPaymentMethod");
@@ -50,11 +70,9 @@ function calculateFinalTotal() {
 
     let adminFee = 0;
     if (selectPayment && selectPayment.selectedIndex > 0) {
-        const selectedOption =
-            selectPayment.options[selectPayment.selectedIndex];
+        const selectedOption = selectPayment.options[selectPayment.selectedIndex];
         const feeType = selectedOption.getAttribute("data-fee-type");
-        const feeValue =
-            parseFloat(selectedOption.getAttribute("data-fee")) || 0;
+        const feeValue = parseFloat(selectedOption.getAttribute("data-fee")) || 0;
 
         if (feeType === "flat") {
             adminFee = feeValue;
@@ -67,8 +85,7 @@ function calculateFinalTotal() {
 
     if (displaySubtotal) displaySubtotal.innerText = formatRupiah(subtotal);
     if (displayAdminFee) displayAdminFee.innerText = formatRupiah(adminFee);
-    if (displayGrandTotal)
-        displayGrandTotal.innerText = formatRupiah(grandTotal);
+    if (displayGrandTotal) displayGrandTotal.innerText = formatRupiah(grandTotal);
 
     // Update input hidden untuk total murni barang
     const totalInput = document.getElementById("inputTotalBayar");
@@ -125,30 +142,16 @@ function renderCart() {
                 <div class="d-flex align-items-center" style="max-width: 70%;">
                     <img src="${imageSrc}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" class="me-3 border">
                     <div>
-                        <h6 class="mb-1 text-truncate fw-bold" style="font-size: 0.9rem;">${
-                            item.name
-                        }</h6>
-                        <div class="text-muted small">Rp ${formatRupiah(
-                            item.price
-                        ).replace("Rp ", "")} x ${item.quantity}</div>
-                        ${
-                            item.varian
-                                ? `<span class="badge bg-light text-dark border">${item.varian}</span>`
-                                : ""
-                        }
+                        <h6 class="mb-1 text-truncate fw-bold" style="font-size: 0.9rem;">${item.name}</h6>
+                        <div class="text-muted small">Rp ${formatRupiah(item.price).replace("Rp ", "")} x ${item.quantity}</div>
+                        ${item.varian ? `<span class="badge bg-light text-dark border">${item.varian}</span>` : ""}
                     </div>
                 </div>
                 <div class="text-end">
-                    <span class="fw-bold text-dark d-block mb-2">${formatRupiah(
-                        subtotal
-                    )}</span>
+                    <span class="fw-bold text-dark d-block mb-2">${formatRupiah(subtotal)}</span>
                     <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-outline-secondary btn-minus" data-id="${
-                            item.id
-                        }">-</button>
-                        <button type="button" class="btn btn-outline-secondary btn-plus" data-id="${
-                            item.id
-                        }">+</button>
+                        <button type="button" class="btn btn-outline-secondary btn-minus" data-id="${item.id}">-</button>
+                        <button type="button" class="btn btn-outline-secondary btn-plus" data-id="${item.id}">+</button>
                     </div>
                 </div>
             </li>`;
@@ -222,21 +225,15 @@ function handleAddToCart(event) {
     const inputQty = document.getElementById("inputQty");
     const quantity = inputQty ? parseInt(inputQty.value) || 1 : 1;
 
-    const selectedVarian = document.querySelector(
-        'input[name="varian"]:checked'
-    );
+    const selectedVarian = document.querySelector('input[name="varian"]:checked');
     let varianName = "";
     if (selectedVarian) {
-        const label = document.querySelector(
-            `label[for="${selectedVarian.id}"]`
-        );
+        const label = document.querySelector(`label[for="${selectedVarian.id}"]`);
         if (label) varianName = label.innerText.trim();
     }
 
     const newItem = {
-        id:
-            btn.dataset.id +
-            (varianName ? "-" + varianName.replace(/\s+/g, "") : ""),
+        id: btn.dataset.id + (varianName ? "-" + varianName.replace(/\s+/g, "") : ""),
         original_id: btn.dataset.id,
         name: btn.dataset.name,
         price: parseFloat(btn.dataset.price),
@@ -250,11 +247,21 @@ function handleAddToCart(event) {
 
     const offcanvasEl = document.getElementById("cartOffcanvas");
     if (offcanvasEl && typeof bootstrap !== "undefined") {
-        const bsOffcanvas =
-            bootstrap.Offcanvas.getInstance(offcanvasEl) ||
-            new bootstrap.Offcanvas(offcanvasEl);
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
         bsOffcanvas.show();
     }
+}
+
+function closeCartOffcanvas() {
+    const cartEl = document.getElementById("cartOffcanvas");
+    if (!cartEl || typeof bootstrap === "undefined") return;
+
+    const instance =
+        bootstrap.Offcanvas.getInstance(cartEl) ||
+        new bootstrap.Offcanvas(cartEl);
+
+    instance.hide();
+    
 }
 
 /**
@@ -264,8 +271,7 @@ function executeSubmission(cart, btnKonfirmasi, checkoutForm) {
     isSubmitting = true;
     if (btnKonfirmasi) {
         btnKonfirmasi.disabled = true;
-        btnKonfirmasi.innerHTML =
-            '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+        btnKonfirmasi.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
     }
 
     Swal.fire({
@@ -299,6 +305,7 @@ function executeSubmission(cart, btnKonfirmasi, checkoutForm) {
 
     totalInput.value = totalHitung;
     localStorage.removeItem(CART_STORAGE_KEY);
+    closeCartOffcanvas();
     checkoutForm.submit();
 }
 
@@ -316,20 +323,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartOffcanvas = document.getElementById("cartOffcanvas");
     if (cartOffcanvas) {
         cartOffcanvas.addEventListener("show.bs.offcanvas", renderCart);
-        // Listener gabungan dari Blade
-        cartOffcanvas.addEventListener(
-            "shown.bs.offcanvas",
-            calculateFinalTotal
-        );
+        cartOffcanvas.addEventListener("shown.bs.offcanvas", calculateFinalTotal);
     }
 
-    // Listener gabungan dari Blade untuk dropdown pembayaran
     const selectPayment = document.getElementById("selectPaymentMethod");
     if (selectPayment) {
         selectPayment.addEventListener("change", calculateFinalTotal);
     }
 
-    // MutationObserver gabungan dari Blade
     const observerTarget = document.getElementById("cartItemsContainer");
     if (observerTarget) {
         const observer = new MutationObserver(calculateFinalTotal);
@@ -338,27 +339,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const checkoutForm = document.getElementById("checkoutForm");
     if (checkoutForm) {
-        checkoutForm.addEventListener("submit", function (e) {
+        checkoutForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             if (isSubmitting) return false;
 
             const cart = getCartItems();
             const dateInp = document.getElementById("tanggalPicker");
-            const paymentSelect = document.getElementById(
-                "selectPaymentMethod"
-            );
+            const paymentSelect = document.getElementById("selectPaymentMethod");
 
-            if (cart.length === 0)
-                return Swal.fire("Ops!", "Keranjang kosong.", "warning");
+            if (cart.length === 0) return Swal.fire("Ops!", "Keranjang kosong.", "warning");
             if (!dateInp?.value || !paymentSelect?.value) {
-                return Swal.fire(
-                    "Lengkapi Data",
-                    "Pilih tanggal dan metode bayar.",
-                    "warning"
-                );
+                return Swal.fire("Lengkapi Data", "Pilih tanggal dan metode bayar.", "warning");
             }
 
-            if (this.dataset.hasPending === "true") {
+            // 1. Verifikasi Transaksi Pending Secara Real-time (AJAX)
+            Swal.fire({
+                title: 'Memverifikasi status...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const hasPending = await checkPendingStatus();
+            Swal.close();
+
+            if (hasPending) {
                 return Swal.fire({
                     title: "Transaksi Pending!",
                     icon: "warning",
@@ -366,24 +370,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     showCancelButton: true,
                     confirmButtonText: "Lihat Pesanan",
                 }).then((res) => {
-                    if (res.isConfirmed)
-                        window.location.href = this.dataset.ordersUrl;
+                    if (res.isConfirmed) window.location.href = this.dataset.ordersUrl;
                 });
             }
 
-            const paymentName =
-                paymentSelect.options[paymentSelect.selectedIndex].text;
-            const grandTotalText =
-                document.getElementById("displayGrandTotal").innerText;
+            // 2. Jika aman, lanjut konfirmasi pesanan
+            const paymentName = paymentSelect.options[paymentSelect.selectedIndex].text;
+            const grandTotalText = document.getElementById("displayGrandTotal").innerText;
 
-            let itemsHtml =
-                '<div class="text-start border p-2 rounded mb-3" style="font-size: 0.85rem; background:#f8f9fa; max-height:150px; overflow-y:auto;">';
+            let itemsHtml = '<div class="text-start border p-2 rounded mb-3" style="font-size: 0.85rem; background:#f8f9fa; max-height:150px; overflow-y:auto;">';
             cart.forEach((item) => {
-                itemsHtml += `<div class="d-flex justify-content-between"><span>${
-                    item.quantity
-                }x ${item.name}</span><b>${formatRupiah(
-                    item.price * item.quantity
-                )}</b></div>`;
+                itemsHtml += `<div class="d-flex justify-content-between"><span>${item.quantity}x ${item.name}</span><b>${formatRupiah(item.price * item.quantity)}</b></div>`;
             });
             itemsHtml += "</div>";
 
@@ -396,12 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cancelButtonText: "Cek Lagi",
                 reverseButtons: true,
             }).then((result) => {
-                if (result.isConfirmed)
-                    executeSubmission(
-                        cart,
-                        document.getElementById("btnKonfirmasi"),
-                        checkoutForm
-                    );
+                if (result.isConfirmed) executeSubmission(cart, document.getElementById("btnKonfirmasi"), checkoutForm);
             });
         });
     }
