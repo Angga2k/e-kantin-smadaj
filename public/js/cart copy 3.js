@@ -1,58 +1,57 @@
-const CART_STORAGE_KEY = 'e_kantin_cart';
+/**
+ * KONFIGURASI & VARIABEL GLOBAL
+ */
+const CART_STORAGE_KEY = "e_kantin_cart";
+let isSubmitting = false; // Flag untuk mencegah double-click
 
 /**
- * Helper: Format angka menjadi format Rupiah tanpa desimal.
+ * HELPER FUNCTIONS
  */
 function formatRupiah(number) {
-    if (number === null || number === undefined) return '0';
+    if (number === null || number === undefined) return "0";
     return number.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-/**
- * Mengambil data keranjang dari Local Storage.
- */
 function getCartItems() {
     try {
         const cartString = localStorage.getItem(CART_STORAGE_KEY);
         return cartString ? JSON.parse(cartString) : [];
     } catch (e) {
-        console.error("Error reading cart from Local Storage:", e);
+        console.error("Error reading cart:", e);
         return [];
     }
 }
 
-/**
- * Menyimpan array item ke Local Storage dan memicu update UI.
- */
 function saveCartItems(items) {
     try {
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
         renderCart();
         updateCartCount();
     } catch (e) {
-        console.error("Error saving cart to Local Storage:", e);
+        console.error("Error saving cart:", e);
     }
 }
 
 /**
- * Merender item keranjang di dalam Offcanvas.
+ * UI RENDERING (OFFCANVAS)
  */
 function renderCart() {
     const items = getCartItems();
-    const container = document.getElementById('cartItemsContainer');
-    const totalEl = document.getElementById('cartGrandTotal');
-    const btn = document.getElementById('btnKonfirmasi');
-    const countSpan = document.querySelector('.cart-count-span');
+    const container = document.getElementById("cartItemsContainer");
+    const totalEl = document.getElementById("cartGrandTotal");
+    const btn = document.getElementById("btnKonfirmasi");
+    const countSpan = document.querySelector(".cart-count-span");
 
-    // Update Badge Count di Header Offcanvas
     if (countSpan) {
-        const totalQty = items.reduce((sum, item) => sum + parseInt(item.quantity), 0);
-        countSpan.innerText = totalQty + ' barang';
+        const totalQty = items.reduce(
+            (sum, item) => sum + parseInt(item.quantity),
+            0
+        );
+        countSpan.innerText = totalQty + " barang";
     }
 
     if (!container) return;
 
-    // Jika Kosong
     if (items.length === 0) {
         container.innerHTML = `
             <div class="text-center my-5 empty-cart-placeholder">
@@ -61,243 +60,312 @@ function renderCart() {
             </div>
         `;
         if (btn) btn.disabled = true;
-        if (totalEl) totalEl.innerText = 'Rp 0';
+        if (totalEl) totalEl.innerText = "Rp 0";
         return;
     }
 
-    // Jika Ada Isi
     if (btn) btn.disabled = false;
     let total = 0;
     let html = '<ul class="list-group list-group-flush">';
 
-    items.forEach(item => {
+    items.forEach((item) => {
         let subtotal = item.price * item.quantity;
         total += subtotal;
-
-        // Cek gambar (fallback jika tidak ada)
-        let imageSrc = item.photo_url;
-        if (!imageSrc || imageSrc === 'undefined') {
-            imageSrc = '/icon/Makanan.png'; // Gambar default
-        }
+        let imageSrc =
+            item.photo_url && item.photo_url !== "undefined"
+                ? item.photo_url
+                : "/icon/Makanan.png";
 
         html += `
             <li class="list-group-item px-0 py-3 border-bottom d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center" style="max-width: 70%;">
                     <img src="${imageSrc}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" class="me-3 border">
                     <div>
-                        <h6 class="mb-1 text-truncate fw-bold" style="font-size: 0.9rem;">${item.name}</h6>
-                        <div class="text-muted small">
-                            Rp ${formatRupiah(item.price)} x ${item.quantity}
-                        </div>
-                        ${item.varian ? `<span class="badge bg-light text-dark border">${item.varian}</span>` : ''}
+                        <h6 class="mb-1 text-truncate fw-bold" style="font-size: 0.9rem;">${
+                            item.name
+                        }</h6>
+                        <div class="text-muted small">Rp ${formatRupiah(
+                            item.price
+                        )} x ${item.quantity}</div>
+                        ${
+                            item.varian
+                                ? `<span class="badge bg-light text-dark border">${item.varian}</span>`
+                                : ""
+                        }
                     </div>
                 </div>
                 <div class="text-end">
-                    <span class="fw-bold text-dark d-block mb-2">Rp ${formatRupiah(subtotal)}</span>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary btn-minus" data-id="${item.id}" style="padding: 0.1rem 0.4rem;">-</button>
-                        <button type="button" class="btn btn-outline-secondary btn-plus" data-id="${item.id}" style="padding: 0.1rem 0.4rem;">+</button>
+                    <span class="fw-bold text-dark d-block mb-2">Rp ${formatRupiah(
+                        subtotal
+                    )}</span>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-secondary btn-minus" data-id="${
+                            item.id
+                        }">-</button>
+                        <button type="button" class="btn btn-outline-secondary btn-plus" data-id="${
+                            item.id
+                        }">+</button>
                     </div>
                 </div>
-            </li>
-        `;
+            </li>`;
     });
-    html += '</ul>';
-
+    html += "</ul>";
     container.innerHTML = html;
-    if (totalEl) totalEl.innerText = 'Rp ' + formatRupiah(total);
-
-    // Re-attach event listeners untuk tombol +/-
+    if (totalEl) totalEl.innerText = "Rp " + formatRupiah(total);
     addCartEventListeners();
 }
 
-/**
- * Menambahkan listener ke tombol +/- di dalam keranjang
- */
 function addCartEventListeners() {
-    document.querySelectorAll('.btn-plus').forEach(button => {
-        button.onclick = (e) => {
-            e.stopPropagation(); // Mencegah event bubbling
-            updateQuantity(button.dataset.id, 1);
+    document.querySelectorAll(".btn-plus").forEach((btn) => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            updateQuantity(btn.dataset.id, 1);
         };
     });
-
-    document.querySelectorAll('.btn-minus').forEach(button => {
-        button.onclick = (e) => {
+    document.querySelectorAll(".btn-minus").forEach((btn) => {
+        btn.onclick = (e) => {
             e.stopPropagation();
-            updateQuantity(button.dataset.id, -1);
+            updateQuantity(btn.dataset.id, -1);
         };
     });
 }
 
-/**
- * Update Kuantitas Item
- */
 function updateQuantity(itemId, amount) {
     const cart = getCartItems();
-    const itemIndex = cart.findIndex(item => item.id === itemId);
-
-    if (itemIndex !== -1) {
-        cart[itemIndex].quantity += amount;
-
-        if (cart[itemIndex].quantity <= 0) {
-            cart.splice(itemIndex, 1); // Hapus jika 0
-        }
+    const idx = cart.findIndex((item) => item.id === itemId);
+    if (idx !== -1) {
+        cart[idx].quantity += amount;
+        if (cart[idx].quantity <= 0) cart.splice(idx, 1);
     }
     saveCartItems(cart);
 }
 
+function updateCartCount() {
+    const items = getCartItems();
+    const total = items.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+    const badge = document.querySelector(".cart-count-span");
+    if (badge) badge.innerText = total + " barang";
+}
+
 /**
- * Menambah Item Baru (Dipanggil dari tombol 'Tambah Keranjang')
+ * LOGIKA TAMBAH KE KERANJANG (HALAMAN DETAIL)
  */
 function addToCart(newItem) {
     const cart = getCartItems();
-    const existingItemIndex = cart.findIndex(item => item.id === newItem.id);
-
-    if (existingItemIndex !== -1) {
-        cart[existingItemIndex].quantity += newItem.quantity;
+    const existingIdx = cart.findIndex((item) => item.id === newItem.id);
+    if (existingIdx !== -1) {
+        cart[existingIdx].quantity += newItem.quantity;
     } else {
         cart.push(newItem);
     }
-
     saveCartItems(cart);
 
-    // Tampilkan notifikasi kecil (Opsional)
-    if (typeof Swal !== 'undefined') {
+    if (typeof Swal !== "undefined") {
         const Toast = Swal.mixin({
-            toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, timerProgressBar: true
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
         });
-        Toast.fire({ icon: 'success', title: 'Masuk keranjang!' });
+        Toast.fire({ icon: "success", title: "Masuk keranjang!" });
     }
 }
 
-/**
- * Handler Tombol "Tambah Keranjang" di Halaman Detail
- */
 function handleAddToCart(event) {
     const btn = event.currentTarget;
-    const inputQty = document.getElementById('inputQty');
+    const inputQty = document.getElementById("inputQty");
+    const quantity = inputQty ? parseInt(inputQty.value) || 1 : 1;
 
-    const quantity = inputQty ? (parseInt(inputQty.value) || 1) : 1;
-    const itemPrice = parseFloat(btn.dataset.price);
-    const itemId = btn.dataset.id;
-
-    // Cek Varian Radio Button
-    const selectedVarian = document.querySelector('input[name="varian"]:checked');
-    // Ambil nama varian dari Label yang sesuai dengan ID radio
-    let varianName = '';
+    const selectedVarian = document.querySelector(
+        'input[name="varian"]:checked'
+    );
+    let varianName = "";
     if (selectedVarian) {
-        const label = document.querySelector(`label[for="${selectedVarian.id}"]`);
+        const label = document.querySelector(
+            `label[for="${selectedVarian.id}"]`
+        );
         if (label) varianName = label.innerText.trim();
     }
 
     const newItem = {
-        id: itemId + (varianName ? '-' + varianName.replace(/\s+/g, '') : ''), // ID Unik kombinasi
-        original_id: itemId,
+        id:
+            btn.dataset.id +
+            (varianName ? "-" + varianName.replace(/\s+/g, "") : ""),
+        original_id: btn.dataset.id,
         name: btn.dataset.name,
-        price: itemPrice,
+        price: parseFloat(btn.dataset.price),
         quantity: quantity,
         jenis_barang: btn.dataset.jenis,
         photo_url: btn.dataset.photo,
-        varian: varianName
+        varian: varianName,
     };
 
     addToCart(newItem);
 
-    // Buka Offcanvas Otomatis
-    const offcanvasEl = document.getElementById('cartOffcanvas');
-    if (offcanvasEl && typeof bootstrap !== 'undefined') {
-        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
+    const offcanvasEl = document.getElementById("cartOffcanvas");
+    if (offcanvasEl && typeof bootstrap !== "undefined") {
+        const bsOffcanvas =
+            bootstrap.Offcanvas.getInstance(offcanvasEl) ||
+            new bootstrap.Offcanvas(offcanvasEl);
         bsOffcanvas.show();
     }
 }
 
 /**
- * Update Badge Cart di Navbar Utama
+ * EKSEKUSI PEMBAYARAN
  */
-function updateCartCount() {
-    const items = getCartItems();
-    const totalItems = items.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+function executeSubmission(cart, btnKonfirmasi, checkoutForm) {
+    isSubmitting = true;
+    if (btnKonfirmasi) {
+        btnKonfirmasi.disabled = true;
+        btnKonfirmasi.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+    }
 
-    // Selector untuk span 'Rp 0' atau badge di header layout
-    const headerCountElements = document.querySelectorAll('.header-cart-count'); // Tambahkan class ini di navbar jika perlu
+    Swal.fire({
+        title: "Memproses Pesanan...",
+        html: 'Sedang mengalihkan ke pembayaran.<br><small class="text-muted">Jangan tutup halaman ini.</small>',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading(),
+    });
 
-    // Update badge di dalam offcanvas title juga
-    const offcanvasBadge = document.querySelector('.cart-count-span');
-    if (offcanvasBadge) offcanvasBadge.innerText = totalItems + ' barang';
+    const hiddenContainer = document.getElementById("hiddenItemsContainer");
+    const totalInput = document.getElementById("inputTotalBayar");
+    hiddenContainer.innerHTML = "";
+    let totalHitung = 0;
+
+    cart.forEach((item, index) => {
+        const idInp = document.createElement("input");
+        idInp.type = "hidden";
+        idInp.name = `items[${index}][id_barang]`;
+        idInp.value = item.original_id;
+        hiddenContainer.appendChild(idInp);
+
+        const qtyInp = document.createElement("input");
+        qtyInp.type = "hidden";
+        qtyInp.name = `items[${index}][jumlah]`;
+        qtyInp.value = item.quantity;
+        hiddenContainer.appendChild(qtyInp);
+
+        totalHitung += item.price * item.quantity;
+    });
+
+    totalInput.value = totalHitung;
+    localStorage.removeItem(CART_STORAGE_KEY);
+    checkoutForm.submit();
 }
 
-// --- INISIALISASI SAAT DOM READY ---
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * INITIALIZATION
+ */
+document.addEventListener("DOMContentLoaded", () => {
     updateCartCount();
 
-    // 1. Render saat offcanvas dibuka
-    const cartOffcanvas = document.getElementById('cartOffcanvas');
-    if (cartOffcanvas) {
-        cartOffcanvas.addEventListener('show.bs.offcanvas', renderCart);
-    }
-
-    // 2. Listener Tombol Tambah (Halaman Detail)
-    const addToCartButton = document.getElementById('addToCartButton');
+    // 1. Tombol Tambah Keranjang (Halaman Detail)
+    const addToCartButton = document.getElementById("addToCartButton");
     if (addToCartButton) {
-        addToCartButton.addEventListener('click', handleAddToCart);
+        addToCartButton.addEventListener("click", handleAddToCart);
     }
 
-    // 3. Listener FORM CHECKOUT (Pengganti fungsi checkout() lama)
-    const checkoutForm = document.getElementById('checkoutForm');
+    // 2. Offcanvas Render
+    const cartOffcanvas = document.getElementById("cartOffcanvas");
+    if (cartOffcanvas) {
+        cartOffcanvas.addEventListener("show.bs.offcanvas", renderCart);
+    }
+
+    // 3. Form Checkout Submit
+    const checkoutForm = document.getElementById("checkoutForm");
     if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Stop submit standar
+        checkoutForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            if (isSubmitting) return false;
 
             const cart = getCartItems();
+            const dateInp = document.getElementById("tanggalPicker");
+            const paymentSelect = document.getElementById(
+                "selectPaymentMethod"
+            );
 
-            // Validasi Kosong
-            if (cart.length === 0) {
-                if(typeof Swal !== 'undefined') Swal.fire('Ops!', 'Keranjang kosong.', 'warning');
-                else alert('Keranjang kosong!');
-                return;
+            if (cart.length === 0)
+                return Swal.fire("Ops!", "Keranjang kosong.", "warning");
+            if (!dateInp?.value || !paymentSelect?.value) {
+                return Swal.fire(
+                    "Lengkapi Data",
+                    "Pilih tanggal dan metode bayar.",
+                    "warning"
+                );
             }
 
-            // Validasi Input Tanggal (Browser 'required' attribute handles empty, but logic check here is safer)
-            const dateInput = document.getElementById('tanggalPicker');
-            if (dateInput && !dateInput.value) {
-                if(typeof Swal !== 'undefined') Swal.fire('Lengkapi Data', 'Mohon pilih tanggal pengambilan.', 'warning');
-                else alert('Pilih tanggal pengambilan!');
-                return;
+            // Cek Transaksi Pending
+            if (this.dataset.hasPending === "true") {
+                return Swal.fire({
+                    title: "Transaksi Pending!",
+                    icon: "warning",
+                    text: "Selesaikan pembayaran sebelumnya terlebih dahulu.",
+                    showCancelButton: true,
+                    confirmButtonText: "Lihat Pesanan",
+                }).then((res) => {
+                    if (res.isConfirmed)
+                        window.location.href = this.dataset.ordersUrl;
+                });
             }
 
-            // Populate Input Hidden
-            const hiddenContainer = document.getElementById('hiddenItemsContainer');
-            const totalInput = document.getElementById('inputTotalBayar');
-            hiddenContainer.innerHTML = '';
+            // KONFIRMASI RINGKASAN
+            const paymentName =
+                paymentSelect.options[paymentSelect.selectedIndex].text;
+            const grandTotalText =
+                document.getElementById("displayGrandTotal").innerText;
 
-            let totalHitung = 0;
-
-            cart.forEach((item, index) => {
-                // Input: items[0][id_barang]
-                const inputId = document.createElement('input');
-                inputId.type = 'hidden';
-                inputId.name = `items[${index}][id_barang]`;
-                inputId.value = item.original_id; // ID asli database
-                hiddenContainer.appendChild(inputId);
-
-                // Input: items[0][jumlah]
-                const inputQty = document.createElement('input');
-                inputQty.type = 'hidden';
-                inputQty.name = `items[${index}][jumlah]`;
-                inputQty.value = item.quantity;
-                hiddenContainer.appendChild(inputQty);
-
-                totalHitung += (item.price * item.quantity);
+            let itemsHtml =
+                '<div class="text-start border p-2 rounded mb-3" style="font-size: 0.85rem; background:#f8f9fa; max-height:150px; overflow-y:auto;">';
+            cart.forEach((item) => {
+                itemsHtml += `<div class="d-flex justify-content-between"><span>${
+                    item.quantity
+                }x ${item.name}</span><b>Rp ${formatRupiah(
+                    item.price * item.quantity
+                )}</b></div>`;
             });
+            itemsHtml += "</div>";
 
-            totalInput.value = totalHitung;
-
-            // Submit Form ke Laravel (akan redirect ke Xendit)
-            // Opsional: Hapus keranjang setelah submit agar pas balik sudah kosong
-            localStorage.removeItem(CART_STORAGE_KEY);
-
-            this.submit();
+            Swal.fire({
+                title: "Konfirmasi Pesanan",
+                html: `
+                    <p class="small text-muted mb-2">Apakah rincian pesanan sudah benar?</p>
+                    ${itemsHtml}
+                    <div class="text-start small">
+                        <div class="d-flex justify-content-between"><span>Metode:</span> <b>${paymentName}</b></div>
+                        <div class="d-flex justify-content-between text-primary fs-5 mt-2"><span>Total:</span> <b>${grandTotalText}</b></div>
+                    </div>`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Ya, Bayar Sekarang",
+                cancelButtonText: "Cek Lagi",
+                reverseButtons: true,
+            }).then((result) => {
+                if (result.isConfirmed)
+                    executeSubmission(
+                        cart,
+                        document.getElementById("btnKonfirmasi"),
+                        checkoutForm
+                    );
+            });
         });
     }
+});
+
+/**
+ * BFCACHE FIX (BACK BUTTON)
+ */
+window.addEventListener("pageshow", function (event) {
+    isSubmitting = false;
+    if (typeof Swal !== "undefined") Swal.close();
+    const btn = document.getElementById("btnKonfirmasi");
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = "Konfirmasi & Bayar";
+    }
+    renderCart();
+    updateCartCount();
 });

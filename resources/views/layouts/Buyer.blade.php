@@ -65,9 +65,6 @@
         @include('components.keranjang')
     </div>
 
-    {{-- LOGIKA KERANJANG (LOCAL STORAGE) --}}
-    <script src="{{ asset('js/cart.js') }}"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {{-- TANGGAL DI KERANJANG GUYS --}}
@@ -83,6 +80,10 @@
         });
     </script>
 
+
+
+    {{-- LOGIKA KERANJANG (LOCAL STORAGE) --}}
+    <script src="{{ asset('js/cart.js') }}"></script>
 
     {{-- SEARCH --}}
     {{-- <script>

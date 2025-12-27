@@ -9,7 +9,7 @@ let isSubmitting = false; // Flag untuk mencegah double-click
  */
 function formatRupiah(number) {
     if (number === null || number === undefined) return "0";
-    return number.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return "Rp " + number.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 function getCartItems() {
@@ -27,9 +27,52 @@ function saveCartItems(items) {
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
         renderCart();
         updateCartCount();
+        calculateFinalTotal(); // Memastikan rincian biaya terupdate saat item berubah
     } catch (e) {
         console.error("Error saving cart:", e);
     }
+}
+
+/**
+ * FUNGSI KALKULASI GABUNGAN (DARI BLADE)
+ */
+function calculateFinalTotal() {
+    const selectPayment = document.getElementById("selectPaymentMethod");
+    const displaySubtotal = document.getElementById("displaySubtotal");
+    const displayAdminFee = document.getElementById("displayAdminFee");
+    const displayGrandTotal = document.getElementById("displayGrandTotal");
+
+    let cartItems = getCartItems();
+    const subtotal = cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+    );
+
+    let adminFee = 0;
+    if (selectPayment && selectPayment.selectedIndex > 0) {
+        const selectedOption =
+            selectPayment.options[selectPayment.selectedIndex];
+        const feeType = selectedOption.getAttribute("data-fee-type");
+        const feeValue =
+            parseFloat(selectedOption.getAttribute("data-fee")) || 0;
+
+        if (feeType === "flat") {
+            adminFee = feeValue;
+        } else if (feeType === "percent") {
+            adminFee = subtotal * feeValue;
+        }
+    }
+
+    const grandTotal = subtotal + adminFee;
+
+    if (displaySubtotal) displaySubtotal.innerText = formatRupiah(subtotal);
+    if (displayAdminFee) displayAdminFee.innerText = formatRupiah(adminFee);
+    if (displayGrandTotal)
+        displayGrandTotal.innerText = formatRupiah(grandTotal);
+
+    // Update input hidden untuk total murni barang
+    const totalInput = document.getElementById("inputTotalBayar");
+    if (totalInput) totalInput.value = subtotal;
 }
 
 /**
@@ -61,6 +104,7 @@ function renderCart() {
         `;
         if (btn) btn.disabled = true;
         if (totalEl) totalEl.innerText = "Rp 0";
+        calculateFinalTotal();
         return;
     }
 
@@ -86,7 +130,7 @@ function renderCart() {
                         }</h6>
                         <div class="text-muted small">Rp ${formatRupiah(
                             item.price
-                        )} x ${item.quantity}</div>
+                        ).replace("Rp ", "")} x ${item.quantity}</div>
                         ${
                             item.varian
                                 ? `<span class="badge bg-light text-dark border">${item.varian}</span>`
@@ -95,7 +139,7 @@ function renderCart() {
                     </div>
                 </div>
                 <div class="text-end">
-                    <span class="fw-bold text-dark d-block mb-2">Rp ${formatRupiah(
+                    <span class="fw-bold text-dark d-block mb-2">${formatRupiah(
                         subtotal
                     )}</span>
                     <div class="btn-group btn-group-sm">
@@ -111,8 +155,9 @@ function renderCart() {
     });
     html += "</ul>";
     container.innerHTML = html;
-    if (totalEl) totalEl.innerText = "Rp " + formatRupiah(total);
+    if (totalEl) totalEl.innerText = formatRupiah(total);
     addCartEventListeners();
+    calculateFinalTotal();
 }
 
 function addCartEventListeners() {
@@ -148,7 +193,7 @@ function updateCartCount() {
 }
 
 /**
- * LOGIKA TAMBAH KE KERANJANG (HALAMAN DETAIL)
+ * LOGIKA TAMBAH KE KERANJANG
  */
 function addToCart(newItem) {
     const cart = getCartItems();
@@ -263,19 +308,34 @@ function executeSubmission(cart, btnKonfirmasi, checkoutForm) {
 document.addEventListener("DOMContentLoaded", () => {
     updateCartCount();
 
-    // 1. Tombol Tambah Keranjang (Halaman Detail)
     const addToCartButton = document.getElementById("addToCartButton");
     if (addToCartButton) {
         addToCartButton.addEventListener("click", handleAddToCart);
     }
 
-    // 2. Offcanvas Render
     const cartOffcanvas = document.getElementById("cartOffcanvas");
     if (cartOffcanvas) {
         cartOffcanvas.addEventListener("show.bs.offcanvas", renderCart);
+        // Listener gabungan dari Blade
+        cartOffcanvas.addEventListener(
+            "shown.bs.offcanvas",
+            calculateFinalTotal
+        );
     }
 
-    // 3. Form Checkout Submit
+    // Listener gabungan dari Blade untuk dropdown pembayaran
+    const selectPayment = document.getElementById("selectPaymentMethod");
+    if (selectPayment) {
+        selectPayment.addEventListener("change", calculateFinalTotal);
+    }
+
+    // MutationObserver gabungan dari Blade
+    const observerTarget = document.getElementById("cartItemsContainer");
+    if (observerTarget) {
+        const observer = new MutationObserver(calculateFinalTotal);
+        observer.observe(observerTarget, { childList: true, subtree: true });
+    }
+
     const checkoutForm = document.getElementById("checkoutForm");
     if (checkoutForm) {
         checkoutForm.addEventListener("submit", function (e) {
@@ -298,7 +358,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             }
 
-            // Cek Transaksi Pending
             if (this.dataset.hasPending === "true") {
                 return Swal.fire({
                     title: "Transaksi Pending!",
@@ -312,7 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
-            // KONFIRMASI RINGKASAN
             const paymentName =
                 paymentSelect.options[paymentSelect.selectedIndex].text;
             const grandTotalText =
@@ -323,7 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cart.forEach((item) => {
                 itemsHtml += `<div class="d-flex justify-content-between"><span>${
                     item.quantity
-                }x ${item.name}</span><b>Rp ${formatRupiah(
+                }x ${item.name}</span><b>${formatRupiah(
                     item.price * item.quantity
                 )}</b></div>`;
             });
@@ -331,13 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             Swal.fire({
                 title: "Konfirmasi Pesanan",
-                html: `
-                    <p class="small text-muted mb-2">Apakah rincian pesanan sudah benar?</p>
-                    ${itemsHtml}
-                    <div class="text-start small">
-                        <div class="d-flex justify-content-between"><span>Metode:</span> <b>${paymentName}</b></div>
-                        <div class="d-flex justify-content-between text-primary fs-5 mt-2"><span>Total:</span> <b>${grandTotalText}</b></div>
-                    </div>`,
+                html: `<p class="small text-muted mb-2">Apakah rincian pesanan sudah benar?</p>${itemsHtml}<div class="text-start small"><div class="d-flex justify-content-between"><span>Metode:</span> <b>${paymentName}</b></div><div class="d-flex justify-content-between text-primary fs-5 mt-2"><span>Total:</span> <b>${grandTotalText}</b></div></div>`,
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonText: "Ya, Bayar Sekarang",
@@ -356,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * BFCACHE FIX (BACK BUTTON)
+ * BFCACHE FIX
  */
 window.addEventListener("pageshow", function (event) {
     isSubmitting = false;
