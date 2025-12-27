@@ -72,13 +72,13 @@
                             <div class="d-flex align-items-center mb-2">
                                 {{-- Foto Profil Toko --}}
                                 <div class="flex-shrink-0 me-2">
-                                    <img src="{{ asset($item->penjual->foto_profile ?? 'icon/toko.png') }}" 
-                                         alt="Toko" 
-                                         class="rounded-circle border" 
+                                    <img src="{{ asset($item->penjual->foto_profile ?? 'icon/toko.png') }}"
+                                         alt="Toko"
+                                         class="rounded-circle border"
                                          style="width: 40px; height: 40px; object-fit: cover;"
                                          onerror="this.src='{{ asset('asset/default-profile.png') }}'">
                                 </div>
-                                
+
                                 {{-- Nama Toko & Nama Barang --}}
                                 <div class="overflow-hidden">
                                     <p class="stall-name mb-0 text-muted small text-truncate" style="line-height: 1.2;">
