@@ -14,7 +14,7 @@
                 $profile = Auth::user()->foto_profile;
                 @endphp
                 @if ($userRole === 'siswa' || $userRole === 'civitas_akademik')
-                    <button class="btn btn-keranjang mx-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                    <button class="btn btn-keranjang mx-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
                         <i class="bi bi-cart-fill"></i>
                     </button>
                     <a href='{{ route('profile.index') }}'>
@@ -73,7 +73,7 @@
             </ul>
 
             <div class="d-none d-lg-flex align-items-center">
-                <div class="search-box me-2">
+                <div class="search-box me-1">
                     <i class="bi bi-search search-icon"></i>
                     <input class="form-control search-filter-input" type="search" placeholder="Cari...">
                 </div>
@@ -81,8 +81,8 @@
                 @auth
                     @php $userRole = Auth::user()->role; @endphp
                     @if ($userRole === 'siswa' || $userRole === 'civitas_akademik')
-                    <button class="btn btn-keranjang me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
-                        <i class="bi bi-cart-fill me-2"></i>Keranjang
+                    <button class="btn btn-keranjang me-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas" aria-controls="cartOffcanvas">
+                        <i class="bi bi-cart-fill"></i>Keranjang
                     </button>
                     <a href='{{ route('profile.index') }}'>
                         @if($profile)
