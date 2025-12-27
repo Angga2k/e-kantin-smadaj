@@ -36,7 +36,7 @@
                     <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/">Beranda</a>
                 </li>
                 <li class="nav-item dropdown">
-                     <a class="nav-link dropdown-toggle {{ request()->is('asdasdas*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                     <a class="nav-link dropdown-toggle {{ request()->is('makanan', 'minuman', 'camilan') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Kategori
                      </a>
                      <ul class="dropdown-menu">

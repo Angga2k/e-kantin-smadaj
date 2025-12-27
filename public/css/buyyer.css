@@ -11,7 +11,7 @@ body {
     justify-content: flex-end;
 }
 .navbar .search-box-mobile {
-        max-width: 120px; /* Batasi lebar pencarian di HP */
+        max-width: 100px; /* Batasi lebar pencarian di HP */
         margin-right: 5px !important;
     }
 
