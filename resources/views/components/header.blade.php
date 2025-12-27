@@ -4,9 +4,9 @@
             <img src="{{ asset('asset/logo.png') }}" alt="Logo" style="height: 30px;">
             <span class="fw-bold d-none d-md-inline ms-2">SMA NEGERI 2 JEMBER</span>
         </a>
-        
+
         <div class="d-flex align-items-center d-lg-none ms-auto">
-            <div class="search-box search-box-mobile mx-1">
+            <div class="search-box search-box-mobile mx-1" style="{{ !Auth::check() ? 'width: 200px;' : '' }}">
                 <i class="bi bi-search search-icon"></i>
                 <input class="form-control search-filter-input" type="search" placeholder="Cari...">
             </div>
@@ -67,7 +67,7 @@
                     </li>
                 @else
                     <li class="nav-item d-lg-none">
-                        <a class="nav-link btn btn-success btn-sm border rounded-pill mt-2" href="{{ route('login') }}" style="width: 100%;">
+                        <a class="btn btn-success btn-sm rounded-pill mt-2 w-100 d-flex align-items-center justify-content-center fw-bold" href="{{ route('login') }}" style="width: 100%;">
                             <i class="bi bi-person-fill me-1"></i> Login
                         </a>
                     </li>
@@ -75,7 +75,7 @@
             </ul>
 
             <div class="d-none d-lg-flex align-items-center">
-                <div class="search-box me-1">
+                <div class="search-box me-1" style="width: 300px;">
                     <i class="bi bi-search search-icon"></i>
                     <input class="form-control search-filter-input" type="search" placeholder="Cari...">
                 </div>
@@ -93,7 +93,7 @@
                     </a>
                     @endif
                 @else
-                    <a class="nav-link btn btn-success btn-sm border rounded-pill p-2" href="{{ route('login') }}" style="width: 100%;">
+                    <a class="nav-link btn btn-success btn-sm border rounded-pill p-2" href="{{ route('login') }}" style="width: 150px;">
                         <i class="bi bi-person-fill me-1"></i> Login
                     </a>
                 @endauth
