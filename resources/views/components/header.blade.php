@@ -58,6 +58,9 @@
                         <a class="nav-link {{ request()->is('pesanan') ? 'active' : '' }}" href="/pesanan">Pesanan</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->is('dompet') ? 'active' : '' }}" href="/dompet">Dompet</a>
+                    </li>
+                    <li class="nav-item">
                         <form method="POST" action="{{ route('logout') }}" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-danger btn-sm border rounded-pill mt-1" style="width: 100%;">

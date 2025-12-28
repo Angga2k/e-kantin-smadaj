@@ -92,4 +92,10 @@ class Dompet extends Model
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
+
+    public function topups()
+    {
+        return $this->hasMany(Transaksi::class, 'id_user_pembeli', 'id_user')
+                    ->where('detail_pengambilan', 'TOPUP_SALDO');
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PenjualController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DompetController;
 use App\Http\Controllers\BuyerOrderController;
 use App\Http\Middleware\RoleChecker;
 
@@ -68,6 +69,10 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/profile/update', 'update')->name('profile.update');
             Route::post('/profile/password', 'updatePassword')->name('profile.password');
         });
+        Route::get('/dompet', [DompetController::class, 'index'])
+        ->name('buyer.dana.index');
+        Route::post('/dompet/process', [DompetController::class, 'process'])
+            ->name('buyer.dana.process');
     });
 
 

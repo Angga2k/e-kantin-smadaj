@@ -19,6 +19,7 @@ class BuyerOrderController extends Controller
         // Mengambil data transaksi milik user yang login
         // REVISI: Menggunakan 'id_user_pembeli' sesuai model Transaksi
         $orders = Transaksi::where('id_user_pembeli', Auth::id())
+            ->where('kode_transaksi', 'NOT LIKE', 'TOPUP%')
                     ->with([
                         // Memuat detail transaksi beserta barangnya
                         'detailTransaksi.barang', 
