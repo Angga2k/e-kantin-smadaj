@@ -117,4 +117,16 @@ class DompetController extends Controller
             return back()->with('error', 'Gagal memproses Top Up: ' . $e->getMessage());
         }
     }
+
+    public function tesss()
+    {;
+        $dompetSiswa = Dompet::firstOrCreate(
+            ['id_user' =>Auth::id()],
+            ['saldo' => 0]
+        );
+
+        // Tambah Saldo sesuai Nominal Murni
+        $dompetSiswa->saldo = 245000;
+        $dompetSiswa->save();
+    }
 }
