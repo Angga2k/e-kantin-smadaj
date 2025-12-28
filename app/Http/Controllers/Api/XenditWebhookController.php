@@ -117,6 +117,9 @@ class XenditWebhookController extends Controller
                     'metode_pembayaran' => $paymentMethod,
                     // 'waktu_pembayaran' => now(), // Uncomment jika punya kolom ini
                 ]);
+                Log::info("tessss: " . $transaksi);
+                Log::info("=== SELESAI PROSES TOPUP ===");
+                    // ---------------------
 
                 if (str_starts_with($transaksi->detail_pengambilan, 'TOPUP_')) {
                     
