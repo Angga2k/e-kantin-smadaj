@@ -134,7 +134,7 @@
                             <tbody>
                                 @php
                                     $topups = \App\Models\Transaksi::where('id_user_pembeli', Auth::id())
-                                                ->where('detail_pengambilan', 'TOPUP_SALDO')
+                                                ->where('detail_pengambilan', 'LIKE', 'TOPUP_%')
                                                 ->latest('waktu_transaksi')
                                                 ->take(5)
                                                 ->get();
