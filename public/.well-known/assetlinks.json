@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.e_kantinsmadaj.twa",
+        "sha256_cert_fingerprints": ["9B:88:A3:61:16:75:22:42:C5:E8:2F:14:B6:5C:1F:A0:EE:82:98:46:0E:57:09:7E:28:3C:58:C6:30:FA:F1:58"]
+      }
+    }]
