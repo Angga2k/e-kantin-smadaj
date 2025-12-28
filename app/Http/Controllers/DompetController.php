@@ -118,15 +118,15 @@ class DompetController extends Controller
         }
     }
 
-    public function tesss()
-    {;
-        $dompetSiswa = Dompet::firstOrCreate(
-            ['id_user' =>Auth::id()],
-            ['saldo' => 0]
-        );
+    // public function tesss()
+    // {;
+    //     $dompetSiswa = Dompet::firstOrCreate(
+    //         ['id_user' =>Auth::id()],
+    //         ['saldo' => 0]
+    //     );
 
-        // Tambah Saldo sesuai Nominal Murni
-        $dompetSiswa->saldo = 245000;
-        $dompetSiswa->save();
-    }
+    //     // Tambah Saldo sesuai Nominal Murni
+    //     $dompetSiswa->saldo = 245000;
+    //     $dompetSiswa->save();
+    // }
 }

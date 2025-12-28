@@ -71,8 +71,6 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::get('/dompet', [DompetController::class, 'index'])
         ->name('buyer.dana.index');
-        Route::get('/dompettes', [DompetController::class, 'tesss'])
-        ->name('buyer.dana.index');
         Route::post('/dompet/process', [DompetController::class, 'process'])
             ->name('buyer.dana.process');
     });
