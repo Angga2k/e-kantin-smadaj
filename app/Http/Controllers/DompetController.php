@@ -41,43 +41,33 @@ class DompetController extends Controller
      */
     public function process(Request $request)
     {
-        // 1. Validasi Input
         $request->validate([
-            'amount' => 'required|numeric|min:10000', // Minimal top up 10rb
+            'amount' => 'required|numeric|min:10000',
             'payment_method' => 'required|in:BANK_TRANSFER,E_WALLET',
         ]);
 
         $user = Auth::user();
-        $amount = $request->amount;
+        $amount = $request->amount; // Nominal Murni (misal: 10000)
         $tipePembayaran = $request->payment_method;
 
         DB::beginTransaction();
         try {
-            // 2. [INTI PERMINTAAN ANDA] Cek/Buat Dompet Siswa
-            // Jika baris dompet belum ada untuk user ini, buat baru dengan saldo 0
             $dompet = Dompet::firstOrCreate(
                 ['id_user' => $user->id_user],
                 ['saldo' => 0]
             );
 
-            // 3. Hitung Biaya Admin (Opsional, tergantung kebijakan)
-            // Kita gunakan helper yang sudah ada di service
+            // Hitung Total Bayar (Nominal + Admin)
             $totalBayar = $this->xenditService->calculateTotalWithFee($amount, $tipePembayaran);
 
-            // 4. Generate Kode Transaksi
             $dateCode = date('Ymd');
             $prefix = "TOPUP/$dateCode/";
-
-            // Hitung jumlah transaksi hari ini yang berawalan prefix tersebut untuk menentukan urutan
             $countToday = Transaksi::where('kode_transaksi', 'like', $prefix . '%')->count();
-            
-            // Format urutan menjadi 4 digit (misal: 1 -> 0001)
             $sequence = str_pad($countToday + 1, 4, '0', STR_PAD_LEFT);
             
             $kodeTransaksi = $prefix . $sequence; 
             $externalId = 'TOPUP-' . time() . '-' . Str::random(5);
 
-            // 5. Filter Metode Pembayaran Xendit
             $allowedPaymentMethods = [];
             if ($tipePembayaran === 'E_WALLET') {
                 $allowedPaymentMethods = ['OVO', 'DANA', 'LINKAJA', 'SHOPEEPAY', 'QRIS'];
@@ -85,19 +75,15 @@ class DompetController extends Controller
                 $allowedPaymentMethods = ['BCA', 'BNI', 'BRI', 'MANDIRI', 'PERMATA', 'CIMB', 'BSI'];
             }
 
-            // 6. Buat Invoice Xendit
             $description = "Top Up Saldo E-Kantin #" . $kodeTransaksi;
             $xenditInvoice = $this->xenditService->createInvoice(
                 $externalId,
-                $totalBayar,
+                $totalBayar, 
                 $user->email ?? 'siswa@kantin.com',
                 $description,
                 $allowedPaymentMethods
             );
 
-            // 7. Simpan Riwayat ke Tabel Transaksi
-            // Kita gunakan tabel 'transaksi' yang ada, tapi beri tanda khusus
-            // Misal: detail_pengambilan diisi 'TOPUP_SALDO' agar webhook tahu ini bukan beli barang
             $transaksi = new Transaksi();
             $transaksi->id_transaksi = Str::uuid();
             $transaksi->kode_transaksi = $kodeTransaksi;
@@ -106,27 +92,24 @@ class DompetController extends Controller
             $transaksi->id_order_gateway = $xenditInvoice['id'];
             $transaksi->payment_link = $xenditInvoice['invoice_url'];
             
-            // Simpan nominal murni (amount) di database agar nanti masuk ke saldo sesuai input
-            // Atau simpan total_bayar jika ingin mencatat gross. 
-            // Disini saya simpan total_bayar agar sinkron dengan invoice, 
-            // Nanti di webhook kita harus pintar memilah mana admin fee mana saldo masuk.
-            // *Saran: Untuk Topup, sebaiknya yang masuk ke saldo adalah 'amount' awal.
-            // Kita bisa simpan 'amount' di kolom lain jika ada, atau parsing dari logika nanti.
-            $transaksi->total_harga = $totalBayar; 
+            $transaksi->total_harga = $totalBayar; // Simpan harga kotor (gross) untuk invoice
             
             $transaksi->metode_pembayaran = $tipePembayaran;
             $transaksi->status_pembayaran = 'pending';
             $transaksi->waktu_transaksi = now();
             
-            // FLAGGING PENTING: Menandakan ini Top Up
-            $transaksi->detail_pengambilan = 'TOPUP_SALDO'; 
-            $transaksi->waktu_pengambilan = now(); // Dummy date
+            // --- UPDATE DI SINI ---
+            // Simpan format "TOPUP_NOMINAL" (contoh: TOPUP_10000)
+            // Agar nanti webhook tahu nominal murni yang harus dimasukkan ke saldo
+            $transaksi->detail_pengambilan = 'TOPUP_' . $amount; 
+            // ----------------------
+
+            $transaksi->waktu_pengambilan = now(); 
 
             $transaksi->save();
 
             DB::commit();
 
-            // 8. Redirect ke Xendit
             return redirect($xenditInvoice['invoice_url']);
 
         } catch (\Exception $e) {

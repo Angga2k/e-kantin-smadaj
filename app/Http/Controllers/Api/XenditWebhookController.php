@@ -118,20 +118,24 @@ class XenditWebhookController extends Controller
                     // 'waktu_pembayaran' => now(), // Uncomment jika punya kolom ini
                 ]);
 
-                if ($transaksi->detail_pengambilan === 'TOPUP_SALDO') {
-                    // --- KASUS A: TOP UP SALDO (Masuk ke Dompet PEMBELI/SISWA) ---
+                if (str_starts_with($transaksi->detail_pengambilan, 'TOPUP_')) {
                     
-                    // 1. Cari/Buat Dompet Siswa
+                    // --- KASUS A: TOP UP SALDO ---
+                    
+                    // Ambil nominal murni dari string (contoh: TOPUP_10000 -> 10000)
+                    $parts = explode('_', $transaksi->detail_pengambilan);
+                    $nominalTopUp = isset($parts[1]) ? (float)$parts[1] : $transaksi->total_harga;
+
                     $dompetSiswa = Dompet::firstOrCreate(
                         ['id_user' => $transaksi->id_user_pembeli],
                         ['saldo' => 0]
                     );
 
-                    // 2. Tambah Saldo (Total harga transaksi masuk ke saldo)
-                    $dompetSiswa->saldo = $dompetSiswa->saldo + $transaksi->total_harga;
+                    // Tambah Saldo sesuai Nominal Murni
+                    $dompetSiswa->saldo = $dompetSiswa->saldo + $nominalTopUp;
                     $dompetSiswa->save();
 
-                    Log::info("Topup Berhasil: {$transaksi->kode_transaksi}, User: {$transaksi->id_user_pembeli}, Nominal: {$transaksi->total_harga}");
+                    Log::info("Topup Berhasil: {$transaksi->kode_transaksi}, User: {$transaksi->id_user_pembeli}, Masuk Saldo: {$nominalTopUp}");
 
                 } else {
                     // --- KASUS B: BELANJA BARANG (Masuk ke Dompet PENJUAL) ---
