@@ -94,6 +94,7 @@ class XenditWebhookController extends Controller
         $status = $data['status']; // 'PAID' atau 'EXPIRED'
 
         Log::info('Webhook Invoice Masuk:', $data); // Log untuk debugging
+        Log::info('statuss:', $status); // Log untuk debugging
 
         // 3. Cari Transaksi Pembelian Siswa
         $transaksi = Transaksi::where('external_id', $externalId)->first();
