@@ -118,24 +118,40 @@ class XenditWebhookController extends Controller
                     // 'waktu_pembayaran' => now(), // Uncomment jika punya kolom ini
                 ]);
 
-                $details = DetailTransaksi::where('id_transaksi', $transaksi->id_transaksi)->get();
+                if ($transaksi->detail_pengambilan === 'TOPUP_SALDO') {
+                    // --- KASUS A: TOP UP SALDO (Masuk ke Dompet PEMBELI/SISWA) ---
+                    
+                    // 1. Cari/Buat Dompet Siswa
+                    $dompetSiswa = Dompet::firstOrCreate(
+                        ['id_user' => $transaksi->id_user_pembeli],
+                        ['saldo' => 0]
+                    );
 
-                foreach ($details as $detail) {
-                    $barang = Barang::find($detail->id_barang);
+                    // 2. Tambah Saldo (Total harga transaksi masuk ke saldo)
+                    $dompetSiswa->saldo = $dompetSiswa->saldo + $transaksi->total_harga;
+                    $dompetSiswa->save();
 
-                    if ($barang) {
-                        // $barang->stok = max(0, $barang->stok - $detail->jumlah);
-                        // $barang->save();
+                    Log::info("Topup Berhasil: {$transaksi->kode_transaksi}, User: {$transaksi->id_user_pembeli}, Nominal: {$transaksi->total_harga}");
 
-                        $dompetPenjual = Dompet::firstOrCreate(
-                            ['id_user' => $barang->id_user_penjual],
-                            ['saldo' => 0]
-                        );
+                } else {
+                    // --- KASUS B: BELANJA BARANG (Masuk ke Dompet PENJUAL) ---
+                    
+                    $details = DetailTransaksi::where('id_transaksi', $transaksi->id_transaksi)->get();
 
-                        $pendapatan = $detail->harga_saat_transaksi * $detail->jumlah;
+                    foreach ($details as $detail) {
+                        $barang = Barang::find($detail->id_barang);
 
-                        $dompetPenjual->saldo = $dompetPenjual->saldo + $pendapatan;
-                        $dompetPenjual->save();
+                        if ($barang) {
+                            // Masukkan Saldo ke Penjual
+                            $dompetPenjual = Dompet::firstOrCreate(
+                                ['id_user' => $barang->id_user_penjual],
+                                ['saldo' => 0]
+                            );
+
+                            $pendapatan = $detail->harga_saat_transaksi * $detail->jumlah;
+                            $dompetPenjual->saldo = $dompetPenjual->saldo + $pendapatan;
+                            $dompetPenjual->save();
+                        }
                     }
                 }
 
