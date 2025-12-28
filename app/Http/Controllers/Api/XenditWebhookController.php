@@ -93,8 +93,8 @@ class XenditWebhookController extends Controller
         $externalId = $data['external_id'];
         $status = $data['status']; // 'PAID' atau 'EXPIRED'
 
-        Log::info('Webhook Invoice Masuk:', $data); // Log untuk debugging
-        Log::info('statuss:', $status); // Log untuk debugging
+        // Log::info('Webhook Invoice Masuk:', $data); // Log untuk debugging
+        // Log::info('statuss:', $status); // Log untuk debugging
 
         // 3. Cari Transaksi Pembelian Siswa
         $transaksi = Transaksi::where('external_id', $externalId)->first();
@@ -118,8 +118,8 @@ class XenditWebhookController extends Controller
                     'metode_pembayaran' => $paymentMethod,
                     // 'waktu_pembayaran' => now(), // Uncomment jika punya kolom ini
                 ]);
-                Log::info("tessss: " . $transaksi);
-                Log::info("=== SELESAI PROSES TOPUP ===");
+                // Log::info("tessss: " . $transaksi);
+                // Log::info("=== SELESAI PROSES TOPUP ===");
                     // ---------------------
 
                 if (str_starts_with($transaksi->detail_pengambilan, 'TOPUP_')) {
