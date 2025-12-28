@@ -24,7 +24,7 @@ Route::get('/a', function () {
 });
 
 Route::get('/tesssss', function () {
-    return view('buyer.pesanan.index');
+    return view('buyer.dana.index');
 });
 
 Route::get('/tesauth', function () {

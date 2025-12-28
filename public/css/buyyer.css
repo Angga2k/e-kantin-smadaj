@@ -504,3 +504,144 @@ body {
         text-align: left;
     }
 }
+
+
+/* Navbar */
+.navbar { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
+.navbar-brand img { height: 35px; }
+.navbar .nav-link { font-weight: 500; color: #333; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #5d4037; }
+
+/* Wallet Card */
+.wallet-card {
+    background: linear-gradient(135deg, #00897b 0%, #004d40 100%);
+    border-radius: 20px;
+    color: white;
+    padding: 1.5rem; /* Default Mobile Padding */
+    box-shadow: 0 10px 20px rgba(0, 137, 123, 0.3);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.wallet-card::after {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+/* Responsive Padding untuk Desktop */
+@media (min-width: 768px) {
+    .wallet-card { padding: 2rem; margin-bottom: 2rem; }
+}
+
+/* Card Container Topup */
+.card-topup {
+    background: white;
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* === PERBAIKAN INPUT GROUP (Rp menyatu dengan Angka) === */
+
+/* Wrapper transisi */
+.input-group-custom {
+    transition: all 0.2s;
+}
+
+/* Style Bagian "Rp" (Kiri) */
+.input-group-custom .input-group-text {
+    background-color: white;
+    border: 2px solid #e0e0e0; /* Samakan tebal garis */
+    border-right: none;        /* Hapus garis kanan biar nyambung */
+    color: #6c757d;
+    font-weight: bold;
+    font-size: 1.5rem;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    transition: border-color 0.15s ease-in-out;
+}
+
+/* Style Input Angka (Kanan) */
+.form-control-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-green);
+    border: 2px solid #e0e0e0; /* Samakan tebal garis */
+    border-left: none;         /* Hapus garis kiri biar nyambung */
+    padding: 0.75rem;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: none !important; /* Hapus shadow biru default */
+    transition: border-color 0.15s ease-in-out;
+}
+
+/* LOGIKA FOKUS: Saat input diklik, warnai KEDUANYA jadi hijau */
+.input-group-custom:focus-within .input-group-text,
+.input-group-custom:focus-within .form-control-amount {
+    border-color: var(--primary-green);
+}
+
+/* LOGIKA ERROR: Jika validasi gagal, warnai input jadi merah */
+.form-control-amount.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+/* === END PERBAIKAN INPUT === */
+
+/* Tombol Preset (Pilihan Cepat) */
+.btn-preset {
+    border: 1px solid #ced4da;
+    color: #6c757d;
+    font-weight: 600;
+    padding: 0.6rem;
+    border-radius: 10px;
+    background-color: white;
+    transition: all 0.2s;
+    width: 100%;
+    font-size: 0.95rem; 
+}
+.btn-preset:hover {
+    background-color: #f8f9fa;
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+}
+.btn-preset.active {
+    background-color: #e0f2f1;
+    border-color: var(--primary-green);
+    color: var(--primary-green);
+}
+
+/* Payment Methods */
+.payment-option {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.payment-option:hover {
+    border-color: var(--primary-green);
+    background-color: #f9f9f9;
+}
+.payment-option.selected {
+    border-color: var(--primary-green);
+    background-color: #e0f2f1;
+}
+.radio-custom {
+    accent-color: var(--primary-green);
+    transform: scale(1.2);
+}
+
+/* History Table Badge */
+.badge-soft-success { background-color: #e8f5e9; color: #1b5e20; }
+.badge-soft-warning { background-color: #fff8e1; color: #f57f17; }
+.badge-soft-danger { background-color: #ffebee; color: #c62828; }
