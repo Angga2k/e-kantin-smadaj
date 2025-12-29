@@ -36,6 +36,13 @@
                 $transaksi = $details->first()->transaksi;
                 $grandTotal = $details->first()->jumlah * $details->first()->harga_saat_transaksi;
                 $currentDetailStatus = $details->first()->status_barang;
+                $nama_user = "no_name";
+                $role_pembelii = $transaksi->pembeli['role'];
+                if($role_pembelii === 'siswa'){
+                    $nama_user = $transaksi->pembeli->siswa['nama'];
+                } else  if($role_pembelii === 'civitas_akademik') {
+                    $nama_user = $transaksi->pembeli->civitasAkademik['nama'];
+                }
             @endphp
 
             <div class="col-lg-4 col-md-6 col-12 mb-3 order-item-col" data-transaksi-id="{{ $id_transaksi }}">
@@ -45,37 +52,41 @@
                     <div class="order-card-body">
                         <dl class="mb-0">
                             <div class="order-row">
-                                <dt>Nama Pelanggan</dt>
-                                <dd>{{ $transaksi->id_user_pembeli }}</dd>
-                            </div>
+                                <dt>Pembeli</dt>
+                                <dd>{{ $role_pembelii }}</dd>
+                            </div><hr class="m-0">
+                            
+                            <div class="order-row">
+                                <dt>Nama Pembeli</dt>
+                                <dd>{{ $nama_user }}</dd>
+                            </div><hr class="m-0">
 
                             <div class="order-row">
                                 <dt>Waktu Pesan</dt>
                                 <dd>{{ \Carbon\Carbon::parse($transaksi->waktu_transaksi)->translatedFormat('j M Y, H:i') }}</dd>
-                            </div>
+                            </div><hr class="m-0">
 
                             <div class="order-row">
                                 <dt>Detail Pesan</dt>
                                 <dd>
                                     @foreach($details as $detail)
-                                        {{ $detail->jumlah }}x {{ $detail->barang->nama_barang }} ({{ $detail->status_barang }})<br>
+                                        <strong>{{ $detail->jumlah }}x</strong> {{ $detail->barang->nama_barang }}<br>
                                     @endforeach
                                 </dd>
-                            </div>
+                            </div><hr class="m-0">
 
                             <div class="order-row">
                                 <dt>Pengambilan</dt>
-                                <dd>{{ \Carbon\Carbon::parse($transaksi->waktu_pengambilan)->translatedFormat('j M Y') }}, {{ $transaksi->detail_pengambilan }}</dd>
-                            </div>
+                                <dd>{{ \Carbon\Carbon::parse($transaksi->waktu_pengambilan)->translatedFormat('j M Y') }}, <strong>{{ $transaksi->detail_pengambilan }}</strong></dd>
+                            </div><hr class="m-0">
 
                             <div class="order-row">
                                 <dt>Total</dt>
-                                <dd class="fw-bold">Rp. {{ number_format($grandTotal, 0, ',', '.') }}</dd>
-                            </div>
+                                <dd class="fw-bold text-primary">Rp. {{ number_format($grandTotal, 0, ',', '.') }}</dd>
+                            </div><hr class="m-0 mb-3">
                         </dl>
                     </div>
 
-                    <hr>
 
                     <div class="order-card-footer">
                         <div class="row g-2">

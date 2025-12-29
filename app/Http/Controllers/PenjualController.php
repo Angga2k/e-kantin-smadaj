@@ -118,7 +118,11 @@ class PenjualController extends Controller
         })
         ->where('status_barang', $detailStatus)
         ->whereNotIn('status_barang', ['sudah_diambil'])
-        ->with(['transaksi', 'barang'])
+        ->with([
+            'transaksi.pembeli.siswa', 
+            'transaksi.pembeli.civitasAkademik',
+            'barang'
+            ])
         ->get();
 
         $pesananGrouped = $pesananDetail->groupBy('id_transaksi');
@@ -331,7 +335,7 @@ class PenjualController extends Controller
 
         $riwayat = HistoryPenarikan::where('id_dompet', $dompet->id_dompet)
                     ->latest()
-                    ->paginate(10);
+                    ->get();
 
         // Ambil Rekening Tersimpan
         $rekeningTersimpan = RekeningTujuan::where('id_user', $idUser)->get();

@@ -50,12 +50,6 @@ Route::get('/detail/{barang}', [MakananController::class, 'show'])->name('detail
 
 
 
-Route::get('/payment/status', [CheckoutController::class, 'paymentStatus'])->name('payment.status');
-Route::post('/pesanan/repay', [CheckoutController::class, 'repayOrder'])->name('buyer.orders.repay');
-Route::get('/pesanan', [BuyerOrderController::class, 'index'])->name('buyer.orders.index');
-// Aksi Simpan Rating (AJAX)
-Route::post('/pesanan/ulasan', [BuyerOrderController::class, 'storeRating'])->name('buyer.orders.rating.store');
-Route::post('/pesanan/cancel', [BuyerOrderController::class, 'cancelOrder'])->name('buyer.orders.cancel');
 
 Route::middleware(['auth'])->group(function () {
 
@@ -69,6 +63,12 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/profile/update', 'update')->name('profile.update');
             Route::post('/profile/password', 'updatePassword')->name('profile.password');
         });
+        Route::get('/payment/status', [CheckoutController::class, 'paymentStatus'])->name('payment.status');
+        Route::post('/pesanan/repay', [CheckoutController::class, 'repayOrder'])->name('buyer.orders.repay');
+        Route::get('/pesanan', [BuyerOrderController::class, 'index'])->name('buyer.orders.index');
+        // Aksi Simpan Rating (AJAX)
+        Route::post('/pesanan/ulasan', [BuyerOrderController::class, 'storeRating'])->name('buyer.orders.rating.store');
+        Route::post('/pesanan/cancel', [BuyerOrderController::class, 'cancelOrder'])->name('buyer.orders.cancel');
         Route::get('/dompet', [DompetController::class, 'index'])
         ->name('buyer.dana.index');
         Route::post('/dompet/process', [DompetController::class, 'process'])

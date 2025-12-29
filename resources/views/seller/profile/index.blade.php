@@ -136,10 +136,22 @@
 
                 if (!current_password || !new_password || !new_password_confirmation) {
                     Swal.showValidationMessage('Semua kolom harus diisi!');
-                } else if (new_password !== new_password_confirmation) {
+                    return false;
+                } 
+                
+                else if (new_password === current_password) {
+                    Swal.showValidationMessage('Password baru tidak boleh sama dengan password lama!');
+                    return false;
+                } 
+                
+                else if (new_password !== new_password_confirmation) {
                     Swal.showValidationMessage('Konfirmasi password tidak cocok!');
-                } else if (new_password.length < 8) {
+                    return false;
+                }
+                
+                else if (new_password.length < 8) {
                     Swal.showValidationMessage('Password baru minimal 8 karakter!');
+                    return false;
                 }
                 return { current_password, new_password, new_password_confirmation };
             }

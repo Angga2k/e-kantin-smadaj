@@ -8,19 +8,13 @@
 
         <div class="d-flex d-lg-none align-items-center ms-auto">
 
-            <span class="fw-bold me-2" style="font-size: 0.9rem;">Rp {{ number_format($saldoNavbar ?? 0, 0, ',', '.') }}</span>
+            <span class="fw-bold me-3" style="font-size: 0.9rem;">Rp {{ number_format($saldoNavbar ?? 0, 0, ',', '.') }}</span>
 
-            <a href="#" class="fs-5 text-secondary me-2"><i class="bi bi-bell-fill"></i></a>
+            <!--<a href="#" class="fs-5 text-secondary me-3"><i class="bi bi-bell-fill"></i></a>-->
 
-            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <form method="POST" action="{{ route('logout') }}" class="d-inline me-2">
-                @csrf
-                <button type="submit" class="btn btn-danger btn-sm border rounded-pill mt-1" style="width: 100%;">
-                    <i class="bi bi-box-arrow-right me-1"></i> Logout
-                </button>
-            </form>
 
             <a href="{{ route('seller.profile.index') }}">
                 <img src="{{ asset(Auth::user()->foto_profile ?? 'icon/profile.png') }}" class="rounded-circle" alt="Profil" style="height: 30px; width: 30px; object-fit: cover;">
@@ -59,6 +53,14 @@
                         <li><a class="dropdown-item" href="#">b</a></li>
                      </ul>
                 </li> --}}
+                <li class="nav-item d-flex d-lg-none">
+                    <form method="POST" action="{{ route('logout') }}" class="d-inline me-2 w-100">
+                        @csrf
+                        <button type="submit" class="btn btn-danger btn-sm border rounded-pill mt-1" style="width: 100%;">
+                            <i class="bi bi-box-arrow-right me-1"></i> Logout
+                        </button>
+                    </form>
+                </li>
             </ul>
 
             <div class="d-none d-lg-flex align-items-center">
@@ -67,13 +69,15 @@
                 <span class="fw-bold me-3">
                     Rp {{ number_format($saldoNavbar ?? 0, 0, ',', '.') }}
                 </span>
-
-                <form method="POST" action="{{ route('logout') }}" class="d-inline me-2">
+                
+                <form method="POST" action="{{ route('logout') }}" class="d-inline me-2 d-none d-lg-flex">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm border rounded-pill mt-1" style="width: 100%;">
                         <i class="bi bi-box-arrow-right me-1"></i> Logout
                     </button>
                 </form>
+
+                
                 <a href={{ route('seller.profile.index') }}>
                     <img src="{{ asset(Auth::user()->foto_profile ?? 'icon/profile.png') }}" class="rounded-circle" alt="Profil" style="height: 35px; width: 35px; object-fit: cover;">
                 </a>
