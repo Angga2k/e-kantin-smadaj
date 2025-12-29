@@ -35,6 +35,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <link rel="stylesheet" href="{{ asset('css/buyyer.css') }}">
+    <meta name="theme-color" content="#007bff">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    
+    <link rel="apple-touch-icon" href="{{ asset('icon/logofix.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"> 
+    <meta name="apple-mobile-web-app-title" content="E-Kantin">
 </head>
 <body>
 
@@ -229,6 +236,16 @@
             // Opsi 2 (Alternatif): Langsung arahkan ke halaman login
             // window.location.href = "{{ route('login') }}";
         }, refreshTime);
+    </script>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register("/sw.js")
+                    .then(reg => console.log('PWA: Service Worker terdaftar!', reg.scope))
+                    .catch(err => console.error('PWA: Gagal daftar Service Worker:', err));
+            });
+        }
     </script>
 
 </body>

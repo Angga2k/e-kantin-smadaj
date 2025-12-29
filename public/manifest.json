@@ -1,0 +1,40 @@
+{
+  "name": "E-Kantin SMADAJ",
+  "short_name": "E-Kantin",
+  "description": "Sistem Kantin Digital SMA Negeri 2 Jember.",
+  "id": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "icons": [
+    {
+      "src": "/icon/logofix.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon/logofix.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon/logofix.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+kantin",
+      "url": "/?type=%s"
+    }
+  ],
+  "display_override": ["standalone", "browser"]
+}

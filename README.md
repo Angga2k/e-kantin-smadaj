@@ -1,5 +1,7 @@
 # e-Kantin SMA 2 Jember
 
+tes
+
 Selamat datang di **e-Kantin SMA 2 Jember**, sebuah aplikasi berbasis web yang dirancang untuk mempermudah pengelolaan dan pemesanan makanan di kantin sekolah. Aplikasi ini bertujuan untuk memberikan pengalaman yang lebih efisien dan modern bagi siswa, guru, dan pengelola kantin.
 
 ## Fitur Utama

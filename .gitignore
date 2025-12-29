@@ -15,6 +15,7 @@
 /node_modules
 /public/build
 /public/hot
+/public/foto_profile
 /public/storage
 /storage/*.key
 /storage/pail
